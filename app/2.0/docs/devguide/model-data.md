@@ -1,29 +1,24 @@
 ---
-title: Work with object and array data
+title: オブジェクトや配列のデータとの連携
 ---
 
 <!-- toc -->
 
-The data system provides methods for making [observable changes](data-system#observable-changes) to
-an element's model data (properties and subproperties). Use these methods to make observable changes
-to arrays and object subproperties.
+データシステムは、要素のモデルデータ(プロパティおよびサブプロパティ)に[監視可能な変更](data-system#observable-changes)を加えるためのメソッドを提供します。これらのメソッドを使用して、配列やオブジェクトのサブプロパティに*監視可能な変更*を加えます。
 
-Related concepts:
+関連する概念：
 
--   [Data paths](data-system#paths).
--   [Observable changes](data-system#observable-changes).
+- [データパス](data-system#paths)
+- [監視可能な変更](data-system#observable-changes)
 
-## Specifying paths
+## パスの記法
 
-A [data path](data-system#paths) is a series of path segments. *In most cases*, each path segment is
-a property name. The data APIs accept two kinds of paths:
+[データパス](data-system#paths)は、パスセグメントの連続体です。*ほとんどの場合*、各パスセグメントはプロパティ名になります。データAPIでは二種類のパスが利用可能です。：
 
-*   A string, with path segments separated by dots.
+*   ドット区切りのパスセグメントの文字列(下記例の一番目)
+*   配列アイテムが文字列で、パスセグメント又はドット区切りのパスのいずれかになります。(下記例の三番目)
 
-*   An array of strings, where each array element is either a path segment or a dotted path.
-
-The following all represent the same path:
-
+以下はすべて同じパスを表します。：
 
 ```
 "one.two.three"
@@ -31,18 +26,15 @@ The following all represent the same path:
 ["one.two", "three"]
 ```
 
-There are a few special types of path segments.
+特別な種類のパスセグメントがいくつかあります。
 
+*   ワイルドカードパス(例：`foo.*`）は、配列の変更を含む、指定されたパスやそのサブプロパティに対するすべての変更を表します。
+*   配列の変更パス(例：`foo.splices`)は、指定された配列に対するすべての変更を表す。
+*   配列アイテムのパス(例：`foo.11`)は、配列内の特定のアイテムを表します。
 
-*   Wildcard paths (like `foo.*`) represent _all changes to a given path and its subproperties_,
-    including array mutations.
-*   Array mutation paths (like `foo.splices`) represent all array mutations to a given array.
-*   Array item paths (like `foo.11`) represent an item in an array.
+## パスによる値の取得 {#get-value}
 
-## Get a value by path {#get-value}
-
-Use the [`get`](/{{{polymer_version_dir}}}/docs/api/elements/Polymer.Element#method-get) method to retrieve a value based on
-its path.
+パスに基づいて値を取得するには[get](/{{{polymer_version_dir}}}/docs/api/elements/Polymer.Element#method-get)メソッドを使用してください。
 
 ```
 // retrieve a subproperty by path
@@ -52,10 +44,9 @@ var item = this.get(['myArray', 11])
 
 ```
 
-## Set a property or subproperty by path {#set-path}
+## パスによるプロパティまたはサブプロパティの設定 {#set-path}
 
-Use the [`set`](/{{{polymer_version_dir}}}/docs/api/elements/Polymer.Element#method-set) method to
-make an [observable change](data-system#observable-changes) to a subproperty.
+サブプロパティに[監視可能な変更](data-system#observable-changes)を加えるには[set](/{{{polymer_version_dir}}}/docs/api/elements/Polymer.Element#method-set)メソッドを使用してください。
 
 ```js
 // clear an array
@@ -64,10 +55,7 @@ this.set('group.members', []);
 this.set('profile.name', 'Alex');
 ```
 
-Calling `set` has no effect if the value of the property or subproperty doesn't change. In
-particular, calling `set` on an object property won't cause Polymer to pick up changes to the
-object's subproperties, unless the object itself changes. Likewise, calling `set` on an array
-property won't cause Polymer to pick up array mutations that have already been made:
+プロパティまたはサブプロパティの値が変わらない場合には、`set`を呼び出しても効果がありません。特に、オブジェクトのプロパティで`set`を呼び出すと、オブジェクトそのものが変更されない限り、Polymerはオブジェクトのサブプロパティの変更を検知しません。同様に、配列プロパティで`set`を呼び出した場合も、Polymerは既存の配列の変更を検知しません。：
 
 ```
 // DOES NOT WORK
@@ -79,77 +67,54 @@ this.users.push({name: 'Grace'});
 this.set('users', this.users);
 ```
 
-In both cases an object to itself doesn't have any effect—the object hasn't changed. Instead,
-you can use [`notifyPath`](#notifyPath) to inform Polymer of a subproperty change that's already
-happened. For an array, you can either use Polymer's array mutation methods as described in
-[Mutate an array](#array-mutation), or notify Polymer after the fact as described in
-[Notify Polymer of array mutations](#notifysplices).
+どちらの場合も、オブジェクトは変更されておらず、オブジェクトそのものに何ら効果が生じません。代わりに、[notifyPath](#notifyPath)を利用でき、既に生じたサブプロパティの変更を、Polymerに知らせることができます。配列の場合には、[配列の変更](#array-mutation)で説明したように、Polymerの配列変更メソッドを使用するか、[配列の変更をPolymerに通知](#notifysplices)で説明したように、事後的にPolymerに通知する方法があります。
 
-**MutableData** For elements that include the `Polymer.MutableData` mixin, calling `set` on an
-object or array causes Polymer to re-evaluates the entire object graph starting at
-that object or array, even if the object or array itself hasn't changed. For details, see
-[Using the MutableData mixin](data-system#mutable-data).
+**可変データ(MutableData)**：`Polymer.MutableData`ミックスインをインクルードした要素の場合、オブジェクトまたは配列上で`set`を呼び出すと、オブジェクトや配列自身が変更されていなくても、Polymerはそれらオブジェクトや配列から開始して、オブジェクトグラフ全体を再評価します。詳細については、[MutableDataミックスインの使用](data-system#mutable-data)を参照してください。
 {.alert .alert-info}
 
 
-Related tasks:
+関連タスク：
 
 -   [Notify Polymer of a subproperty change](#notify-path)
 -   [Mutate an array](#array-mutation)
 -   [Notify Polymer of array mutations](#notifysplices)
 
-### Notify Polymer of a subproperty change {#notify-path}
+### Polymerにサブプロパティの変更を通知する {#notify-path}
 
-After making changes to an object subproperty, call `notifyPath` to make the change
-[_observable_](data-system#observable-changes) to the data system.
+オブジェクトのサブプロパティに変更を加えた後に`notifyPath`呼び出すことで、変更をデータシステムに対して[監視可能](data-system#observable-changes)にします。ta system.
 
 ```
 this.profile.name = Alex;
 this.notifyPath('profile.name');
 ```
 
-When calling `notifyPath`, you need to use the **exact path** that changed. For example, calling
-`this.notifyPath('profile')` doesn't pick up a change to `profile.name` because the `profile` object
-itself hasn't changed.
+`notifyPath`を呼び出し時に、変更があった**正確なパス**を指定する必要があります。例えば、`this.notifyPath('profile')`を呼び出ししても`profile.name`に対する変更は検出しません。なぜなら`profile`オブジェクトそのものは変更されていないからです。
 
-**MutableData** For elements that include the `Polymer.MutableData` mixin, calling `notifyPath` on an
-object or array causes Polymer to re-evaluates the entire object graph starting at
-that object or array, even if the object or array itself hasn't changed. For details, see
-[Using the MutableData mixin](data-system#mutable-data).
+**可変データ(MutableData)**：`Polymer.MutableData`ミックスインをインクルードした要素の場合、オブジェクトまたは配列上で`notifyPath `を呼び出すと、オブジェクトや配列自身が変更されていなくても、Polymerはそれらオブジェクトや配列から開始して、オブジェクトグラフ全体を再評価します。詳細については、[MutableDataミックスインの使用](data-system#mutable-data)を参照してください。
 {.alert .alert-info}
 
-## Work with arrays {#work-with-arrays}
+## 配列との連携 {#work-with-arrays}
 
-Use Polymer's array mutation methods to make [observable changes](data-system#observable-changes)
-to arrays.
+Polymerの配列変更メソッドを使用して、配列に[監視可能な変更](data-system#observable-changes)を加えます。
 
-If you manipulate an array using the native methods (like `Array.prototype.push`), you can notify
-Polymer after the fact, as described in [Batch changes to an object or array](#batch-changes).
+ネイティブメソッド(`Array.prototype.push`のような)を使用して配列を操作する場合、[オブジェクトまたは配列へのバッチによる変更](#batch-changes)で説明しているように、変更を事後的にPolymerに通知することができます。).
 
-### Mutate an array {#array-mutation}
+### 配列を変更 {#array-mutation}
 
-When modifying arrays, Polymer provides a set of array mutation methods that mimic
-`Array.prototype` methods, with the exception that
-they take a `path` string as the first argument.  The `path` argument identifies
-an array on the element to mutate, with the following arguments matching those
-of the native `Array` methods.
+配列を変更するとき、Polymerは`Array.prototype`を模倣した、一連の配列変更メソッドを提供しますが、最初の引数として文字列の`path`を使用する点が異なります。引数`path`は、要素上で変更する配列を識別するのに利用され、第二引数以降はネイティブの`Array`メソッドのものと同じです。
 
-These methods perform the mutation action on the array, and then notify other elements that may be
-bound to the same array of the changes. You can use these methods when mutating an array
-to ensure that any elements watching the array (via observers, computed properties,
-or data bindings) are kept in sync.
+これらのメソッドは配列上で変更アクションを実行し、同じ配列にバインドされているかもしれない他の要素に対してその変更を通知します。配列を変更する際にこれらのメソッドを使用することで、(オブザーバー、算出プロパティ、またはデータバインディングを通じて)その配列を監視する全ての要素を同期された状態に保つことができます。
 
-Every Polymer element has the following array mutation methods available:
-
+すべてのPolymer要素には、以下の配列変更メソッドがあり利用することができます。：
 *   <code>push(<var>path</var>, <var>item1</var>, [..., <var>itemN</var>])</code>
 *   <code>pop(<var>path</var>)</code>
 *   <code>unshift(<var>path</var>, <var>item1</var>, [..., <var>itemN</var>])</code>
 *   <code>shift(<var>path</var>)</code>
-*   <code>splice(<var>path</var>, <var>index</var>, <var>removeCount</var>, [<var>item1</var>,
-    ..., <var>itemN</var>])</code>
+*   <code>splice(<var>path</var>, <var>index</var>, <var>removeCount</var>, [<var>item1</var>,..., <var>itemN</var>])</code>
 
 
-Example { .caption }
+
+例 { .caption }
 
 ```html
 <link rel="import" href="components/polymer/polymer-element.html">
@@ -180,50 +145,32 @@ Example { .caption }
 </dom-module>
 ```
 
-The `set` method can also be used to manipulate arrays by using an array path. For example, to
-to replace the array item at index 3:
+`set`メソッドは、*配列パス*を使用して配列を操作する用途も利用できます。例えば、インデックス`3`の配列のアイテムを置き換えるには次のようにします。：
 
 ```js
 this.set('users.3', {name: 'Churchill'});
 ```
 
-Sometimes it's not convenient to use the Polymer array mutation methods. In this event, you have
-a few choices:
+Polymerの配列変更メソッドの利用が役立たない場合もあります。この場合には、いくつかの選択肢があります。：
 
-*   Use the [`notifySplices`](#notifysplices) method to notify Polymer after the fact.
+*   [notifySplices](#notifysplices)メソッドを使用して事後的にPolymerに通知します。
+*   `MutableData`ミックスインを使用します。`Polymer.MutableData`ミックスインをインクルードした要素の場合、オブジェクトまたは配列上で`set`または`notifyPath `を呼び出すと、オブジェクトや配列自身が変更されていなくても、Polymerはそれらオブジェクトや配列から開始して、オブジェクトグラフ全体を再評価します。詳細については、[MutableDataミックスインの使用](data-system#mutable-data)を参照してください。
 
-*   Use the `MutableData` mixin. For elements that include the `Polymer.MutableData` mixin, calling
-    `set` or `notifyPath` on an object or array causes Polymer to re-evaluate the entire object
-    graph starting at that object or array, even if the object or array itself hasn't changed. For
-    details, see [Using the MutableData mixin](data-system#mutable-data).
+###  配列の変更をPolymerに通知 {#notifysplices}
 
-### Notify Polymer of array mutations {#notifysplices}
+可能である時は常に、Polymerの[配列変更メソッド](#array-mutation)を利用すべきです。しかし、これらは必ずしも利用できるとは限りません。例えば、Polymer配列変更メソッドを使わないサードパーティのライブラリを利用しているかもしれません。これらのシナリオにおいては、変更後に<a href="/{{{polymer_version_dir}}}/docs/api/elements/Polymer.Element#method-notifySplices">notifySplices</a>を呼び出すことで、配列を監視するすべてのPolymer要素にその変更が適切に通知されるようにできます。
 
-Whenever possible you should always use Polymer's [array mutation methods](#array-mutation).
-However, this isn't always possible. For example, you may be using a third-party library
-that does not use Polymer's array mutation methods. In these scenarios you can call
-<a href="/{{{polymer_version_dir}}}/docs/api/elements/Polymer.Element#method-notifySplices">`notifySplices`</a>
-after the mutations to ensure that any Polymer elements observing the array
-are properly notified of the changes.
+`notifySplices`メソッドは、配列の変更を一連の`splice`オペレーションに*正規化*することが求められます。例えば、配列上で`shift`を呼び出して配列の最初の要素を削除するのは、`splice(0, 1)`を呼び出すことと同じです。
 
-The `notifySplices` method requires the array mutations to be *normalized* into a series of `splice`
-operations. For example, calling `shift` on an array removes the first element of the array, so is
-equivalent to calling `splice(0, 1)`.
+`splice`オペレーションはインデックスの順番に適用する必要があります。そうすることで要素が配列の内部表現を更新できます。
 
-Splices should be applied in index order, so that the element can update its internal representation
-of the array.
-
-If you can't know the exact changes that occurred, you can use the `MutableData` mixin. For elements
-that include the `Polymer.MutableData` mixin, calling `set` or `notifyPath` on an object or array
-causes Polymer to re-evaluate the entire object graph starting at that object or array, even if the
-object or array itself hasn't changed. For details, see [Using the MutableData mixin](data-system#mutable-data).
+発生した正確な変更(パス)か分からない場合は、`MutableData`ミックスインを利用できます。
+`Polymer.MutableData`ミックスインをインクルードした要素の場合、オブジェクトまたは配列上で`set`または`notifyPath `を呼び出すと、オブジェクトや配列自身が変更されていなくても、Polymerはそれらオブジェクトや配列から開始して、オブジェクトグラフ全体を再評価します。詳細については、[MutableDataミックスインの使用](data-system#mutable-data)を参照してください。
 
 
-## Batch multiple property changes {#set-property}
+## 複数のプロパティ変更をバッチ処理 {#set-property}
 
-Use [`setProperties`](/{{{polymer_version_dir}}}/docs/api/mixins/Polymer.PropertyEffects#method-setProperties)
-method to make a batch change to a set of properties. This ensures the property changes
-run as a coherent set.
+複数のプロパティへの変更をまとめて設定するには[`setProperties`](/{{{polymer_version_dir}}}/docs/api/mixins/Polymer.PropertyEffects#method-setProperties)を使用します。これにより、プロパティの変更はまとまったセットとして確実に設定されます。
 
 ```js
 this.setProperties({
@@ -242,31 +189,21 @@ this.setProperties({
 }, true);
 ```
 
-## Link two paths to the same object {#linkpaths}
+## 同一オブジェクトへのパスをリンク {#linkpaths}
 
-Use the [`linkPaths`](/{{{polymer_version_dir}}}/docs/api/elements/Polymer.Element#method-linkPaths)
-method to associate two paths. Use `linkPaths` when an element has two paths that refer to the same
-object, as described in [Two paths referencing the same object](data-system#two-paths).
+[linkPaths](/{{{polymer_version_dir}}}/docs/api/elements/Polymer.Element#method-linkPaths)メソッドは二つのパスを関連付けます。[二つのパスが同一のオブジェクトを参照]((data-system#two-paths)での説明の通り、`linkPaths`は要素が同じオブジェクトを参照する二つのパスを持つ場合に使用できます。
 
-When two paths are *linked*, an [observable change](data-system#observable-changes) to one path is
-observable on the other path, as well.
+二つのパスがリンクされている場合、片方のパスへの[監視可能な変更](data-system#observable-changes)は、もう片方のパスでも同じように監視することができます。
 
 ```js
 linkPaths('selectedUser', 'users.1');
 ```
 
-**Both paths must be relative to the same element.** To propagate changes _between_ elements, you
-must use a [data binding](data-binding).
+**どちらのパスも同一の要素に関連付ける必要があります。**要素間で変更を伝播するには、[データバインディング](data-binding)を使用すべきです。
 {.alert .alert-info}
 
-
-
-To remove a path linkage, call `unlinkPaths`, passing in the first path you passed to
-`linkPaths`:
+パスの結合を解除するには、`linkPaths`に渡した一つ目のパスを引数に指定して`unlinkPaths`を呼び出します：
 
 ```js
 unlinkPaths('selectedUser');
 ```
-
-
-

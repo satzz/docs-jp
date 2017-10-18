@@ -4,26 +4,20 @@ title: Routing with <app-route>
 
 <!-- toc -->
 
-For client-side routing, App Toolbox uses the
-[`<app-route>`](https://www.webcomponents.org/element/PolymerElements/app-route) element to provide
-_modular routing_. Modular routing means that instead of having a central repository for all your
-application's routes, individual components manage some portion of the route, and delegate the rest
-to other components.
+クライアントサイドにおけるルーティングのために、App Toolboxは、[`<app-route>`](https://www.webcomponents.org/element/PolymerElements/app-route)要素を使用して_モジュラールーティング_を提供します。_モジュラールーティング_ とは、アプリケーションのすべてのルートに対して中央リポジトリを用意するのではなく、個々のコンポーネントはルートの一部を管理し、残りを他のコンポーネントに管理を委譲することを意味します。
 
-**Why modular routing?** For background on `<app-route>` and modular routing, see
-[Encapsulated routing with elements](/blog/routing).
+**なぜモジュラールーティングなのか？** `<app-route>`と*モジュラールーティング*の背景については、[Encapsulated routing with elements](/blog/routing)を参照してください。
 {.alert .alert-info}
 
-## Install app-route
+## app-routeのインストール
 
-Install the `app-route` package with Bower:
+Bowerを使って`app-route`パッケージをインストールします。：
 
     bower install --save PolymerElements/app-route
 
-## Add routing
+## ルーティングの追加
 
-Your first task is to decide how your app's routes map to elements. For example, if you have an
-application with several main views:
+初めにすべきことは、あなたのアプリのルートがどのように要素にマップされるか決めることです。例えば、いくつかのメインビューを持つアプリケーションがあるとしましょう。：
 
 | View | Route |
 | :--- | :---- |
@@ -31,9 +25,7 @@ application with several main views:
 | Message list | <code>/messages</code> |
 | Message view | <code>/detail/<var>:message_id</var></code> |
 
-You might have a main application element and a separate view component for each tab. The application
-element manages the top-level route, selects one of the views to display, and _delegates_ the rest
-of the route to the active view. The app element's template might include markup like this:
+メインのアプリケーション要素と、タブごとに分割されたビューコンポーネントがあったとします。アプリケーション要素がトップレベルのルートを管理(表示するビューの一つを選択)し、残りのルートの管理をアクティブなビューに委譲します。`app`要素のテンプレートには次のようなマークアップが含まれるでしょう。：
 
 ```
 <!-- app-location binds to the app's URL -->
@@ -47,16 +39,11 @@ of the route to the active view. The app element's template might include markup
     tail="{{subroute}}"></app-route>
 ```
 
-The `<app-location>` element is simply a proxy for `window.location` that provides two-way data
-binding. A single `<app-location>` element binds the top-level `<app-route>` element to the state of
-the URL bar.
+`<app-location>`要素は双方向データバインディングを提供する単なる`window.location`のプロキシです。一つの`<app-location>`要素が、トップレベルの`<app-route>`要素とURLバーのステータスをバインドします。
 
-The `<app-route>` element matches the current `route` against a `pattern` (where `:view` represents
-a parameter). If the pattern matches, the route is _active_ and any URL parameters are added to the
-`data` object. In this case, the path `/profile/tina` matches the top-level route, setting
-`routeData.view` to `profile`. The remainder of the route (`/tina`) forms the `tail`.
+`<app-route>`要素は、現在の`route`と`pattern`（`:view`部分はパラメータを表します）の照合を行います。パターンに一致すると、ルートはアクティブになり、すべてのURLパラメータが`data`オブジェクトに追加されます。今回の例でいうと、パス`/profile/tina`はトップレベルのルートと一致し、`routeData.view`が`profile`に設定されます。残りのルート（`/tina`）が`tail`になります。
 
-Based on the route, the app can use `<iron-pages>` to select a view to display:
+ルートに基づき、アプリは`<iron-pages>`を使って表示するビューを選択できます：
 
 ```
 <!-- iron-pages selects the view based on the active route -->
@@ -67,9 +54,7 @@ Based on the route, the app can use `<iron-pages>` to select a view to display:
 </iron-pages>
 ```
 
-If the current URL is `/profile/tina`, the `<my-profile-view>` element is displayed, with _its_
-route set to `/tina`. This view might embed its own `<app-route>` to process the route: for example,
-to load the user's data:
+仮に、現在のURLが`/profile /tina`の場合、ルートが`/tina`に設定された`<my-profile-view>`要素が表示されます。このビューには、ルートを処理のため独自の`<app-route>`が組み込まれています。例えば、ユーザーデータをロードする場合には：
 
 ```
 <app-route
@@ -81,52 +66,44 @@ to load the user's data:
 ```
 
 
-## Route objects
+## Routeオブジェクト
 
-The `route` object contains two properties:
+`route`オブジェクトには二つのプロパティがあります。：
 
--   `prefix`. The path matched by the previous `<app-route>` element. For the
-    top-level `<app-route>` element, `prefix` is always the empty string.
--   `path`. The path this route object is matching against.
+-   `prefix`：上位の`<app-route>`要素でマッチしたパス。トップレベルの`<app-route>`要素の場合、`prefix`は常に空の文字列になります。
+-   `path`：`route`オブジェクトが照合しているパス。
+ 
+`tail`オブジェクトは、ルート内の次の`<app-route>`に渡すルートを表す`route`オブジェクトでもあります。
 
-The `tail` object is also a route object, representing the route to pass to the
-next `<app-route>` in line.
+例えば、現在のURLが`/users/bob/messages`で、トップレベルの`<app-route>`のパターンが`/users/:user`の場合：
 
-For example, if the current URL is `/users/bob/messages` and the top-level
-`<app-route>` has the pattern `/users/:user':
-
-The `route` object is:
+`route`オブジェクトは、：
 
     {
       prefix: '',
       path: '/users/bob/messages'
     }
 
-The `tail` object is:
+`tail`オブジェクトは、：
 
     {
       prefix: '/users/bob',
       path: '/messages'
     }
 
-And the `routeData` object is:
+また、`routeData`オブジェクトは、：
 
     {
       user: 'bob'
     }
 
-## Change routes
+## ルートの変更
 
-When using `<app-route>`, there are two ways to change the current URL.
+`<app-route>`を使用した場合、現在のURLを変更するには二つの方法があります。
 
--   Links. When you click a link, `<app-location>` intercepts the navigation
-    event and updates its `route` property. Using links for your primary
-    navigation is a good idea because they help search indexers understand the
-    structure of your application.
+-   リンク：リンクをクリックすると、`<app-location>`はナビゲーションイベントをインターセプトし、その`route`プロパティを更新します。主要なナビゲーションにリンクを使用するのは良い考えです。なぜなら、検索エンジンがインデックスを作成する際にアプリケーションの構造の把握に役立つためです。
 
--   Updating the route. The `route` object is read-write, so you can use
-    two-way data binding or `this.set` to update the route. Both the `route`
-    and `routeData` objects can be manipulated this way. For example:
+-   ルートの更新：`route`オブジェクトは読み書き可能なので、双方向データバインディングまたは`this.set`を使用してルートを更新できます。 `route`と`routeData`の両方のオブジェクトはこれらの方法で操作できます。例えば：
 
     `this.set('route.path', '/search/');`
 
@@ -134,12 +111,11 @@ When using `<app-route>`, there are two ways to change the current URL.
 
     `this.set('routeData.user', 'mary');`
 
-## Take action on route changes
+## ルート変更に応じたアクション
 
-Previous sections showed data binding to routes and route data, but sometimes you need to run code
-when the route changes. Using observers, it's simple to react to changes to the route or data:
+前のセクションでは、ルートとそのデータへのデータバインディングを示しましたが、ルートが変化した際に特定のコードを実行する必要があるかもしれません。オブザーバーを使用すれば、ルートやデータの変更に応た処理を行うことが可能です。：
 
-Route observer example {.caption}
+Rルートオブザーバーの例 {.caption}
 
 ```
 static get observers() {
@@ -159,7 +135,7 @@ _viewChanged(view) {
 }
 ```
 
-## More resources
+## 参考情報
 
 -   [Encapsulated routing with elements](/blog/routing)
 -   [`<app-route>`

@@ -4,20 +4,15 @@ title: Handle and fire events
 
 <!-- toc -->
 
-Elements  use events to communicate state changes up the DOM tree to parent elements.
-Polymer elements can use the standard DOM APIs for creating, dispatching, and listening for events.
+要素はイベントを使用して状態の変化をDOMツリーを通じて親要素に伝達します。Polymer要素は、標準のDOM  APIを使ってイベントの生成、ディスパッチ、監視(listen)を行うことができます。
 
-Polymer also provides annotated event listeners, which allow you to specify event listeners
-declaratively as part of the  element's DOM template.
+Polymerには*アノテーション付イベントリスナー*も用意されています。このリスナーを使用すると、要素のDOMテンプレートの一部としてイベントリスナーを宣言的に記述できます。
 
-## Add annotated event listeners {#annotated-listeners}
+## アノテーション付イベントリスナーを追加 {#annotated-listeners}
 
-To add event listeners to local DOM children, use
-<code>on-<var>event</var></code>  annotations in your template. This often
-eliminates the need to give an element an `id` solely for  the purpose of
-binding an event listener.
+ローカルDOMの子にイベントリスナーを追加するには、テンプレート内で<code>on-<var>event</var></code> アノテーションを使用します。これにより、イベントリスナーをバインドするためだけに要素に`id`を付与するといった処理が不要になります。
 
-Example: { .caption }
+例： { .caption }
 
 ```html
 <dom-module id="x-custom">
@@ -38,16 +33,11 @@ Example: { .caption }
 </dom-module>
 ```
 
-Because the event name is specified using an HTML attribute, **the event name is always
-converted to lowercase**. This is because HTML attribute names are case
-insensitive. So specifying `on-myEvent` adds a listener for `myevent`. The event _handler_
-name (for example, `handleClick`) **is** case sensitive. **To avoid confusion, always use
-lowercase event names.**
+イベント名はHTML属性を利用して指定されるので、**常に小文字に変換されます。**これは、HTML属性名が大文字と小文字を区別しないためです。したがって、`on-myEvent`を指定した場合、イベント`myEvent`に対してリスナーが追加されます。_イベントハンドラの名前_（例えば、`handleClick`）は**大文字と小文字を区別**します。混乱を避けるため、**常に小文字のイベント名を使用する**ようにして下さい。
 
-## Add and remove listeners imperatively {#imperative-listeners}
+## リスナーを命令的に追加/削除 {#imperative-listeners}
 
-You can use the standard `addEventListener` and `removeEventListener`
-methods to add and remove event listeners imperatively.
+標準の`addEventListener`及び`removeEventListener`メソッドを使用して、イベントリスナーを命令的に追加または削除することができます。
 
 ```js
 ready() {
@@ -56,9 +46,7 @@ ready() {
 }
 ```
 
-The previous example uses an arrow function to ensure the listener is called with the element as the
-`this` value. You can also use `bind` to create a bound instance of the listener function. This can
-be  useful if you need to remove the listener.
+上の例では、(ES6から導入された)アロー関数を使用して、カスタム要素を`this`の値としてリスナーが呼び出されるようにしています。また`bind`を使って、リスナー関数がバインドされたインスタンスを作成することもできます。この方法は、リスナーを削除する必要がある場合に役立ちます。
 
 ```js
 constructor() {
@@ -77,18 +65,14 @@ disconnectedCallback() {
 }
 ```
 
-An element adding an event listener to itself or one of its shadow DOM children shouldn't prevent
-the element from being garbage collected. However, an event listener attached to an outside element,
-like a window or document level event listener, may prevent the element from being garbage
-collected. Remove the event listener in `disconnectedCallback` to prevent memory leaks.
+自身またはShadow DOMの子のどこかにイベントリスナーを追加した要素は、その要素がガベージコレクトされるのを禁止すべきではありません。しかしながら、ウィンドウまたはドキュメントレベルのような外部の要素に追加されたイベントリスナーによって、要素がガベージコレクションされないことがあります。メモリリークを防止するため`disconnectedCallback`コールバック内でイベントリスナーを削除するようにしてください。s.
 
 
-## Fire custom events {#custom-events}
+## カスタムイベントの発火 {#custom-events}
 
-To fire a custom event from the host element use the standard `CustomEvent` constructor and
-the `dispatchEvent` method.
+ホスト要素からカスタムイベント(独自に作成したイベント)を発火するには、標準の`CustomEvent`コンストラクタと`dispatchEvent`メソッドを使用します。
 
-Example: { .caption }
+例：{ .caption }
 
 ```html
 <dom-module id="x-custom">
@@ -120,8 +104,7 @@ Example: { .caption }
 The `CustomEvent` constructor is not supported on IE, but the webcomponents polyfills include a
 small polyfill for it so you can use the same syntax everywhere.
 
-By default, custom events stop at shadow DOM boundaries. To make a custom event pass through
-shadow DOM boundaries, set the `composed` flag to true when you create the event:
+デフォルトでは、カスタムイベントはShadow DOMの境界で停止します。カスタムイベントがShadow DOMの境界を越えて伝播するようにするには、イベントを作成する際に`composed`フラグをtrueに設定します。：
 
 ```js
 var event = new CustomEvent('my-event', {bubbles: true, composed: true});
@@ -132,18 +115,13 @@ To get the same behavior, you need to specify both options when you create a cus
 above.
 {.alert .alert-info}
 
-## Handle retargeted events {#retargeting}
+## リターゲティングされたイベントの処理 {#retargeting}
 
-Shadow DOM has a feature called "event retargeting" which changes an event's
-target as it bubbles up, such that target is always in the same scope as the
-receiving element. (For example, for a listener in the main document, the
-target is an element in the main document, not in a shadow tree.)
+Shadow DOMには、イベントがバブルアップする際に、ターゲットを変更する「イベントリターゲッティング(event retargetting)」という機能があり、そのターゲットは常にイベントを受け取る要素と同じスコープになります。（例えば、メインドキュメントのリスナーの場合、ターゲットはShadow Tree内ではなくメインドキュメント内の要素になります。）
 
-The event's `composedPath()` method returns an array of nodes through which the event will pass.
-So `event.composedPath()[0]` represents the original target for the event (unless that target is
-hidden in a closed shadow root).
+イベントの`composedPath()`メソッドは、イベントが通過するノードを配列で返します。そのため`event.composedPath()[0]`は、イベントの原初のターゲットを表します（ただし、ターゲットが閉じられたShadow Root内に隠れていない場合に限ります）。
 
-Example: { .caption }
+例： { .caption }
 
 ```html
 <!-- event-retargeting.html -->
@@ -189,20 +167,12 @@ Example: { .caption }
 </script>
 ```
 
-In this example, the original event is triggered on a `<button>` inside the `<event-retargeting>`
-element's local DOM tree. The listener is added on the `<event-retargeting>` element itself, which
-is in the main document. To hide the implementation of the element, the event should be retargeted
-so it appears to come from `<event-retargeting>` rather than from the `<button>` element.
+この例では、原初のイベントが`<event-retargeting>`要素のローカルDOMツリー内の`<button>`でトリガーされています。リスナーは、メインドキュメント上の`<event-retargeting>`要素に対して設定されています。イベントはリターゲティングされるので、要素の実装を隠してしまえばクリックイベントは`<button>`要素からというよりむしろ`<event-retargeting>`要素から生じているようにみえます。
 
-The shadow root may show up in the console as `document-fragment`. In shady DOM this is an instance
-of `DocumentFragment`. In native shadow DOM, this would show up as an instance of `ShadowRoot`
-(a DOM interface that extends `DocumentFragment`).
+Shadow Rootは`document-fragment`としてコンソールに表示されるかもしれません。Shady DOMでは、`DocumentFragment`のインスタンスになるためです。ネイティブのShadow DOMでは、`ShadowRoot`(`DocumentFragment`を拡張するDOMインターフェース)のインスタンスとして表示されます。
 
 For more information, see [Event retargeting](shadow-dom#event-retargeting) in Shadow DOM concepts.
 
-## Property change events {#property-changes}
+## プロパティ変更イベント {#property-changes}
 
-You can configure an element to fire a non-bubbling DOM event when a specified
-property changes. For more information, see [Change notification events](data-system#change-events).
-
-
+特定のプロパティ値が変更された際に、ノンバブリングなDOMイベントを発生する要素を構築することもできます。詳細については、[変更通知イベント](data-system#change-events)を参照してください。

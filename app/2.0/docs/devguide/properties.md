@@ -1,37 +1,30 @@
 ---
-title: Declare Properties
+title: プロパティの宣言
 ---
 
 <!-- toc -->
 
-You can declare properties on an element to add a default value and enable various features in the
-data system.
+デフォルト値を追加したりデータシステムの様々な機能を利用するために、要素にプロパティを宣言することができます。
 
-Declared properties can specify:
+宣言したプロパティには以下のような項目を指定できます：
 
-*   Property type.
-*   Default value.
-*   Property change observer. Calls a method whenever the property value changes.
-*   Read-only status. Prevents accidental changes to the property value.
-*   Two-way data binding support. Fires an event whenever the property value changes.
-*   Computed property. Dynamically calculates a value based on other properties.
-*   Property reflection to attribute. Updates the corresponding attribute value when the property
-    value changes.
+*   プロパティの型(type)
+*   デフォルト値
+*   プロパティの変更を監視するオブザーバー。プロパティ値が変更される度に特定のメソッドを呼び出します。
+*   読み取り専用(read-only)ステータス。プロパティ値の予期せぬ変更を防ぎます。
+*   双方向データバインディングのサポート。プロパティ値が変更されるたびにイベントを発生させます。
+*   算出プロパティ(computed property)。他のプロパティを元に値を動的に計算します。
+*   属性へのプロパティの反映を指定。プロパティ値がアップデートされたときに対応する属性の値を変更します。
 
-Many of these features are tightly integrated into the [data system](data-system), and are
-documented in the data system section.
+これらの機能の多くは、[データシステム](data-system)に緊密に統合されており、それらはデータシステムのセクションに解説があります。
 
-In addition, a declared property can be configured from markup using an attribute
-(see [attribute deserialization](#attribute-deserialization) for details).
+さらに、宣言的プロパティは、マークアップから属性を使って設定することもできます（詳細については、[属性のデシリアライズ](#attribute-deserialization)のセクションを参照してください）。
 
-**In most cases, a property that's part of your element's public API should be declared in the
-`properties` object.**
+**ほとんどの場合、要素のパブリックAPIの一部となるプロパティは`properties`オブジェクト内で宣言する必要があります。**
 
+プロパティを宣言するには、要素のクラスに静的getterメソッド`properties`を追加します。getterメソッドは、プロパティの宣言を含むオブジェクトを返す必要があります。
 
-To declare properties, add a static `properties` getter to the element's class. The getter should
-return  an object containing property declarations.
-
-Example { .caption }
+例：{ .caption }
 
 ```js
 class XCustom extends Polymer.Element {
@@ -52,137 +45,94 @@ class XCustom extends Polymer.Element {
 customElements.define('x-custom', XCustom);
 ```
 
-The `properties` object supports the following keys for each property:
+この`properties`オブジェクトは、各プロパティに以下のキーを提供しています。
 
 <table>
-<tr>
-<th>Key</th><th>Details</th>
-</tr>
-<tr>
-<td><code>type</code></td>
-<td>
-Type: constructor <br>
+  <tr>
+    <th>キー</th>
+    <th>詳細</th>
+  </tr>
+  <tr>
+    <td><code>type</code></td>
+    <td>
+      型：コンストラクタ<br>
+      Attribute type, used for deserializing from an attribute. Polymer supports deserializing the following types: <code>Boolean</code>, <code>Date</code>, <code>Number</code>, <code>String</code>,<code>Array</code> and <code>Object</code>. You can add support for other types by overriding the element's `_deserializeValue` method.
 
-Attribute type, used for deserializing from an attribute. Polymer supports deserializing the
-following types: <code>Boolean</code>, <code>Date</code>, <code>Number</code>, <code>String</code>,
-<code>Array</code> and <code>Object</code>. You can add support for other types by overriding the
-element's `_deserializeValue` method.
+      指定された型は、属性からプロパティにデシリアライズに使用されます。0.5系と違い、プロパティの型はコンストラクタの型によって明示的に指定されます。詳細は<a href="#attribute-deserialization">属性のデシリアライズ</a>を参照してください 。
+    </td>
+  </tr>
+  <tr>
+    <td><code>value</code></td>
+    <td>
+      型: <code>boolean</code>, <code>number</code>, <code>string</code> または <code>function</code>.<br>
+      プロパティのデフォルト値となります。もし<code>value</code>が関数の場合、関数が呼び出され、戻り値がプロパティのデフォルト値に使用されます。デフォルト値が**インスタンスに固有な**配列またはオブジェクトでなければならない場合は、関数内で配列またはオブジェクトを作成します。詳細については、<a href="#configure-values">デフォルトのプロパティ値の設定</a>を参照してください 。
+    </td>
+  </tr>
+  <tr>
+    <td><code>reflectToAttribute</code></td>
+    <td>
+      型: <code>boolean</code><br>
 
-Unlike 0.5, the
-property's type is explicit, specified using the type's constructor. See
-<a href="#attribute-deserialization">attribute deserialization</a> for more information.
+      <code>true</code>を指定すると、プロパティ値が変更された場合、対応する属性がホストノードに設定されるようになります。プロパティ値がブール値の場合には、属性は標準のHTML属性のブール値として作成されます（trueの場合に記述され、falseの場合には記述されない）。プロパティの型がそれ以外なら、属性値はプロパティ値を文字列で表現したものになります。<br><br>Polymer0.5系の<code>reflect</code>に相当します。詳細については、<a href="#attribute-reflection">属性へのプロパティの反映</a>を参照してください。
+    </td>
+  </tr>
+  <tr>
+    <td><code>readOnly</code></td>
+    <td>
+      型： <code>boolean</code><br>
+      <code>true</code>を指定した場合、プロパティは代入やデータバインディングによって直接的に設定することができなくなります。詳細については、<a href="#read-only">読み取り専用プロパティ</a>を参照してください。
+    </td>
+  </tr>
+  <tr>
+    <td><code>notify</code></td>
+    <td>
+      型： <code>boolean</code><br>
+      <code>true</code>を指定した場合、プロパティに双方向データバインディングが使用できます。さらに、プロパティが変更されるたびに<code>property-name-changed</code>イベントが発生します。詳細については、<a href="#notify">プロパティ変更通知イベント（notify）</a>を参照してください。
+    </td>
+  </tr>
+  <tr>
+    <td><code>computed</code></td>
+    <td>
+      型: <code>string</code><br>
+      プロパティの値は、メソッド名と引数リストとして解釈されます。このメソッドは、引数の値のいずれかが変更されるたびに、プロパティ値を算出するために呼び出されます。算出プロパティは常に読み取り専用です。詳細については、<a href="observers#computed-properties">算出プロパティ</a>を参照してください 。
+    </td>
+  </tr>
+  <tr>
+    <td><code>observer</code></td> 
+    <td>
+      型: <code>string</code><br>
 
-</td>
-</tr>
-<tr>
-<td><code>value</code></td>
-<td>
-Type: <code>boolean</code>, <code>number</code>, <code>string</code> or <code>function</code>.<br>
+      プロパティ値は、プロパティ値が変更された時に呼び出されるメソッドの名前として解釈されます。0.5系とは異なり、 <strong>プロパティ変更ハンドラは明示的に登録する必要がある点に注意してください。</strong><code><var>propertyName</var>Changed</code>メソッドは自動的に実行されることはありません。詳細については、<a href="observers">プロパティ変更コールバック（observers）</a>を参照してください。
 
-Default value for the property. If <code>value</code> is a function, the function is
-invoked and the return value is used as the default value of the property. If
-the default value should be an array or object unique to the instance, create
-the array or object inside a function. See
-<a href="#configure-values">Configuring default property values</a> for more information.
-</td>
-</tr>
-<tr>
-<td><code>reflectToAttribute</code></td>
-<td>Type: <code>boolean</code><br>
-
-Set to <code>true</code> to cause the corresponding attribute to be set on the host node
-when the property value changes. If the property value is Boolean, the attribute
-is created as a standard HTML boolean attribute (set if true, not set if false).
-For other property types, the attribute value is a string representation of the
-property value. Equivalent to <code>reflect</code> in Polymer 0.5.
-See <a href="#attribute-reflection">Reflecting properties to attributes</a> for
-more information.
-</td>
-</tr>
-<tr>
-<td><code>readOnly</code></td>
-<td>Type: <code>boolean</code><br>
-
-If <code>true</code>, the property can't be set directly by assignment or data binding. See <a href="#read-only">Read-only properties</a>.
-</td>
-</tr>
-<tr>
-<td><code>notify</code></td>
-<td>Type: <code>boolean</code><br>
-
-If <code>true</code>, the property is available for two-way data binding. In addition, an
-event, <code><var>property-name</var>-changed</code> is fired whenever the
-property changes. See <a href="#notify">Property change notification events (notify)</a>
-for more information.
-</td>
-</tr>
-<tr>
-<td><code>computed</code></td>
-<td>Type: <code>string</code><br>
-
-The value is interpreted as a method name and argument list. The method is invoked
-to calculate the value whenever any of the argument values changes. Computed
-properties are always read-only. See <a href="observers#computed-properties">Computed properties</a>
-for more information.
-</td>
-</tr>
-<tr>
-<td><code>observer</code></td>
-<td>Type: <code>string</code><br>
-
-The value is interpreted as a method name to be invoked when the property value
-changes. Note that unlike in 0.5, <strong>property change handlers must be registered
-explicitly.</strong> The <code><var>propertyName</var>Changed</code> method will not be
-invoked automatically. See <a href="observers">Property change callbacks (observers)</a>
-for more information.
-</td>
-</tr>
+    </td>
+  </tr>
 </table>
 
-## Property name to attribute name mapping {#property-name-mapping}
+## プロパティ名の属性名へのマッピング {#property-name-mapping}
 
-For data binding, deserializing properties from attributes, and reflecting
-properties back to attributes, Polymer maps attribute names to property
-names and the reverse.
+データバインディング、属性からのプロパティへのデシリアライズ、およびプロパティの属性への反映において、Polymerは属性名をプロパティ名に、またその逆に、マッピングを行います。
 
-When mapping attribute names to property names:
+属性名をプロパティ名にマッピングする場合：
 
-*   Attribute names are converted to lowercase property names. For example,
-    the attribute `firstName` maps to `firstname`.
+*   属性名は小文字のプロパティ名に変換されます。例えば、属性名が`firstName`であれば`firstname`にマップされます。
 
-*   Attribute names with _dashes_ are converted to _camelCase_ property names
-    by capitalizing the character following each dash, then removing the dashes.
-    For example, the attribute `first-name` maps to `firstName`.
+*   属性名にダッシュ(-)が含まれる場合には、キャメルケース(camelCase)に変換されます。つまりダッシュ(-)を削除して、ダッシュの後の各文字を大文字に変換します。例えば、属性名が`first-name`であれば`firstName`にマップされます。
 
-The same mappings happen in reverse when converting property names to attribute
-names (for example, if a property is defined using `reflectToAttribute: true`.)
+上記とは反対に、プロパティ名を属性名に変換する際は、同様のマッピングが逆に実行されます（例えば、プロパティに`reflectToAttribute: true`が定義されている場合など）。
 
-**Compatibility note:** In 0.5, Polymer attempted to map attribute names to corresponding properties.
-For example, the attribute `foobar` would map to the property `fooBar` if it was
-defined on the element. This **does not happen in 1.0**—attribute to property
-mappings are set up on the element at registration time based on the rules
-described above.
+**互換性に関する注意:** 0.5系では、Polymerは属性名を一致したプロパティにマップしようとしました。例えば、もし要素上でプロパティでfooBarが定義されている場合、属性`foobar`は、プロパティ`fooBar`にマップされます。このようなプロパティのマッピングは、**1.0系以降の属性では発生しません。**属性からプロパティへのマッピングは、上記で示したルールに従って要素の登録のタイミングで実行されます。
 { .alert .alert-warning }
 
-## Attribute deserialization {#attribute-deserialization}
+## 属性のデシリアライズ{#attribute-deserialization}
 
-If a property is configured in the `properties` object, an attribute on the
-instance matching the property name will be deserialized according to the type
-specified and assigned to a property of the same name on the element instance.
+`properties`オブジェクトでプロパティが設定されている場合、プロパティ名に一致するインスタンスの属性は、指定された*型*に従ってデシリアライズされ、インスタンス上の同名のプロパティに割り当てられます。
 
-If no other `properties` options are specified for a property, the `type`
-(specified using the type constructor, e.g. `Object`, `String`, etc.) can be set
-directly as the value of the property in the `properties` object; otherwise it
-should be provided as the value to the `type` key in the `properties`
-configuration object.
+`properties`オブジェクトに`type`(コンストラクタによって`Object`、`String`などに指定された型)以外が記述されていない場合(訳注：”property: String" のような略記のこと)、属性の値を`properties`オブジェクトの`type`プロパティの値に直接設定することができます。そうでない場合(訳注：略記でない場合)には、 `properties`オブジェクト内で`type`キーの値として設定されるべきです。
 
 
-Boolean properties are set based on the _presence_ of the attribute:
-if the attribute exists at all, the property is set to `true`, regardless
-of the attribute _value_. If the attribute is absent, the property
-gets its default value.
+Boolean型プロパティは属性値の有無によって設定されます。つまり属性が存在すれば(属性の値は関係ない)プロパティにtrueが設定され、属性が存在しなければ、プロパティはデフォルト値になります。
 
-Example: { .caption }
+例: { .caption }
 
 ```html
 <script>
@@ -218,10 +168,9 @@ This user is a manager.
 -->
 ```
 
-To configure camel-case properties of elements using attributes, dash-
-case should be used in the attribute name.
+属性から要素にキャメルケース(camelCase)のプロパティを設定するには、属性名としてダッシュケース(dash-case)を使用する必要があります。
 
-Example: { .caption }
+例: { .caption }
 
 ```html
 <script>
@@ -242,30 +191,25 @@ Example: { .caption }
 <!-- Sets <x-custom>.userName = 'Scott';  -->
 ```
 
-**Note:** Deserialization occurs both at create time, and at runtime (for
-example, when the attribute is changed using `setAttribute`).  However, it is
-encouraged that attributes only be used for configuring properties in static
-markup, and instead that properties are set directly for changes at runtime.
+**注意**：属性からプロパティへのデシリアライズは、作成時と実行時（例えば、`setAttribute`を使用して実行時に属性を変更する場合）の両方で発生します。しかし、属性は静的マークアップからプロパティを設定するためだけに使用することが推奨され、実行時にプロパティを変更するには(訳補：属性からではなく)直接的に設定するように下さい。
 {.alert .alert-info}
 
-### Configuring boolean properties
 
-For a Boolean property to be configurable from markup, it must default to `false`. If it defaults
-to `true`, you cannot set it to `false` from markup, since the presence of the attribute, with or
-without a value, equates to `true`. This is the standard behavior for attributes in the web platform.
+### ブール値のプロパティの設定
 
-If this behavior doesn't fit your use case, you can use a string-valued or number-valued attribute
-instead.
+マークアップからBoolean型のプロパティを指定したい場合、デフォルト値を`false`にする必要があります。デフォルト値が`true`場合、マークアップから`false`を指定することはできません。なぜなら、属性の有無にかかわらず、`true`と等価であると判定されるためです。これはWebプラットフォームにおける属性の標準的な振る舞いです。
 
-### Configuring object and array properties
+この振る舞いがあなたのユースケースに合わない場合は、代わりに文字列や数値を属性の値に利用できます。
 
-For object and array properties you can pass an object or array in JSON format:
+### オブジェクトと配列のプロパティの設定
+
+プロパティがオブジェクトや配列の場合、これらはJSON形式にして渡すことができます：
 
 ```
 <my-element book='{ "title": "Persuasion", "author": "Austen" }'></my-element>
 ```
 
-Note that JSON requires double quotes, as shown above.
+上記のように、JSONでは二重引用符が必要な点に注意してください。
 
 ### Custom deserializers
 
@@ -284,20 +228,15 @@ _deserializeValue(value, type) {
 }
 ```
 
-## Configuring default property values {#configure-values}
+## デフォルトのプロパティ値の設定 {#configure-values}
 
-Default values for properties may be specified in the `properties` object using
-the `value` field.  The value may either be a primitive value, or a function
-that returns a value.
+`properties`オブジェクトのプロパティのデフォルト値は、`value`フィールドを使用することで設定できます。プロパティ値は、プリミティブな値でも、値を返す関数でも構いません。
 
-If you provide a function, Polymer calls the function once
-_per element instance_.
+関数を指定した場合、Polymerは要素の_インスタンスごとに_一度ずつ呼び出します。
 
-When initializing a property to an object or array value, use a function to
-ensure that each element gets its own copy of the value, rather than having
-an object or array shared across all instances of the element.
+オブジェクトのプロパティや配列の値を初期化する際は、関数を利用して、すべての要素のインスタンス間でオブジェクトや配列を共有せず、要素ごとに独自に値をコピーして取得するようにします。
 
-Example: { .caption }
+例: { .caption }
 
 ```js
 class XCustom extends Polymer.Element {
@@ -320,34 +259,28 @@ class XCustom extends Polymer.Element {
 ```
 
 
-## Property change notification events (notify) {#notify}
+## プロパティ変更通知イベント（notify） {#notify}
 
-When a property is set to `notify: true`, an event is fired whenever the
-property value changes. The event name is:
+プロパティを`notify: true`に設定すると、プロパティ値が変更される度に、以下の名前のイベントが発火します。
 
 <code><var>property-name</var>-changed</code>
 
-Where <code><var>property-name</var></code> is the dash-case version of
-the property name. For example, a change to `this.firstName` fires
-`first-name-changed`.
+イベント名の<code><var>property-name</var></code>部分は、プロパティ名をダッシュケースで表現したものです。例えば、`this.firstName`が変更されると`first-name-changed`が発火するといった具合です。
 
-These events are used by the two-way data binding system. External
-scripts can also listen for events (such as `first-name-changed`)
-directly using `addEventListener`. Property change events don't bubble, so
+これらのイベントは、双方向データバインディングシステムによって利用されます。外部のスクリプトから`addEventListener`を使用してイベント(`first-name-changed`のような)を監視することもできます。
+Property change events don't bubble, so
 the event listener must be added directly to the element generating the event. 
 
-For more on property change notifications and the data system, see
-[Data flow](data-system#data-flow).
+プロパティ変更通知とデータシステムの詳細については、[データフロー](data-system#data-flow)を参照してください。
 
-## Read-only properties {#read-only}
+## 読み取り専用プロパティ(readOnly) {#read-only}
 
-When a property only "produces" data and never consumes data, this can be made
-explicit to avoid accidental changes from the host by setting the `readOnly`
-flag to `true` in the `properties` property definition.  In order for the
-element to actually change the value of the property, it must use a private
-generated setter of the convention <code>\_set<var>Property</var>(value)</code>
-where <code><var>Property</var></code> is the property name, with the first character converted to uppercase (if alphabetic). For example, the setter for `oneProperty` is `setOneProperty`, and the setter
-for _privateProperty is `set_privateProperty`.
+プロパティがデータを生成(produce)するだけで消費(consume)しない場合、`properties`の定義においてプロパティの`readOnly`フラグを`true`に設定することで、ホストからの不測の変更を明示的に避けることができます。
+
+In order for the element to actually change the value of the property, it must use a private generated setter of the convention <code>\_set<var>Property</var>(value)</code> where <code><var>Property</var></code> is the property name, with the first character converted to uppercase (if alphabetic). 
+
+For example, the setter for `oneProperty` is `setOneProperty`, and the setter for `_privateProperty` is `set_privateProperty`.
+
 
 ```
 class XCustom extends Polymer.Element {
@@ -369,16 +302,12 @@ class XCustom extends Polymer.Element {
 }
 ```
 
-For more on read-only properties and data binding, see
-[How data flow is controlled](data-system#data-flow-control).
+読み取り専用プロパティとデータバインディングに関する詳細については、[データフローの制御方法](data-system#data-flow-control)を参照してください 。
 
 
-## Reflecting properties to attributes  {#attribute-reflection}
+## プロパティの属性への反映(reflectToAttribute)  {#attribute-reflection}
 
-In specific cases, it may be useful to keep an HTML attribute value in sync with
-a property value.  This may be achieved by setting `reflectToAttribute: true` on
-a property in the `properties` configuration object. This causes any observable
-change to the property to trigger an update to the corresponding attribute
+ある特定のケースにおいては、HTMLの属性値とプロパティ値を同期させておくと便利かもしれません。`properties`オブジェクト内のプロパティに`reflectToAttribute: true`を設定することで実現できます。 これによって、プロパティに対する_監視可能な変更_は、同名の属性にシリアライズされます。
 (as described in <a href="#property-name-mapping">Property name to attribute name mapping</a>).
 Since attributes only take string values, the property value is serialized
 to a string, as described in <a href="#attribute-serialization">Attribute serialization</a>.
@@ -402,22 +331,18 @@ class XCustom extends Polymer.Element {
 }
 ```
 
-### Attribute serialization {#attribute-serialization}
+### 属性へのシリアライズ {#attribute-serialization}
 
-When reflecting a property to an attribute or
-[binding a property to an attribute](data-binding#attribute-binding),
-the property value is _serialized_ to the attribute.
+プロパティを属性に反映する場合や[属性にプロパティをバインド](data-binding#attribute-binding)する場合、プロパティの値は属性に_シリアライズ_されます。
 
-By default, values are serialized according to value's  **current type**,
-_regardless of the property's `type` value_:
+デフォルトでは、プロパティの`type`の値に関係なく、値の**現在の型**に従って以下のようにシリアライズされます。：
 
-*   `String`. No serialization required.
-*   `Date` or `Number`. Serialized using  `toString`.
-*   `Boolean`. Results in a non-valued attribute to be either set (`true`) or removed (`false`).
-*   `Array` or `Object`. Serialized using `JSON.stringify`.
+*   `String`：シリアライズは不要です。
+*   `Date`または`Number`：`toString`を使用してシリアライズされます。
+*   `Boolean`：値を持たない属性が設定(`true`の場合)または、削除(`false`の場合)されます。
+*   `Array`または`Object`：`JSON.stringify`を使用してシリアライズされます。
 
-To add custom serialization for other data types, override your element's `_serializeValue`
-method.
+カスタム要素に独自のシリアライズ処理を実装したい場合には、要素の`_serializeValue`メソッドをオーバーライドして下さい。
 
 ```js
 _serializeValue(value) {
@@ -428,18 +353,12 @@ _serializeValue(value) {
 }
 ```
 
-## Implicitly declared properties
+## 暗黙的に宣言されたプロパティ
 
-A property is declared _implicitly_ if you add it to a data binding or add it as a dependency of an
-observer, computed property, or computed binding.
+データバインディングにプロパティを追加したり、オブザーバー、算出プロパティ、算出バインディングといった機能により、依存関係をもつプロパティを追加した場合には、プロパティが_暗黙的に_宣言されたことになります。
 
-Polymer automatically creates setters for these implicitly declared properties. However, implicitly
-declared properties can't be configured from markup.
+Polymerはこれら暗黙的に宣言されたプロパティに自動的にsetterメソッドを作成します。しかし、暗黙的に宣言されたプロパティをマークアップから作成することはできません。
 
-## Private and protected properties
+## 非公開および保護されたプロパティ
 
-JavaScript doesn't have any true protection for properties. By convention, Polymer elements usually
-use a single underscore (`_protectedProp`) to indicate a protected property or method (intended to
-be used or overridden by subclasses, but not for public use), and a double underscore
-(`__privateProp`) for members that are private to the class.
-
+JavaScriptにはプロパティを真に保護する機能はありません。Polymer要素では、慣例に従い命名規約を通じてこれらを表現します。保護されるべきプロパティやメソッドはシングルアンダースコア(`_protectedProp`)で明示します。(サブクラスで利用または上書きされることは許可されますが、publicな利用は意図しません)また、クラスのprivateなメンバーであることを明示するにはダブルアンダースコア(`__privateProp`)を利用します。

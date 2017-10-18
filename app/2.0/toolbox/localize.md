@@ -1,36 +1,26 @@
 ---
-title: Localization
+title: ローカリゼーション
 ---
 
 <!-- toc -->
 
-[`Polymer.AppLocalizeBehavior`](https://www.webcomponents.org/element/PolymerElements/app-localize-behavior)
-wraps the [format.js](http://formatjs.io/) library to help you internationalize your application.
-Note that if you're on a browser that does not natively support the
-[Intl](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl) object,
-**you must load a polyfill yourself.** An example polyfill can be found at
-[github.com/andyearnshaw/Intl.js](https://github.com/andyearnshaw/Intl.js/).
+[`Polymer.AppLocalizeBehavior`](https://www.webcomponents.org/element/PolymerElements/app-localize-behavior)は、アプリケーションの国際化をサポートする[format.js](http://formatjs.io/)ライブラリをラップしています。[Intl](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl)オブジェクトをネイティブにサポートしていないブラウザを使用している場合は、**自分でポリフィルを読み込む必要があります。**polyfillの利用例は、[github.com/andyearnshaw/Intl.js](github.com/andyearnshaw/Intl.js)を参照してください。
 
-`Polymer.AppLocalizeBehavior` supports the same
-[message syntax](http://formatjs.io/guides/message-syntax/) as `format.js`, in its entirety; use the
-library docs as reference for the available message formats and options.
+`Polymer.AppLocalizeBehavior`は、`format.js`とまったく同じ[メッセージ構文](http://formatjs.io/guides/message-syntax/)をサポートしています。利用可能なメッセージ形式とオプションのリファレンスはformat.jsライブラリのドキュメントを参照してください。
 
-Each element that displays content to be localized should add `Polymer.AppLocalizeBehavior`.
-All of these elements share a common localization cache, so you only need to load translations once.
+コンテンツをローカライズして表示する要素には、それぞれ`Polymer.AppLocalizeBehavior`を追加する必要があります。これらの要素はすべて共通のローカリゼーションキャッシュを共有しており、翻訳は一度読む込むだけで済みます。
 
-`AppLocalizeBehavior` can be used directly in Polymer 1.x elements and Polymer 2.x hybrid elements.
-For class-style elements, use the `mixinBehaviors` method.
+Polymer 1.x要素とPolymer 2.xのハイブリッド要素では、`AppLocalizeBehavior`を直接使用できます。クラススタイルの要素の場合は、`mixinBehaviors`メソッドを使用します。.
 
-## Install AppLocalizeBehavior
+## AppLocalizeBehaviorをインストール
 
     bower install --save PolymerElements/app-localize-behavior
 
-## Add localization to your app
+## アプリケーションにローカリゼーションを追加
 
-The main application is usually responsible for loading the localized messages and setting the
-current language.
+通常、メインアプリケーションが、ローカライズされたメッセージのロードと言語環境の設定を担います。
 
-Sample application (class style elements) {.caption}
+サンプルアプリケーション(クラススタイル要素) {.caption}
 
 ```html
 <dom-module id="x-app">
@@ -68,9 +58,9 @@ Sample application (class style elements) {.caption}
 </dom-module>
 ```
 
-More typically, the app loads resources from an external file, as shown in the next example.
+一般的には、次の例に示すように、アプリケーションは外部ファイルからリソースをロードします。
 
-Sample application (hybrid elements) {.caption}
+サンプルアプリケーション(ハイブリッド要素) {.caption}
 
 ```html
 <dom-module id="x-app">
@@ -105,8 +95,6 @@ Sample application (hybrid elements) {.caption}
 ```
 
 
-The main app is also responsible for loading the `Intl` polyfill
-(not shown above).
+メインアプリケーションは、ポリフィル`Intl`の読み込みも担います。(上記には示されていません)
 
-Each element that needs to localize messages should also add the `Polymer.AppLocalizeBehavior`
-and use the `localize` method to translate strings, as shown above.
+メッセージをローカライズする必要がある要素には、それぞれ`Polymer.AppLocalizeBehavior`を追加し、上記のように`localize`メソッドを使用して文字列を変換する必要があります。

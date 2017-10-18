@@ -4,66 +4,43 @@ title: Responsive app layout
 
 <!-- toc -->
 
-Every application needs some layout, and the app layout elements provide the tools to create
-responsive layouts easily.
+どんなアプリケーションにもレイアウトが必要です。`app-layout`要素は、レスポンシブなレイアウトを簡単に作成するツールを提供します。
 
-If you've worked with the previous generation of Material Design layout elements, like
-`paper-header-panel` and `paper-drawer-panel`, the app layout elements should feel fairly familiar.
-However, these elements are designed to be:
+前世代のMaterial Designベースのレイアウト要素（`paper-header-panel`や`paper-drawer-panel`など）を使って開発していた場合、`app-layout`要素はかなり手軽に感じるはずです。これらの要素は次のように設計されています。：
 
-- More flexible and composable -- supporting a wider range of layout patterns.
-- Less opinionated -- these elements don't enforce a particular look and feel
-(although they still support the Material Design effects and UI patterns if that's
-what you're looking for).
-- Extensible -- with a new, pluggable system for scroll effects.
+- より柔軟で簡易な構築ー幅広いレイアウトパターンをサポートしています。
+- より自由にーこれらの要素が特定のルック・アンド・フィールを強制することはありません。（ただし、Materila DesignのエフェクトやUIパターンは必要に応じてサポートします）。
+- 拡張可能ースクロールエフェクト用に簡易にプラグインできるシステムを新たに採用しました。
 
-## Design your layout
+## デザインのレイアウト
 
-Before you can build your layout, you need to design it.
+レイアウトを構築する前に、そのレイアウトを設計する必要があります。
 
--   Do you want a simple app header that scrolls with the content, or a collapsing header with fancy
-    scroll effects?
--   How will users navigate your app? Tabs? A side menu?
--   How does the app layout change on a small screen?
+-   コンテンツに合わせてスクロールする単純なアプリケーションヘッダーが必要ですか？または手の込んだスクロールエフェクトを使った折りたたみ式ヘッダーが必要ですか？
+-   ユーザーはあなたのアプリ内をどのように移動するでしょうか？タブでしょうか？サイドメニューでしょうか？
+-   小さな画面上でアプリケーションのレイアウトはどのように変化するでしょうか？
 
-You may already have design mockups you're trying to implement, or you may be doing it yourself. If
-you're not sure exactly what you want, you can browse through some of the pre-built app layout
-templates for inspiration:
+実装しようとしているデザインのモックアップがすでにあるかもしれません。あるいはあなたが独自にデザインしているかもしれません。必要なものが正確にわからない場合は、アイディアの出発点として、すでに作成されたアプリのレイアウトのテンプレートを参考にできます。：
 
--   [Simple landing page.](https://polymerelements.github.io/app-layout/templates/landing-page/)
-    A simple landing page with a header. Tabs at the top of the page jump to sections on the page.
-    The basic layout of this page stays the same across all screen sizes.
--   [Getting started](https://polymerelements.github.io/app-layout/templates/getting-started/). A basic
-    layout with a simple header and a responsive drawer.
--   [ZUPERKÜLBLOG](https://polymerelements.github.io/app-layout/templates/publishing/). A basic blog-style
-    layout, similar to Getting Started, but with a fixed header.
--   [Shrine](https://polymerelements.github.io/app-layout/templates/shrine/). An e-commerce-style
-    site that implements a number of patterns, including tab navigation that's replaced by a
-    navigation drawer on narrow screens, and multiple toolbars that collapse to a single toolbar as
-    you scroll down.
+- [Simple landing page](https://polymerelements.github.io/app-layout/templates/landing-page/)：ヘッダーの付いたシンプルなランディングページです。ページの上部にあるタブでページ内のセクションを移動します。このページの基本的なレイアウトは、すべての画面サイズで同じになります。
+- [Getting started](https://polymerelements.github.io/app-layout/templates/getting-started/)：シンプルなヘッダーとレスポンシブなドロワーを備えた基本的なレイアウトです。
+- [ZUPERKULBLOG](https://polymerelements.github.io/app-layout/templates/publishing/)：基本的なブログスタイルのレイアウトです。Getting startedに似ていますが、ヘッダーは固定されています。
+- [Shrine](https://polymerelements.github.io/app-layout/templates/shrine/)：さまざまなパターンを実装したeコマーススタイルのサイトです。幅の狭い画面上では、タブナビゲーションがドロワーナビゲーションに置き換わったり、下にスクロールした場合マルチツールバーがシングルツールバーに変形したりします。
 
-Once you've decided on your basic design, you can start implementing it, starting with the top of
-the screen: toolbars and headers.
+基本的なデザインを決めたら、実装を開始することができます。画面の上部のツールバーとヘッダーから始めましょう。
 
 
-## Toolbars and headers
+## ツールバーとヘッダー
 
-Almost every app has some kind of header or toolbar at the top. The header can scroll with the
-content, be fixed at the top of the screen, or have dynamic behavior as the user scrolls. The
-elements you need depend on what you're looking for:
+ほとんどすべてのアプリには、上部にヘッダーやツールバーがあります。ヘッダーはコンテンツとともにスクロールしたり、画面の上部に固定したり、あるいはユーザーのスクロールに応じて動的な振る舞いを実装することもできます。必要な要素は、期待するものによって異なります。：
 
--   For a simple header that scrolls with the content, you can use an, `<app-toolbar>` element by
-    itself. The `<app-toolbar>` is a simple horizontal container for controls and labels. If you
-    need multiple rows of controls, you just use multiple toolbars.
+-   コンテンツとともにスクロールする単純なヘッダーが必要な場合、`<app-toolbar>`要素をそのまま利用できます。`<app-toolbar>`は、コントロールとラベル用のシンプルな水平のコンテナです。複数行のコントロールが必要な場合には、複数のツールバーを使用するだけです。
 
--   For scroll effects (like a header that changes size as the user scrolls), you need the
-    `<app-header>` element. The `<app-header>` can hold one or more toolbars, and it manages scroll
-    effects.
+-   スクロールエフェクト（ユーザーがスクロールするとサイズを変化するようなヘッダー）が必要な場合、`<app-header>`要素が必要です。`<app-header>`は一つ以上のツールバーを保持でき、スクロールエフェクトを管理します。
 
-### Simple toolbars
+### シンプルなツールバー
 
-A toolbar by itself serves as a simple header that scrolls with the page content. With a little
-extra CSS, it can be fixed to the top of the page. The following [sample](http://jsbin.com/haroru/edit?html,output) uses a toolbar as a simple scrolling header with a title.
+ツールバーそのものは、ページコンテンツに合わせてスクロールするシンプルなヘッダーとして機能します。CSSを少し追加するだけで、ページの上部に固定することもできます。次の[サンプル](http://jsbin.com/haroru/edit?html,output)では、​​ツールバーをシンプルなタイトル付きスクロールヘッダーとして利用しています。
 
 `index.html` { .caption }
 
@@ -103,11 +80,7 @@ extra CSS, it can be fixed to the top of the page. The following [sample](http:/
 
 ![screenshot of a simple app-toolbar](/images/1.0/toolbox/simple-toolbar.png)
 
-The toolbar is a horizontal flexbox container, so you can use the usual flexbox rules to adjust the
-layout of its children. A child with the attribute `main-title` is
-automatically styled to flex, so it
-takes up all the extra space in the container. If you add buttons or icons on either side of the
-title, they'll automatically be pushed to the sides of the toolbar:
+ツールバーは水平なフレックスボックスコンテナなので、通常のフレックスボックスのルールに従い、子のレイアウトを調整できます。`main-title`という属性を持つ子は自動的にフレキシブルにスタイリングされ、コンテナ内の余ったスペースを埋めるように配置されます。タイトルの両側にボタンやアイコンを追加すると、自動的にツールバーの両側にプッシュされます。：
 
 ```
   <app-toolbar>
@@ -120,46 +93,35 @@ title, they'll automatically be pushed to the sides of the toolbar:
 ![screenshot of a simple app-toolbar with a menu and search buttons](/images/1.0/toolbox/toolbar-with-buttons.png)
 
 
-### Dynamic headers
+### ダイナミックヘッダー
 
-An `<app-header>` element is a container that applies scroll effects. The app header can hold any
-kind of element, but the most common children are toolbars and tab bars. Use multiple toolbars for
-multiple rows of controls.
+`<app-header>`要素は、スクロールエフェクトに対応するコンテナです。アプリのヘッダーにはあらゆる種類の要素を配置することができますが、最も一般的な子はツールバーとタブバーでしょう。複数行をコントロールする場合は複数のツールバーを使用します。
 
-By default, the header scrolls offscreen as you scroll down the page, just like the simple toolbar.
-You can change the default behavior by adding attributes to the header:
+デフォルトでは、シンプルなツールバーとちょうど同じようにページを下にスクロールするとヘッダーも画面外へスクロールされます。ヘッダーに以下の属性を追加することで、デフォルトの動作を変更できます。：
 
-- `fixed`. A _fixed header_ stays put at the top of the screen.
-- `reveals`. A _revealing header_ scrolls back on-screen (reveals itself)  as soon as you start
-    scrolling up, no matter how far down the page you are.
-- `condenses`. A _condensing header_ is taller than the usual header, and shrinks vertically as
-    you scroll down. Condensing headers usually have multiple toolbars/tab bars with one (the
-    _sticky_ element) that is always shown. This mode can be combined with either a fixed or
-    revealing header.
+- `fixed`：固定(fixed)ヘッダーとして画面の上部に配置されたままになります。
+- `reveals`：リビーリング(revealing)ヘッダーは、ページをどんなに下までスクロールしていたとしても、上に向かってスクロールを開始するとすぐにヘッダーが表示されます。
+- `condenses`：コンデンシング(condensing)ヘッダーは通常のヘッダーより高さがありますが、スクロールすると縦に縮みます。コンデンシングヘッダーはたいてい複数のツールバー/タブバーを持ち、どれかひとつ(sticky要素)が常時表示されることになります。このモードは、固定ヘッダーやリビーリングヘッダーと組み合わせることもできます。
 
 
-### Condensing header
+### コンデンシングヘッダー
 
-When using a condensing header with multiple toolbars, you can choose two basic techniques:
+複数のツールバーを持つコンデンシングヘッダを使用する場合、次の二つの基本的な方法を選択できます。：
 
--   All toolbars stay on screen, but "collapse" on top of one another. The toolbar contents must be
-    staggered so they don't overlap. (In the Material Design guidelines, this pattern is called
-    flexible space, and it's often combined with one or more scroll effects.)
+(訳注：以下の文章による説明は分かりづらいので適宜イメージ画像や[デモページ](https://polymerelements.github.io/app-layout/templates/test-drive/)を参照してください。)
+
+-   複数のツールバーはすべて画面上に留まりますが、他のツールバーの上部に畳こむ(collapse)ように納まります。ツールバーのコンテンツが、重なり合わないようにずらす必要があります。（[Material Design](https://material.io/guidelines/patterns/scrolling-techniques.html#)のガイドラインでは、このパターンを「フレキシブルスペース(flexible space)」と呼び、一つ以上のスクロールエフェクトと組み合わされることが多いです。）
 
     ![screenshot of an expanded, tall, app-toolbar with a menu and shop button, and titled My App](/images/1.0/toolbox/collapsing-headers-open.png)
     ![screenshot of the same toolbar collapsed to a regular, smaller size, with the same title and buttons](/images/1.0/toolbox/collapsing-headers-closed.png)
 
--   The top toolbars go offscreen while the bottom toolbar or toolbars stay on screen. (In the
-    Material Design patterns, this bottom toolbar is usually a tab bar or search bar.)
+-   一番上のツールバーはスクリーンの外へ追い出され、下のツールバーが画面上に残ります。（[Material Design](https://material.io/guidelines/)のパターンでは、通常この下のツールバーはタブバーまたは検索バーになります）。
 
     ![screenshot of an expanded, tall app-toolbar with a back and shop buttons, titled Spork. Below it are three tabs, labelled food, drink, life](/images/1.0/toolbox/spork-tabs-tall.png)
     ![screenshot of the same app-toolbar, but with the title and the buttons gone, and only with the 2 tabs visible](/images/1.0/toolbox/spork-tabs-condensed.png)
 
 
-One toolbar in the set is identified as `sticky`. When the page scrolls, any toolbars _above_ the
-sticky toolbar scroll off screen. You can designate a sticky toolbar by setting the `sticky`
-attribute on it. If no toolbar has the `sticky` attribute, the `<app-header>`'s first child is
-sticky.
+セット内の特定ツールバーが、`sticky`として識別されます。ページをスクロールすると、stickyツールバーより上のツールバーは画面外へスクロールされます。stickyツールバーに指定するには、`sticky`属性を設定します。`sticky`属性を持つツールバーがない場合、`<app-header>`の最初の子がstickyになります。
 
 ```
   <app-header fixed condenses effects="waterfall">
@@ -175,15 +137,11 @@ sticky.
   </app-header>
 ```
 
-Here, the first toolbar (with the icon buttons) is sticky. It stays on screen while other toolbars
-slide up to stack on top of it. The `spacer` attribute on the title adds some left padding to the
-title so it doesn't overlap a menu button on the left side of the toolbar.
+ここでは、最初のツールバー（アイコンボタン付き）がstickyです。他のツールバーが上にずり上がっても画面に残り、重なったツールバーの最上部に表示されます。タイトルの`spacer`属性によって、タイトルの左に`padding`が追加され、ツールバーの左側にあるメニューボタンに重なり合うことはありません。
 
-The condensing header starts out its natural height (that is, the height of its contents, unless an
-explicit height is set on it in CSS). It condenses down until it reaches the height of its sticky
-element.
+コンデンシングヘッダの初期の高さは自然に決まります。（つまり、CSSで明示的に高さが設定されていない限り、その内容の高さになります）。そしてsticky要素の高さを下限として縮められていきます。
 
-To retain just a tab bar, place the tab bar last, and mark it as sticky.
+タブバーだけを残したい場合には、タブバーを最後に置き、`sticky`としてマークします。
 
 ```
   <app-header id="header" effects="waterfall" fixed condenses>
@@ -200,14 +158,11 @@ To retain just a tab bar, place the tab bar last, and mark it as sticky.
   </app-header>
 ```
 
-### Scroll effects
+### スクロールエフェクト
 
-Most of the scroll effects are used with _condensing headers_. These effects change the header's
-appearance as it condenses.
+ほとんどのスクロールエフェクトは、コンデンシングヘッダーと一緒に使われます。これらのエフェクトは、ヘッダーが縮む際の見た目を変化させます。
 
-One exception is the waterfall effect, which requires a fixed header, but can be used with or
-without the `condenses` attribute. It makes the header appear to lift up above the the content when
-the user starts scrolling, so the content can scroll underneath it.
+唯一の例外は、固定ヘッダーに必要なウォーターフォールエフェクトですが、`condenses`属性の有無に関わらず利用することができます。このエフェクトは、ユーザーがスクロールを開始すると、ヘッダーがコンテンツの上に浮かんだように見えるようになり、コンテンツがその下をスクロールしていきます。 it.
 
 ```
   <app-header fixed effects="waterfall">
@@ -217,36 +172,25 @@ the user starts scrolling, so the content can scroll underneath it.
   </app-header>
 ```
 
-To try out the various header options including all of the scroll effects, try the demo:
+全てのスクロールエフェクトを含む、さまざまなヘッダーオプションを試すには、デモページをご覧ください。：
+:
 
 <a href="https://polymerelements.github.io/app-layout/templates/test-drive/" class="blue-button">
   Launch Test Drive Demo
 </a>
 
-For a list of available scroll effects, see [the `<app-header>`
-reference](https://www.webcomponents.org/element/PolymerElements/app-layout/app-header). For
-instructions on creating your own scroll effects, see the [`AppScrollEffectsBehavior`
-reference](https://www.webcomponents.org/element/PolymerElements/app-layout/Polymer.AppScrollEffectsBehavior).
+利用可能なスクロールエフェクトのリストについては、[`<app-header>`のリファレンス](https://www.webcomponents.org/element/PolymerElements/app-layout/app-header)を参照してください。独自のスクロールエフェクトを作成する方法については、[AppScrollEffectsBehaviorのリファレンス](https://www.webcomponents.org/element/PolymerElements/app-layout/Polymer.AppScrollEffectsBehavior)を参照してください。
 
-For more background, see [Scrolling
-techniques](https://material.io/guidelines/patterns/scrolling-techniques.html) in the material
-design specification for an overview of the different scroll effects.
+さらなる背景を知りたい場合、様々なスクロールエフェクトの違いについて解説したMaterial Desing仕様の[スクロールテクニック](https://www.google.com/design/spec/patterns/scrolling-techniques.html)を参照してください。
 
-### Document scroller and element scrollers
+### ドキュメントスクローラーと要素スクローラー
 
-The `<app-header>` element uses the document scroller used by default. On mobile browsers, this
-means the browser can hide the URL bar as you scroll down the page. However, since there's only one
-document scroller, if you switch between pages of content, your app needs to manage the scroll
-position on each page.
+`<app-header>`要素は、デフォルトでドキュメントスクローラーを使用します。モバイルブラウザでは、ブラウザがページを下にスクロールする際URLバーを非表示にすることができます。しかし、ドキュメントスクローラーは一つしかないので、コンテンツページを切り替える場合は、アプリは各ページのスクロール位置を管理する必要があります。
 
-**Manage multiple scrolling views.**
-If you're using something like `<iron-pages>` to switch views, you can use
-[`<app-scroll-position>`](https://www.webcomponents.org/element/PolymerElements/app-layout/app-scroll-position)
-to track scroll position for each of the views. See the API docs for sample usage.
-`<app-scroll-position>` was renamed in release 2.0 (replacing `<app-scrollpos-control>`).
+**複数のスクロール付きビューを管理する。**`<iron-pages>`のような手段を使ってビューを切り替える場合、[`<app-scroll-position>`](https://www.webcomponents.org/element/PolymerElements/app-layout/app-scroll-position)を利用して各ビューのスクロール位置を記録できます。利用例については、APIドキュメントを参照してください。なお、2.0のリリースに伴い`<app-scrollpos-control>`が`<app-scroll-position>`に改名されています。
 {.alert .alert-info}
 
-You can use an element scroller by specifying a `scrollTarget` property on `<app-header>`:
+`<app-header>`に`scrollTarget`プロパティを指定することで、**要素の**スクローラーを使用することができます：
 
 ```
   <div id="scrollingRegion" style="overflow-y: auto;">
@@ -255,16 +199,13 @@ You can use an element scroller by specifying a `scrollTarget` property on `<app
   </div>
 ```
 
-This can be useful if you want to use header scroll effects in a side panel, such as a drawer.
+これは、ドロワーのように、サイドパネル上でヘッダースクロールのエフェクトを利用したい場合に便利です。
 
+### ヘッダーレイアウト
 
-### Header layout
+[`<app-header-layout>`](https://www.webcomponents.org/element/PolymerElements/app-layout/app-header-layout)要素は、`<app-header>`ベースのレイアウトをまとめ上げる簡単な方法です。この要素は、コンテンツの周りに必要なパディングを確保してくれるので、コンテンツがヘッダーによって隠れてしまうといったことがなくなります。
 
-The [`<app-header-layout>`](https://www.webcomponents.org/element/PolymerElements/app-layout/app-header-layout)
-element is a simple way to put together a layout with an `<app-header>`. It supplies the necessary
-padding around the content so the content isn't hidden by the header.
-
-To use it, just place an `<app-header>` and some content inside an `<app-header-layout>`.
+使用するには、`<app-header>`といくつかのコンテンツを`<app-header-layout>`の中に置きます。.
 
 ```
   <app-header-layout>
@@ -279,17 +220,14 @@ To use it, just place an `<app-header>` and some content inside an `<app-header-
   </app-header-layout>
 ```
 
-Specifying `slot="header"` is required with App Layout 2.0.
+Polymer 2.0のApp Layoutでは、`slot="header"`を指定する必要があります。
 {.alert .alert-info}
 
-By default the layout uses document scrolling. If you don't want to to scroll the whole page, the
-layout can define its own scrolling region, as shown in the [API
-docs](https://www.webcomponents.org/element/PolymerElements/app-layout/app-header-layout).
+デフォルトでは、レイアウトにドキュメントスクロールを使用します。ページ全体をスクロールしたくない場合は、[APIドキュメント](https://www.webcomponents.org/element/PolymerElements/app-layout/app-header-layout)に示されているように、レイアウトで独自のスクロール領域を定義することができます。
 
-## Drawers
+## ドロワー
 
-The [`<app-drawer>`](https://www.webcomponents.org/element/PolymerElements/app-layout/app-drawer)
-element is a drawer that can be positioned on the left or right side of the screen.
+[`<app-drawer>`](https://www.webcomponents.org/element/PolymerElements/app-layout/app-drawer)要素は、画面の左右に配置可能なドロワーです。
 
 ```
 <app-drawer>
@@ -301,41 +239,25 @@ element is a drawer that can be positioned on the left or right side of the scre
 </app-drawer>
 ```
 
-There are a few ways to open and close the drawer:
+ドロワーを開閉する方法はいくつかあります。：
 
--   Swipe an open drawer closed. Set
-    [`swipeOpen`](https://www.webcomponents.org/element/PolymerElements/app-layout/app-drawer#property-swipeOpen)
-    to `true` to detect swipe gestures at the edge of the screen to open the drawer.
+-   閉じられたドロワーをスワイプで開く。画面の端でスワイプジェスチャーを検知してドロワーを開くには、[swipeOpen](https://www.webcomponents.org/element/PolymerElements/app-layout/app-drawer#property-swipeOpen)を`true`に設定します。
+-   ドロワーをドラッグして半分程度まで閉じれ(開け)ば、ドロワーはそのままひとりでに閉じます(開きます)。高速にスワイプ（フリックまたはスワイプ）した場合も同様の効果があり、ジェスチャーが半分に満たなくても開閉します。
+-   [open](https://www.webcomponents.org/element/PolymerElements/app-layout/app-drawer#method-open)、[close](https://www.webcomponents.org/element/PolymerElements/app-layout/app-drawer#method-close)、または[toggle](https://www.webcomponents.org/element/PolymerElements/app-layout/app-drawer#method-toggle)を呼び出すことで、ドロワーをプログラムによって開閉します。あるいは、[opened](https://www.webcomponents.org/element/PolymerElements/app-layout/app-drawer#property-opened)プロパティにバインドします。
+-   スワイプ/フリングジェスチャーを無効にする`persistent`プロパティを設定することで、ドロワーを固定サイドバー(persistent sidebar)として機能させることができます。
 
--   Drag the drawer more than halfway closed (or open) and it continues on its own. A fast swipe (flick or fling gesture) has the same effect, even if it goes less than halfway.
+ドロワーは分割されたコンポーネントなので、さまざまな方法で組み立てることができます。例えば：
 
--   Open and close the drawer programmatically by calling
-    [`open`](https://www.webcomponents.org/element/PolymerElements/app-layout/app-drawer#method-open),
-    [`close`](https://www.webcomponents.org/element/PolymerElements/app-layout/app-drawer#method-close),
-    or [`toggle`](https://www.webcomponents.org/element/PolymerElements/app-layout/app-drawer#method-toggle).
-    Or bind to the
-    [`opened`](https://www.webcomponents.org/element/PolymerElements/app-layout/app-drawer#property-opened) property.
+-   ドロワーの高さをフルサイズにする場合、ドロワーを`app-header-layout`の外側に配置するか、`app-drawer-layout`内に`app-header-layout`をラップします。
+-   ヘッダーの下でドロワーを開く場合、ドロワーまたは`app-drawer-layout`を`app-header-layout`内に配置します。
 
--   A drawer can act as a persistent sidebar by setting the `persistent` property, which disables
-    the swipe/fling gestures.
+### ドロワーのスタイリング
 
-Because the drawer is a separate component, you can compose it in different ways. For example:
+`--app-drawer-content-container`ミックスインを使用して、ドロワーのスタイルを設定できます。例えば、背景を設定したり、枠線や影を付けることでドロワーの端を明確にすることができます。
 
--   For a full-height drawer, place the drawer outside of a header layout, or wrap a header layout
-    inside a drawer layout.
--   For a drawer that opens _underneath_ a header, put the drawer or drawer layout inside a header
-    layout.
+レスポンシブなドロワーが開いているとき、画面の残りの部分は背景幕(backdrop)またはスクリム(scrim)で覆われます。スクリムの背景をカスタムプロパティ`--app-drawer-scrim-background`で設定します。デフォルトのスクリムの背景は、半透明の灰色です。
 
-### Styling the drawer
-
-You can style the drawer using the `--app-drawer-content-container` mixin. For example, you can set
-a background, or add a border or shadow to define the edge of the drawer.
-
-When a responsive drawer is open, the rest of the screen is covered with a backdrop or _scrim_. Set
-the scrim background with the `--app-drawer-scrim-background` custom property. The default scrim has
-a semi-transparent grey background.
-
-The following CSS adds a border shadow to the drawer and provides a colored scrim.
+次のCSSでは、影付きの枠線がドロワーに追加され、色付きのスクリムが設定されます。
 
 ```
   app-drawer {
@@ -346,24 +268,16 @@ The following CSS adds a border shadow to the drawer and provides a colored scri
   }
 ```
 
-### Drawer layouts
+### ドロワーのレイアウト
 
-The [`<app-drawer-layout>`](https://www.webcomponents.org/element/PolymerElements/app-layout/app-drawer-layout)
-element creates a responsive layout with a single drawer. On
-wider screens, the drawer acts as a persistent sidebar by default; it's always displayed and swipe
-and fling gestures are disabled.
+[`<app-drawer-layout>`](https://www.webcomponents.org/element/PolymerElements/app-layout/app-drawer-layout)要素は、一つのドロワーを使用してレスポンシブなレイアウトを作成します。より広い画面では、ドロワーはデフォルトで固定サイドバーとして機能します。サイドバーは常に表示され、スワイプとフリングジェスチャーは無効になります。
 
-To add a drawer toggle button, place an element with the `drawer-toggle` attribute as one of the
-descendants of an `<app-drawer-layout>`. Usually the drawer toggle button is placed inside one of
-the app's toolbars.
+ドロワーにトグルボタンを追加するには、`<app-drawer-layout>`の子孫の一つとして`drawer-toggle`属性を持つ要素を配置します。通常、ドロワーのトグルボタンは、アプリケーションの特定のツールバーの内側に配置します。lbars.
 
-In App Layout 2.0, the `drawer-toggle` element is no longer automatically hidden when the drawer is persistent.
-To hide `drawer-toggle`, you can style based on when the `narrow` attribute is present on `app-drawer-layout`
-(e.g. `app-drawer-layout:not([narrow]) [drawer-toggle] { display: none; }`)
+Polymer 2.0のApp Layoutでは、ドロワーが固定された(persistent)場合であっても、`drawer-toggle`要素が自動的に非表示にならなくなりました。`drawer-toggle`を非表示にしたい場合、`app-drawer-layout`の`narrow`属性の有無に基づいてスタイルを適用できます。(例：`app-drawer-layout：not（[narrow])``[drawer-toggle] {display：none;}`)
 {.alert .alert-info}
 
-An `<app-header-layout>` can be nested inside an `<app-drawer-layout>` to create a responsive layout
-with drawer and header.
+`<app-header-layout>`を`<app-drawer-layout>`内にネストすることで、ドロワーとヘッダーを含むレスポンシブなレイアウトを作成できます。
 
 ```
   <app-drawer-layout>
@@ -388,23 +302,19 @@ with drawer and header.
   </app-drawer-layout>
 ```
 
-Specifying `slot="drawer"` is required with App Layout 2.0.
+App Layout 2.0では、`slot="drawer"`を指定する必要があります。
 {.alert .alert-info}
 
-## Responsive navigation pattern
+## レスポンシブなナビゲーションパターン
 
-In many cases, you'll want to switch your navigation based on the screen size. One common pattern
-uses navigation tabs on desktop, which are replaced by a navigation drawer on mobile, as in the
-[Shop app](https://shop.polymer-project.org/).
+多くのケースにおいては、画面サイズに基づいてナビゲーションを切り替えたいかもしれません。汎用的なパターンの一つは、デスクトップ上でナビゲーションタブを使用します。これは、[Shopアプリ](https://shop.polymer-project.org/)のように、モバイル上ではナビゲーションドロワーに置き換えられます。
 
 ![screenshot of a nav menu with 5 tabs, displayed horizontally, labelled "item one" through "item four"](/images/1.0/toolbox/app-layout-responsive-nav-tabs.png)
 ![screenshot of the same menu displayed vertically, after being open from a mobile drawer button ](/images/1.0/toolbox/app-layout-responsive-nav-drawer.png)
 
-You can achieve this with some app layout elements, using data binding to switch between the tab and
-drawer navigation.
+このパターンは、いくつかの`app-layout`要素を使うことで実現できます。タブとドロワーのナビゲーションの切り替えはデータバインディングを利用します。
 
-The [transform navigation demo](https://polymerelements.github.io/app-layout/patterns/transform-navigation/)
-shows a simple version of this transition.
+[変形するナビゲーションのデモ](https://polymerelements.github.io/app-layout/patterns/transform-navigation/)では、このこのような変形の簡単なバージョンが紹介されています。
 
 ```
   <!-- force-narrow prevents the drawer from ever being displayed
@@ -455,6 +365,4 @@ shows a simple version of this transition.
 
 <a href="https://github.com/polymerelements/app-layout/blob/master/patterns/transform-navigation/x-app.html" class="blue-button">View full source</a>
 
-The [Shop app](https://shop.polymer-project.org/). uses a slightly more sophisticated version of this pattern, using conditional templates
-to avoid creating the navigation elements until they're needed. This means that the app doesn't need
-to create the tabs when running on mobile.
+[Shopアプリ](https://shop.polymer-project.org/)では、このパターンのやや洗練されたバージョンを使用しています。条件付きテンプレート(dom-if)を使用することで、ナビゲーション要素が必要とされるまで生成しないようにしています。つまり、モバイル環境で実行しているときにはタブを生成しなくて済みます。

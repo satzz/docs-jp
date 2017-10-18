@@ -1,20 +1,18 @@
 ---
-title: Define an element
+title: 要素の定義
 ---
 
 <!-- toc -->
 
 
-## Define a custom element {#register-element}
+## カスタム要素の定義{#register-element}
 
 
-To define a custom element, create a class that extends `Polymer.Element` and pass the class to the
-`customElements.define` method.
+カスタム要素を定義するには、`Polymer.Element`の拡張クラスを作成し、そのクラスを`customElements.define`メソッドに渡します。
 
-By specification, the custom element's name **must start with a lower-case ASCII letter and must
-contain a dash (-)**.
+仕様では、カスタム要素名は、**小文字のASCII文字で始まり、ダッシュ(-)を含まなければなりません。**
 
-Example: { .caption }
+例: { .caption }
 
 ```
 // define the element's class element
@@ -42,13 +40,11 @@ var el1 = document.createElement('my-element');
 var el2 = new MyElement();
 ```
 
-As shown above, the element's class can define callbacks for the custom element reactions as
-described in [Custom element lifecycle](custom-elements#element-lifecycle).
+上記の通り、[カスタム要素のライフサイクル](custom-elements#element-lifecycle)で説明したように要素のクラスにはカスタム要素のリアクションとしてコールバックを定義することができる。
 
-## Extending an existing element {#extend-element}
+## 既存の要素を拡張 {#extend-element}
 
-You can leverage native subclassing support provided by ES6 to extend and customize existing
-elements defined using ES6 syntax:
+ES6ではネイティブに提供されるサブクラス化の仕組みを活用することで、ES6の構文を使って定義済みの既存の要素を拡張したりカスタマイズしたりすることができます。：
 
 ```js
 // Subclass existing element
@@ -69,9 +65,7 @@ customElements.define(MyElementSubclass.is, MyElementSubclass);
 For more information on extending elements, see [Extending other elements](custom-elements#extending-elements)
 in Custom element concepts.
 
-If you don't provide a template for your subclass, it inherits the superclass's template by default.
-To override this behavior, or modify the superclass template, override the subclass's `template`
-getter.
+サブクラスにテンプレートを指定しない場合、デフォルトでスーパークラスのテンプレートが継承されます。この動作をオーバーライドしたり、スーパークラスのテンプレートを変更したりするには、サブクラスの`template`のgetterメソッドをオーバーライドします。
 
 ## Using mixins
 
@@ -99,30 +93,27 @@ inheritance apply.
 For information on defining mixins, see [Sharing code with class expression mixins](custom-elements#mixins)
 in Custom element concepts.
 
-## Imports and APIs
+## HTML ImportsとAPI
 
 There are three main HTML imports for defining Polymer elements:
+Polymer要素を定義するのに三つの主要なHTML Importsがあります。：
 
-| Import | Description |
+
+| インポート | 説明 |
 |---|-------|
-| `polymer-element.html` | Defines the `Polymer.Element` base class.  |
-| `legacy-element.html` | Defines the `Polymer.LegacyElementMixin` base class, which can be used to add 1.x compatible legacy API to `Polymer.Element`. Also defines the legacy `Polymer()` factory method for creating hybrid elements. (Includes `polymer-element.html`.)|
-| `polymer.html` | Includes the previous imports plus the helper elements (`custom-style`, `dom-bind`, `dom-if`, and `dom-repeat`) that were included in the 1.x `polymer.html` bundle. |
+|`polymer-element.html`|`Polymer.Element`クラスをベースに要素を定義します。|
+|`legacy-element.html`|`Polymer.Element`を拡張し、Poymer 1.xと互換性のある`Polymer.LegacyElement`APIが付加された`Polymer.LegacyElement`クラスをベースに要素を定義します。また、レガシーなファクトリメソッド`Polymer()`を利用して、1.xと2.xのハイブリッド要素を定義することもできます(`polymer-element.html`を含んでいます）。|
+|`polymer.html`|Polymerの基底クラスに、1.xでpolymer.htmlのバンドルに含まれていたヘルパー要素（`custom-style`、`dom-bind`、`dom-if`、`dom-repeat`など)を加えてインクルードします（`legacy-element.html`を含んでいます）。|
 
-For the smallest footprint, use the `polymer-element.html` import and import any required helper
-elements separately.
+リソースを最小限にしたい場合には、`polymer-element.html`をインポートし、必要なヘルパー要素を個別にインポートして下さい。
 
-If you need some of the backwards-compabile APIs from 1.x, you can use the `Polymer.LegacyElement`
-class as the base for 2.x class-style elements. You must still import any helper elements you
-use individually.
+1.xの後方互換APIが必要な場合には、2.xのクラススタイルの要素を作成する際の基底クラスとして`Polymer.LegacyElement`を使用できます。また利用するヘルパー要素は個別にインポートする必要があります。
 
-Use the `polymer.html` import for defining hybrid elements that can run under both 1.x and 2.x.
+1.xと2.xの両方で実行できるハイブリッド要素を定義するには、`polymer.html`をインポートして使用します。
 
+##クラススタイルの要素でハイブリッドな動作を使用
 
-
-## Using hybrid behaviors with class-style elements
-
-You can add hybrid behaviors to your class-style element using the `Polymer.mixinBehavior` function:
+`Polymer.mixinBehavior`関数を使用して、クラススタイルの要素にハイブリッドな動作(behavior)を追加することができます。：
 
 ```
 class XClass extends Polymer.mixinBehaviors([MyBehavior, MyBehavior2], Polymer.Element) {
@@ -132,18 +123,13 @@ class XClass extends Polymer.mixinBehaviors([MyBehavior, MyBehavior2], Polymer.E
 customElements.define('x-class', XClass);
 ```
 
-The `mixinBehavior` function also mixes in the Legacy APIs, the same as if you extended
-`Polymer.LegacyElement`. These APIs are required since since hybrid behaviors depend on them.
+この`mixinBehavior`関数は、1.xのレガシーAPIもミックスインするので、`Polymer.LegacyElement`を拡張したのとほとんど同じことです。これらのレガシーAPIが必要とされるのは、ハイブリッドな動作がそれらに依存しているためです。
 
-## Define an element in the main HTML document {#main-document-definitions}
+## メインのHTMLドキュメントで要素を定義 {#main-document-definitions}
 
-You should only define elements from the main document when
-experimenting. In production, elements should always be defined in
-separate files and imported into your main document.
+試験的な実装においては、メインドキュメントから要素を定義するだけで済むかもしれません。本番環境では、常に要素は分割したファイルに定義した上で、メインドキュメントにインポートする必要があります。
 
-To define an element in your main HTML document, define the element
-from `HTMLImports.whenReady(callback)`. `callback` is invoked when
-all imports in the document have finished loading.
+メインのHTMLドキュメントで要素を定義するには、要素は`HTMLImports.whenReady(callback)`で定義します。`callback`はドキュメント内の全てのインポートの読み込み(loading)が完了した時点で呼び出されます。
 
 ```
 <!DOCTYPE html>
@@ -178,15 +164,13 @@ all imports in the document have finished loading.
 </html>
 ```
 
-## Define a legacy element {#legacy-element}
+## レガシー要素を定義する {#legacy-element}
 
-Legacy elements can use use the `Polymer` function to register an element.
-The function takes as its argument the  prototype for the new element. The prototype
-must have an `is` property that specifies the HTML tag name for your custom element.
+レガシーな要素は、要素の登録に`Polymer`関数が使用できます。関数は新しい要素のプロトタイプを引数に取ります。プロトタイプには、カスタム要素のHTMLタグ名を指定する`is`プロパティが必要です。
 
-By specification, the custom element's name **must start with an ASCII letter and contain a dash (-)**.
+仕様では、カスタム要素の名前は**ASCII文字で始まり、ダッシュ(-)を含む必要があります。**
 
-Example: { .caption }
+例: { .caption }
 
 ```
     // register an element
@@ -208,87 +192,74 @@ Example: { .caption }
     var el2 = new MyElement();
 ```
 
-The `Polymer` function registers the element with the browser and returns a
-constructor that can be used to create new instances of your element via code.
+`Polymer`関数は、要素をブラウザに登録し、コードから要素の新たな要素のインスタンスを生成するコンストラクタを返します。
 
-The `Polymer` function sets up the prototype chain for your custom element,
-chaining it to the Polymer `Base` prototype (which provides
-Polymer value-added features), so you cannot set up your own
-prototype chain. However, you can use [behaviors](#prototype-mixins) to
-share code between elements.
+`Polymer`関数はカスタム要素のプロトタイプチェーンを構築し、それをPolymerの`Base`プロトタイプ（Polymerの付加的な機能を提供）につなぎます。そのため開発者が独自のプロトタイプチェーンを構築することはできません。しかし、[behaviors](#prototype-mixins)プロパティを使用することで要素間でコードを共有することはできます。
 
-## Lifecycle callbacks {#lifecycle-callbacks}
+## ライフサイクルコールバック {#lifecycle-callbacks}
 
-The Polymer.Element class implements the standard Custom Element lifecycle
-callbacks to perform tasks necessary for Polymer's built-in features.
+`Polymer.Element`クラスは、Polymerのビルトイン機能で必須のタスクを実行するため、標準のカスタム要素のライフサイクルコールバックを実装しています。
 
-Polymer adds an extra callback, `ready`, which is invoked when Polymer has
-finished creating and initializing the element's DOM.
+Polymerは、要素のDOMの生成と初期化が完了した時点で呼び出されれる`ready`という特別なコールバックも用意しています。
 
 <table>
   <tr>
-    <th>Legacy callback</th>
-    <th>Description</th>
+    <th>レガシーコールバック</th>
+    <th>説明</th>
   </tr>
   <tr>
     <td><code>created</code></td>
-    <td>Called when the element has been created, but before property values are
-       set and local DOM is initialized.
-      <p>Use for one-time set-up before property values are set.
+    <td>
+      要素の作成後、プロパティ値の設定やローカルDOMの初期化前に呼び出されます。
+      <p>プロパティ値が設定される前のワンタイム設定に利用されます。
       </p>
-      <p>Equivalent to the native constructor.
+      <p>ネイティブの<code>constructor</code>に相当します。
       </p>
     </td>
   </tr>
   <tr>
     <td><code>ready</code></td>
-    <td>Called after property values are set and local DOM is initialized.
-      <p>Use for one-time configuration of your component after local
-        DOM is initialized. (For configuration based on property values, it
-        may be preferable to use an <a href="observers">observer</a>.)
+    <td>プロパティ値が設定され、ローカルDOMが初期化された後に呼び出されます。
+      <p>
+        ローカルDOMの初期化後に、コンポーネントのワンタイムな設定を行うのに利用されます。（プロパティ値を元に設定する場合は、<a href="observers">オブザーバー</a>の使用を推奨します）。
       </p>
     </td>
   </tr>
   <tr>
     <td><code>attached</code></td>
-    <td>Called after the element is attached to the document. Can be called multiple
-        times during the lifetime of an element. The first <code>attached</code> callback
-        is guaranteed not to fire until after <code>ready</code>.
-      <p>Uses include adding document-level event listeners. (For listeners local to the element, you can use declarative
-        event handling, such as <a href="events.html#annotated-listeners">annotated
-        event listeners</a> or the
-        <a href="events#event-listeners"><code>listeners</code> object</a>.)</p>
-     <p>Equivalent to native <code>connectedCallback</code>.</p>
+    <td>
+      要素がドキュメントに追加(attached)された後に呼び出されます。要素の存続期間中であれば複数回呼び出すことができます。初回の<code>attached</code>コールバックは<code>ready</code>コールバックが実行されるまで呼び出されないことが保証されています。
+      <p>
+        ドキュメントレベル(document-level)のイベントリスナーを追加するのにも利用されます。（ローカルな要素に対してイベントリスナーを設定するには、<a href="events.html#annotated-listeners">アノテーション付イベントリスナー</a>や<a href="events#event-listeners">リスナーオブジェクト</a>のような宣言的なイベント処理を利用でき、Polymerはリスナーを自動的に追加します）。
       </p>
+     <p>ネイティブの<code>connectedCallback</code>に相当します。</p>
     </td>
   </tr>
   <tr>
     <td><code>detached</code></td>
-    <td>Called after the element is detached from the document. Can be called
-        multiple times during the lifetime of an element.
-      <p>Uses include removing event listeners added in <code>attached</code>.
+    <td>
+      要素がドキュメントから切り離された(detached)された後に呼び出されます。要素の存続期間中であれば複数回呼び出すことができます。
+      <p>
+        <code>attached</code>コールバックで追加されたイベントリスナーの削除にも利用されます。
       </p>
-      <p>Equivalent to native <code>disconnectedCallback</code>.</p>
+      <p>ネイティブの<code>disconnectedCallback</code>に相当します。</p>
       </p>
     </td>
   </tr>
   <tr>
     <td><code>attributeChanged</code></td>
-    <td>Called when one of the element's attributes is changed.
-      <p>Use to handle attribute changes that <em>don't</em> correspond to
-        declared properties. (For declared properties, Polymer
-        handles attribute changes automatically as described in
-        <a href="properties#attribute-deserialization">attribute deserialization</a>.)
+    <td>要素の属性の一つが変更されたときに呼び出されます。
+      <p>
+        対応するプロパティが宣言<em>されていない</em>属性の変更を扱う場合に利用できます。（対応するプロパティが宣言されている場合は、<a href="properties#attribute-deserialization">属性デシリアライゼーション</a>で説明しているように、Polymerが自動的に属性の変更を処理します）。
       </p>
-      <p>Equivalent to the native <code>attributeChangedCallback</code>.
+      <p>ネイティブの<code>attributeChangedCallback</code>相当します。
       </p>
     </td>
   </tr>
 </table>
 
-### Legacy behaviors {#prototype-mixins}
+### レガシーなbehaviors {#prototype-mixins}
 
-Legacy elements can share code in the form of _behaviors_, which can define
-properties, lifecycle callbacks, event listeners, and other features.
+レガシーな要素においては_behaviors_フォームを利用することで要素間でコードを共有することができます。behaviorにはプロパティ、ライフサイクルコールバック、イベントリスナーやその他の機能を定義することができます。
 
-For more information, see [Behaviors](/1.0/docs/devguide/behaviors) in the Polymer 1.x docs.
+より詳細なガイドは、Polymer 1.xのドキュメントの[Behaviors](/1.0/docs/devguide/behaviors)のセクションを参照してください。

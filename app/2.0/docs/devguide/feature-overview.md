@@ -1,20 +1,18 @@
 ---
-subtitle: Feature Overview
-title: Polymer library
+subtitle: 機能の概要
+title: Polymerライブラリ
 ---
 
-The Polymer library provides a set of features for creating custom elements. These features are
-designed to make it easier and faster to make custom elements that work like standard DOM elements.
-Similar to standard DOM elements, Polymer elements can be:
+Polymerライブラリはカスタム要素(Custom Elements)を作成するための機能一式を提供します。これらの機能は、標準のDOM要素のように動作するカスタム要素を迅速かつ容易に作成できるように設計されています。標準的なDOM要素と同様、Polymer要素では以下のようなことが可能です。：
 
-* Instantiated using a constructor or `document.createElement`.
-* Configured using attributes or properties.
-* Populated with internal DOM inside each instance.
-* Responsive to property and attribute changes.
-* Styled with internal defaults or externally.
-* Responsive to methods that manipulate its internal state.
+* コンストラクタまたは`document.createElement`を使用してインスタンス化する。
+* 属性またはプロパティを使用して構成する。
+* 各インスタンスに内部DOMを追加する。
+* プロパティや属性の変化に応じて処理を行う（例えば、DOMにデータを追加したり、イベントを発火させるなど）。
+* 内部のデフォルトから、あるいは外部からスタイルを設定する。
+* 内部の状態を操作するメソッドに応答して処理する。
 
-A basic Polymer element definition looks like this:
+基本的なPolymer要素の定義は以下のようになります。：
 
 ```
     <dom-module id="x-custom">
@@ -60,26 +58,16 @@ A basic Polymer element definition looks like this:
 ```
 
 
-This guide divides the features into the following groups:
+このドキュメントでは、機能を次のグループに分けて解説しています。：
 
-*   [Custom elements](custom-elements). Registering an
-    element associates a class with a custom element name. The
-    element provides callbacks to manage its lifecycle. Polymer also lets you declare properties,
-    to integrate your element's property API with the Polymer data system.
+*   [カスタム要素](custom-elements)：要素を登録すると、class名がカスタム要素名に関連付けられます。この要素は、ライフサイクルを管理するコールバックを提供します。また、Polymerでは、プロパティを宣言することで、要素のプロパティAPIをPolymerのデータシステムに統合することもできます。
 
-*   [Shadow DOM](shadow-dom). Shadow DOM provides a local, encapsulated DOM tree for your element.
-    Polymer can automatically create and populate a shadow tree for your element from a DOM
-    template.
+*   [Shadow DOM](shadow-dom)：Shadow DOMは、カスタム要素内にカプセル化されたローカルのDOMツリーを提供します。PolymerはDOMテンプレートからShadow Treeを自動的に生成し、カスタム要素に挿入することができます。
 
-*   [Events](events). Polymer provides a declarative syntax for attaching event listeners to
-    shadow DOM children. It also provides an optional library for handling gesture events.
+*   [イベント](events)：Polymerは、Shadow DOMの子にイベントリスナーをアタッチするための宣言的構文を提供します。また、ジェスチャー関連イベントを処理するためのオプションのライブラリも用意しています。
 
-*   [Data system](data-system). The Polymer data system provides data binding to properties and
-    attributes; property observers; and computed properties.
+*   [データシステム](data-system)：Polymerのデータシステムは、プロパティオブザーバー(Property Observer)や算出プロパティ(Computed Properties)といった機能によって、プロパティや属性へのデータバインディングを提供しています。
 
+Polymer 1.xベースの既存の要素を新しいAPIにアップグレードする場合は、[Upgrade guide](/2.0/docs/upgrade)を参照してください 。
 
-If you're upgrading an existing 1.x element to the new APIs, see the
-[Upgrade guide](/2.0/docs/upgrade) for advice.
-
-If you're looking for the latest changes in this release, see the
-[Release notes](/2.0/docs/release-notes).
+リリースの最新の状況を確認したい場合は、[Release notes](/2.0/docs/release-notes)を参照してください。

@@ -1,21 +1,15 @@
 ---
-title: Shadow DOM concepts
+title: Shadow DOMのコンセプト
 ---
 
 <!-- toc -->
 
-Shadow DOM is a new DOM feature that helps you build components. You can think of shadow DOM as a
-**scoped subtree** inside your element.
+Shadow DOMは、コンポーネントの作成に役立つ新しいDOM機能です。*Shadow DOM*は、要素内の**スコープ付きのサブツリー**と考えることができます。
 
-**Read more on Web Fundamentals**. This document gives an overview of shadow DOM as it relates to
-Polymer. For a more comprehensive overview of Shadow DOM, see
-[Shadow DOM v1: self-contained web components](https://developers.google.com/web/fundamentals/primers/shadowdom/?hl=en)
-on Web Fundamentals.
+**詳細はWeb Fundamentalsを読んでください。**このドキュメントでは、Shadow DOMの概要の内、Polymerに関連する部分を説明しています。Shadow DOMに関する包括的な概要説明は、Web Fundamentalsの[Shadow DOM v1: self-contained web components](https://developers.google.com/web/fundamentals/primers/shadowdom/?hl=ja)を参照してください。
 {.alert .alert-info}
 
-Consider a header component that includes a page title and a  menu button: The DOM tree for this
-element might look like this:
-
+ページタイトルとメニューボタンを含むヘッダーコンポーネントについて考えてみましょう。この要素のDOMツリーは次のようになるでしょう。：
 
 ```html
 <my-header>
@@ -24,9 +18,7 @@ element might look like this:
     <button>
 ```
 
-
-Shadow DOM lets you place the children in a scoped subtree, so document-level CSS can't restyle the
-button by accident, for example. This subtree is called a shadow tree.
+Shadow DOMを使用すると、スコープ付きサブツリー内に子を置くことができるため、ドキュメントレベル(document-level)のCSSから意図せずボタンのスタイルを再適用してしまうといったことはなくなります。このサブツリーはShadow Treeと呼ばれます。
 
 
 ```
@@ -37,16 +29,11 @@ button by accident, for example. This subtree is called a shadow tree.
       <button>
 ```
 
+*Shadow Root*がShadow Treeのトップです。`<my-header>`に追加(attached)されたツリーの要素は*Shadowホスト*と呼ばれます。ホストには、Shadow Rootを参照する`shadowRoot`というプロパティがあります。Shadow Rootには、そのホスト要素を参照する`host`プロパティがあります。
 
-The *shadow root* is the top of the shadow tree. The element that the tree is attached to
-(`<my-header>`) is called the *shadow host*.  The host has a property called `shadowRoot` that
-refers to the shadow root. The shadow root has a `host` property that identifies its host element.
+Shadow Treeは要素の`children`とは区別されます。このShadow Treeは、外部の要素は関知する必要のない(カプセル化された)コンポーネントの**実装**の一部と考えることができます。一方、要素の子(children)は、(外部の要素に対しても)publicなインタフェースの一部です。
 
-The shadow tree is separate from the element's `children`. You can think of this shadow tree as part
-of the component's **implementation**, which outside elements don't need to know about. The
-element's children are part of its public interface.
-
-You can add a shadow tree to an element imperatively by calling `attachShadow`:
+以下のように、`attachShadow`を呼び出すことで命令的に要素にShadow Treeを追加(attach)できます：
 
 
 ```js
@@ -55,11 +42,7 @@ var shadowRoot = div.attachShadow({mode: 'open'});
 shadowRoot.innerHTML = '<h1>Hello Shadow DOM</h1>';
 ```
 
-
-Polymer provides a declarative mechanism for adding a shadow tree using a [DOM template](dom-template).
-When you provide a DOM template for an element, Polymer attaches a shadow root for each instance of
-the element and copies the template contents into the shadow tree.
-
+Polymerは、[DOMテンプレート](dom-template)を使用して宣言的にShadow Treeを追加するためのメカニズムを提供しています。要素にDOMテンプレートを追加すると、Polymerは要素の各インスタンスにShadow Rootを追加(attach)して、テンプレートの内容をShadow Treeに複製します。
 
 ```html
 <dom-module id="my-header">
@@ -73,16 +56,11 @@ the element and copies the template contents into the shadow tree.
 </dom-module>
 ```
 
+テンプレート内に`<style>`要素が含まれていることに注意してください。Shadow Treeに配置されたCSSはShadow Tree内部にスコープを持ち、DOMの他の部分に対してスコープがリークすることはありません。
 
-Note that the template includes a `<style>` element. CSS placed in the shadow tree is scoped to the
-shadow tree, and won't leak out to other parts of your DOM.
+## Shadow DOMと構成
 
-## Shadow DOM and composition
-
-By default, if an element has shadow DOM, **the shadow tree is rendered instead of the element's
-children.** To allow children to render, you can add a `<slot>` element to your shadow tree. Think
-of the `<slot>` as a placeholder showing where child nodes will render. Consider the following
-shadow tree for `<my-header>`:
+デフォルトでは、要素にShdow DOMがある場合、**Shadow Treeが要素の子に代わってレンダリングされます。**子をレンダリングするためには、`<slot>`要素をShadow Treeに追加します。`<slot>`は、子ノードのレンダリング先を示すプレースホルダと考えることができます。例として、以下のような`<my-header>`のShadow Treeについて考えてみましょう。：
 
 
 ```html
@@ -93,7 +71,7 @@ shadow tree for `<my-header>`:
 ```
 
 
-The user can add children like this:
+ユーザーは次のように子を追加できます：
 
 
 ```html
@@ -101,7 +79,7 @@ The user can add children like this:
 ```
 
 
-The header renders as if the `<slot>` element was replaced by the children:
+`<slot>`要素が子に置き換えられたかのようにヘッダーがレンダリングされます。
 
 
 ```html
@@ -114,14 +92,11 @@ The header renders as if the `<slot>` element was replaced by the children:
 ```
 
 
-The element's actual descendant tree is sometime called its light DOM, in contrast to its shadow DOM
-tree.
+実際の要素(訳注：上記のように実際にレンダリングされた要素)の子孫ツリーは、そのShadow DOMツリーとは区別して、*Light DOM*と呼ばれることもあります。
 
-The process of turning the light DOM and shadow DOM trees into a single tree for rendering is called
-*flattening* the tree. While the `<slot>` elements don't *render*, they are included in the
-flattened tree, so they can take part in event bubbling, for example.
+レンダリングするためにLight DOMとShadow DOMツリーを単一のツリーに変換するプロセスは、*ツリーのフラット化(flattening the tree)*と呼ばれます。`<slot>`要素がレンダリングされることはありませんが、*フラット化されたツリー*には含まれるので、イベントバブリングのような処理に加えることができます。
 
-You can control where a child should be distributed into the flattened tree using *named slots*.
+`name`属性付きのスロットを使用することで、フラット化されたツリーのどこに子を割り当てるべきか指定することもできます。
 
 
 ```html
@@ -129,30 +104,22 @@ You can control where a child should be distributed into the flattened tree usin
 <div><slot></slot></div>
 ```
 
-
-A named slot only accepts top-level children that have a matching `slot` attribute:
-
+以下のように、名前付きのスロットは、一致する`slot`属性持つトップレベルの子だけを受け入れます。(訳注：トップレベルでない子に関しては、この三つ先のサンプルコードで改めて実例付きの解説があります。)：
 
 ```html
 <span slot="title">A heading</span>
 ```
 
+`name`属性を持たないスロットは、`slot`属性を持たない全ての子のデフォルトのスロットになります。子の`slot`属性に対応する、名前付きスロットがShadow Tree上に存在しない場合にはその子が表示されることはありません。
 
-A slot with no `name` attribute acts as the default slot for any children that don't have a `slot`
-attribute. If a child's `slot` attribute doesn't match any named slot element in the shadow tree,
-that child doesn't appear at all.
-
-For example, consider an `example-card` element with the following shadow tree:
-
+次のようなShadow Treeを持った`example-card`要素を例にして考えてみましょう：
 
 ```html
 <h2><slot name="title"></slot></h2>
 <div><slot></slot></div>
 ```
 
-
-If the example card is used like this:
-
+これが次のように使われているとします：
 
 ```html
 <example-card>
@@ -164,13 +131,9 @@ If the example card is used like this:
 </example-card>
 ```
 
+最初の`span`は`title`属性を持つスロットに割り当てられます。`slot`属性を持たない`div`は、デフォルトのスロットに割り当てられます。Shadow Treeにないスロット名を持つ最後の`span`は、*フラット化されたツリー*には出現せずレンダリングもされません。
 
-The first span is assigned into the `title` slot. The div, which has no `slot` attribute, is
-assigned to the default slot. The final span, which has a slot name that doesn't appear in the
-shadow tree, doesn't show up in the flattened tree, and doesn't render.
-
-Note that only top-level children can match a slot. Consider the following example:
-
+トップレベルの子だけがスロットにマッチすることに注意してください。次の例で考えてみましょう。：
 
 ```html
 <example-card>
@@ -183,18 +146,11 @@ Note that only top-level children can match a slot. Consider the following examp
 </example-card>
 ```
 
+`<example-card>`にはトップレベルの子として二つの`<div>`要素があります。どちらの要素もデフォルトのスロットに割り当てられます。`span`はトップレベルの子ではないため、`span`の`slot`属性が配置に影響することはありません。
 
+### フォールバックコンテンツ
 
-
-The `<example-card>` has two top-level children, both `<div>` elements. Both are assigned to the
-default slot. The `slot` attribute on the span has no effect on the distribution, because the span
-isn't a top-level child.
-
-### Fallback content
-
-A slot can contain *fallback content* that's displayed when no nodes are assigned to the slot. For
-example:
-
+スロットには一つもノードが割り当てられていないときに表示される*フォールバックコンテンツ*を含めることができます。例えば：
 
 ```
 <fancy-note>
@@ -206,8 +162,7 @@ example:
 </fancy-note>
 ```
 
-
-The user can supply their own icon for the <fancy-note> element like this:
+ユーザーは次のように`<fancy-note>`要素に独自のアイコンを指定できます。：
 
 ```html
 <!-- shows note with warning icon -->
@@ -221,7 +176,7 @@ The user can supply their own icon for the <fancy-note> element like this:
 </fancy-note>
 ```
 
-If the user omits the icon, the fallback content supplies a default icon:
+ユーザーがアイコンの指定を省略すると、フォールバックコンテンツとしてデフォルトのアイコンが表示されます。：
 
 ```html
 <!-- shows note with default icon -->
@@ -233,9 +188,9 @@ If the user omits the icon, the fallback content supplies a default icon:
 </fancy-note>
 ```
 
-### Multi-level distribution
+### マルチレベルの割り当て(distribution)
 
-A slot element may also be assigned to a slot. For example, consider two levels of shadow trees.
+`slot`要素を他のスロットに割り当てることもできます。例えば、二つのレベルのShadow Treeを考えてみましょう。
 
 
 ```
@@ -254,7 +209,7 @@ A slot element may also be assigned to a slot. For example, consider two levels 
 ```
 
 
-Given markup like this:
+このようなマークアップを考えてみましょう。：
 
 
 ```html
@@ -264,7 +219,7 @@ Given markup like this:
 ```
 
 
-The flattened tree looks like this:
+フラット化されたツリーは次のようになります。：
 
 
 ```
@@ -276,17 +231,13 @@ The flattened tree looks like this:
           <span>I'm in light DOM</span>
 ```
 
-
-The ordering may be a little confusing at first. At each level, the light DOM children are
-*assigned* to a slot in the host's shadow DOM. The span "I'm in light DOM" is *assigned* to the
-slot `#parent-slot` in `<parent-element>`'s shadow DOM. The `#parent-slot` is then *assigned* to
-`#child-slot` in `<child-element>`'s shadow DOM.
+最初は処理の順番について少し混乱するかもしれません。各レベルにおいて、Light DOMの子は、ホストのShadow DOMの各スロットに割り当てられています。まず`<span>I'm in light</span>`は`<parent-element>`のShadow DOMであるslot(`#parent-slot`)に割り当てられます。次にこのslot(`#parent-slot`)が`<child-element>`のShadow DOMであるslot(`#child-slot`)に割り当てられます。
 
 **Note:** This example uses `id` on slots for illustration purposes only.  This is not the same as
 the `name` attribute.  These slots are unnamed and are therefore default slots.
 {.alert .alert-info}
 
-The slot elements don't render, so the rendered tree is much simpler:
+`slot`要素はレンダリングされないので、 レンダーツリーはとてもシンプルです。：
 
 
 ```html
@@ -296,16 +247,11 @@ The slot elements don't render, so the rendered tree is much simpler:
       <span>I'm in light DOM</span>
 ```
 
+仕様上の用語では、スロットのdistributed nodesとは割り当てられたノードのことであり、各スロットは割り当てられたノードまたはフォールバックコンテンツで置き換えられます。したがって、上記の例では、`＃child-slot`には一つのspanのdistributed nodeがあるといえます。distributed nodesは、*レンダーツリー内のスロットに置き換えられたノードのリスト*と考えることができます。
 
-In spec language, a slot's *distributed nodes* are the assigned nodes, with any slots replaced by
-their assigned nodes or fallback content. So in the example above, `#child-slot` has one
-distributed node, the span. You can think of the distributed nodes as the *list of nodes that take
-the place of the slot in the rendered tree*.
+### スロットのAPI
 
-### Slot APIs
-
-Shadow DOM provides a few new APIs for checking distribution:
-
+Shadow DOMには、割り当て(distribution)をチェックするための新しいAPIがいくつか用意されています。：
 
 *   `HTMLElement.assignedSlot` property gives the assigned slot for an element, or `null` if the
     element isn't assigned to a slot.
@@ -313,24 +259,24 @@ Shadow DOM provides a few new APIs for checking distribution:
     When called with the `{flatten: true}` option, returns the *distributed nodes* for a slot.
 *   HTMLSlotElement.slotchange event is fired when a slot's distributed nodes change.
 
-For more details, see [Working with slots in JS](https://developers.google.com/web/fundamentals/primers/shadowdom/?hl=en#workwithslots) on Web Fundamentals.
+*   `HTMLElement.assignedSlot`プロパティは、要素に割り当てられたスロットを返します。要素にスロットが割り当てられていない場合は`null`を返します。
+*   `HTMLSlotElement.assignedNodes`メソッドは、指定されたスロットに関連付けられたノードのリストを返します。 `{flatten：true}`オプションを指定して呼び出すと、スロットのdistributed nodesが返されます。
+*   `HTMLSlotElement.slotchange`イベントは、slotのdistributed nodeが変更された時点で発生します。
+
+詳細については、Web Fundamentalsでの[Working with slots in JS](https://developers.google.com/web/fundamentals/primers/shadowdom/?hl=ja#workwithslots)を参照してください。
 
 
-### Observe added and removed children {#observe-nodes}
+### 子の追加と削除の監視(observe) {#observe-nodes}
 
-The `Polymer.FlattenedNodesObserver` class provides utilities to track an element's _flattened tree_.
-That is, a list of the node's child nodes, with any `<slot>` elements replaced by their distributed
-nodes. `FlattenedNodesObserver` is an optional utility that can be loaded from
-`lib/utils/flattened-nodes-observer.html`.
+`Polymer.FlattenedNodesObserver`クラスは、要素の_フラット化されたツリー_を記録(track)するユーティリティを提供します。つまり、`<slot>`要素がdistributed nodeによって置き換えられたノードの子ノードのリストです。 `FlattenedNodesObserver`は`lib/utils/flattened-nodes-observer.html`から読み込むことができるオプションのユーティリティです。
 
 ```html
 <link rel="import" href="/bower_components/polymer/lib/utils/flattened-nodes-observer.html">
 ```
 
-`Polymer.FlattenedNodesObserver.getFlattenedNodes(node)` returns a list of flattened nodes for
-the specified node.
+`Polymer.FlattenedNodesObserver.getFlattenedNodes(node)`は、指定したノードのフラット化されたノードのリストを返します。
 
-Use the `Polymer.FlattenedNodesObserver` class to track when the flattened node list changes.
+`Polymer.FlattenedNodesObserver`クラスを使用して、フラット化されたノードリストの変更を記録(track)します。
 
 ```js
 this._observer = new Polymer.FlattenedNodesObserver(this.$.slot, (info) => {
@@ -339,21 +285,18 @@ this._observer = new Polymer.FlattenedNodesObserver(this.$.slot, (info) => {
 });
 ```
 
-You pass the `FlattenedNodesObserver` a callback to be invoked when nodes are added or
-removed. The callback takes a single Object argument, with `addedNodes` and
-`removedNodes` arrays.
+`FlattenedNodesObserver`をノードが追加または削除されたときに呼び出されるコールバックに渡します。コールバックは引数として、`addedNodes`配列と`removedNodes`配列を持つObject(訳注：info)を一つ受け取ります。
 
-The method returns a handle that can be used to stop observation:
+このメソッドは、監視を停止するためのハンドルを返します。：
 
 ```js
 this._observer.disconnect();
 ```
 
-A few notes on `FlattenedNodesObserver`:
+`FlattenedNodesObserver`に関していくつか注意事項があります：
 
 
-*   The callback argument lists added and removed nodes, not just elements.
-    If you're only interested in elements, you can filter the node list:
+*   コールバックの引数には、単なる要素でなく、追加および削除されたノードのリストを指定します。要素だけに興味がある場合は、ノードのリストをフィルタリングすることができます。：
 
     ```js
     info.addedNodes.filter(function(node) {
@@ -361,17 +304,16 @@ A few notes on `FlattenedNodesObserver`:
     });
     ```
 
-*   The observer handle also provides a `flush` method, that can be used for unit testing.
+*   オブザーバーのハンドルには、ユニットテストに利用できる`flush`メソッドも用意されています。
 
 
-## Event retargeting
+## イベントリターゲティング
 
-To preserve the encapsulation of the shadow tree, some events are stopped at the shadow DOM boundary.
+Shadow Treeのカプセル化を守るために、いくつかのイベントはShadow DOMの境界で停止されます。
 
-Other bubbling events are *retargeted* as they bubble up the tree. Retargeting adjusts the event's
-target so that  it represents an element in the same scope as the listening element.
+それ以外のバブリングイベントは、ツリーをバブルアップしながらリターゲティングされます。リターゲティングは、同じスコープ内の要素が監視対象の要素と同等に扱われるようにイベントのターゲットの調整を行います。
 
-For example, given a tree like this:
+例えば、次のようなツリーがあるとします。：
 
 
 ```html
@@ -383,40 +325,33 @@ For example, given a tree like this:
           <img>
 ```
 
-If the user clicks on the image element the click event bubbles up the tree:
+ユーザーが`image`要素をクリックすると、クリックイベントはツリーをバブルアップします。：
 
 
-*   A listener on the image element itself receives the `<img>` as the target.
-*   A listener on the `<fancy-button>` receives the `<fancy-button>` as the target, because the
-    original target is inside its shadow root.
-*   A listener on the `<div>` in `<example-card>`'s shadow DOM also receives `<fancy-button>` as the
-    target, since they are in the same shadow DOM tree.
-*   A listener on the `<example-card>` receives the <example-card> itself as the target.
+*   `image`要素そのもののリスナーは、ターゲットとして`<img>`を受け取ります。
+*   `<fancy-button>`のリスナーは、`<fancy-button>`をターゲットとして受け取ります。元のターゲットはShadow Rootの内側にあるからです。
+*   `<example-card>`のShadow DOM内の`<div>`のリスナーも`<fancy-button>`をターゲットとして受け取ります。やはり、同じShadow DOMツリー内にあるためです。
+*   `<example-card>`のリスナーは、`<example-card>`自身をターゲットとして受け取ります。
 
-The event provides a `composedPath` method that returns an array of nodes that the event will pass
-through. In this case, the array would include:
+これらイベントには、イベントが通過するノードを配列にして返す、`compositedPath`メソッドを提供します。今回のケースでは、配列には次のものが含まれるでしょう。：
 
-*   The `<img>` element itself.
-*   The shadow root of `<fancy-button>`.
-*   The `<div>` element.
-*   The shadow root of `<example-card>`.
-*   Any ancestors of `<example-card>` (for example, `<body>`, `<html>`, `document` and `Window`).
+*   `<img>`要素それ自体
+*   `<fancy-button>`のShadow Root
+*   `<div>`要素
+*   `<example-card>`のShadow Root
+*   `<example-card>`のすべての祖先（例えば、`<body>`、`<html>`、`document`および`Window`）
 
-By default, custom events **don't** propagate though shadow DOM boundaries. To allow a custom event
-to travel through a shadow DOM boundary and be retargeted, you need to create it with the `composed`
-flag set to `true`:
+デフォルトでは、カスタムイベントはShadow DOMの境界を越えて伝播することは**ありません**。カスタムイベントがShadow DOMの境界を越えてリターゲティングされるようにするには、`composed`フラグを`true`に設定してイベントを作成する必要があります。：
 
 ```js
 var event = new CustomEvent('my-event', {bubbles: true, composed: true});
 ```
 
-For more information on events in shadow trees, see [The Shadow DOM event model](https://developers.google.com/web/fundamentals/getting-started/primers/shadowdom#events) in the Web Fundamentals article on shadow DOM.
+Shadow Treeのイベントの詳細については、Web FundamentalsのShadow DOMに関する記事[The Shadow DOM event model](https://developers.google.com/web/fundamentals/getting-started/primers/shadowdom#events)を参照してください。
 
-## Shadow DOM styling
+## Shadow DOMのスタイリング
 
-Styles inside a shadow tree are *scoped* to the shadow tree, and don't affect elements outside the
-shadow tree. Styles outside the shadow tree also don't match selectors inside the shadow tree.
-However, inheritable style properties like `color` still inherit down from host to shadow tree.
+Shadow Tree内のスタイルは、Shadow Treeの内部にスコープされ、Shadow Tree外の要素に作用することはありません。Shadow Tree外のスタイルも、Shadow Tree内のセレクタにマッチすることはありません。しかし、`color`のような継承可能なスタイルプロパティは、それでもなおホストからShadow Treeに下位へ継承されます。
 
 ```
 <style>
@@ -436,15 +371,9 @@ However, inheritable style properties like `color` still inherit down from host 
 ```
 
 
-In this example, the `<div>` has a blue background, even though the `div` selector is less specific
-than the `.test` selector in the main document. That's because the main document selector doesn't
-match the `<div>` in the shadow DOM at all. On the other hand, the white text color set on the
-document body inherits down to `<styled-element>` and into its shadow root.
+この例では、`<div>`の背景色は青になりますが、本来`div`セレクタはメインドキュメント内の`.test`セレクタよりもCSSの詳細度が低いはずです。これは、メインドキュメントのセレクタがShadow DOMの`<div>`にマッチしないためです。一方、ドキュメント本体に設定された白い文字色は`<styled-element>`に下位へ継承され、Shadow Root内部へ適用されます。
 
-There is one case where a style rule inside a shadow tree matches an element outside the shadow tree.
-You can define styles for the *host element*, using the `:host` pseudoclass or the `:host()`
-functional pseudoclass.
-
+Shadow Tree内で指定したスタイルルールがShadow Tree外の要素にマッチするケースが一つだけあります。擬似クラス`:host`または関数型擬似クラス`:host()`を使用して、host要素に対してスタイルを定義することができるのです。
 
 ```
 #shadow-root
@@ -462,9 +391,7 @@ functional pseudoclass.
 ```
 
 
-You can also style light DOM children that are assigned to slots using the `::slotted()`
-pseudoelement. For example, `::slotted(img)` selects any image tags that are assigned to slots in the
-shadow tree.
+擬似要素セレクタ`::slotte()`を使用することで、スロットに割り当てられてたLight DOMの子に対してもスタイルを設定できます。例えば、`::slotted(img)`は、Shadow Tree内のスロットに割り当てられた全ての`image`タグを選択します。
 
 
 ```
@@ -477,22 +404,17 @@ shadow tree.
 ```
 
 
-For more information, see [Styling](https://developers.google.com/web/fundamentals/getting-started/primers/shadowdom#styling) in the Web Fundamentals article on shadow DOM.
+詳細については、Web Fundamentalsの記事内の[Styling](https://developers.google.com/web/fundamentals/getting-started/primers/shadowdom#styling)を参照してください。
 
-## Theming and custom properties
+## テーマ設定とカスタムプロパティ
 
-You can't directly style anything in a shadow tree using a CSS rule **outside** of the shadow tree.
-The exception is CSS properties (such as color and font) that inherit down the tree. A shadow tree
-inherits CSS properties from its host.
+Shadow Tree**外の**CSSルールを使用して、Shadow Tree内のいかなる要素に対しても**直接的に**スタイルを適用することはできません。例外は、ツリーで下位に継承される一部のCSSプロパティ(colorやfontなど)です。Shadow Treeは、そのホストからCSSプロパティを継承します。
 
-To let users customize your element, you can expose specific styling properties using CSS custom
-properties and custom property mixins. Custom properties provide a way to add a styling API to your
-element.
+あなたが作成した要素をユーザーがカスタマイズするのを許可するには、*CSSカスタムプロパティ*と*カスタムプロパティミックスイン*を利用して、特定のスタイルプロパティを公開します。カスタムプロパティは、要素にスタイリングAPIを付与する手段を提供します。
 
-**Polyfill limitations.** When using polyfilled versions of custom properties and mixins, there are
-a number of limitations you should be aware of. For details, see [the Shady CSS README file](https://github.com/webcomponents/shadycss/blob/master/README.md#limitations).
+**ポリフィルの制限事項**：ポリフィルの提供するカスタムプロパティとミックスインを使用する場合、注意すべき多くの制限があります。詳細については、[the Shady CSS README file](https://github.com/webcomponents/shadycss/blob/master/README.md#limitations)を参照してください。
 
-You can think of a custom property as a variable that can be substituted in to your CSS rules:
+カスタムプロパティは、CSSルールの中で代入可能な変数と考えることもできます：
 
 
 ```
@@ -502,8 +424,7 @@ You can think of a custom property as a variable that can be substituted in to y
 ```
 
 
-This sets the host's background color to the value of the `--my-theme-color` custom property. Anyone
-using your element can set the property at a higher level:
+これによって、ホストの背景色をカスタムプロパティ`--my-theme-color`の値で設定します。あなたが作成した要素を利用するユーザーは誰でも、以下のようにより高いレベルでプロパティを設定できます。：
 
 
 ```
@@ -512,12 +433,9 @@ html {
 }
 ```
 
+カスタムプロパティはツリーを下って継承されるので、ドキュメントレベルで設定された値はShadow Tree内からアクセスすることができます。
 
-Custom properties inherit down the tree, so a value set at the document level is accessible from
-inside a shadow tree.
-
-The substitution can include default values to use if no property is set:
-
+代入値は利用者によってプロパティが設定されなかった場合に使用されるデフォルト値を含めることができます。：
 
 ```
 :host {
@@ -525,20 +443,16 @@ The substitution can include default values to use if no property is set:
 }
 ```
 
-
-The default can even be another `var()` function:
-
+デフォルト値が別の`var()`関数であっても構いません。：
 
 ```
 background-color: var(--my-theme-color, var(--another-theme-color, blue));
 ```
 
 
-### Custom property mixins
+### カスタムプロパティミックスイン
 
-Custom property *mixins* are a feature built on top of the custom property specification. Basically,
-the mixin is a variable that contains multiple properties:
-
+カスタムプロパティミックスインは、カスタムプロパティの仕様をベースに構築された機能です。基本的に、ミックスインはオブジェクトの値をとるカスタムプロパティになります。：
 
 ```
 html {
@@ -549,9 +463,7 @@ html {
 }
 ```
 
-
-A component can import or *mix in* the entire set of rules using the `@apply` rule:
-
+コンポーネントは、`@apply`ルールを使用することでルールセット全体をインポートしたりミックスインしたりできます。：
 
 ```
 :host {
@@ -559,72 +471,44 @@ A component can import or *mix in* the entire set of rules using the `@apply` ru
 }
 ```
 
+`@apply`ルールには、`@apply`が使用されたルールセット内に`--my-custom-mixin`の中身をインラインで挿入するのと同じ効果があります。
 
-The `@apply` rule has the same effect as adding the contents of `--my-custom-mixin` inline in the
-ruleset where `@apply` is used.
+## Shadow DOMのポリフィル
 
+Shadow DOMはすべてのプラットフォームで利用できるわけではないため、PolymerではShady DOMとShadow CSSポリフィルをインストールして活用することができます。これらのポリフィルは、`webcomponents-lite.js`ポリフィルのバンドルに含まれています。
 
-## Shadow DOM polyfills
+これらのポリフィルは、**優れたパフォーマンス性を担保しながら**、ネイティブのShadow DOMの合理的(reasonable)なエミュレーションを提供します。しかし、完全なポリフィルを提供できないShadow DOMの機能もいくつか存在します。ネイティブのShadow DOMが実装されていないブラウザをサポートする必要がある場合、これらの制限に注意する必要があります。また、Shady DOMの利用したアプリケーションをデバッグする際は、Shady DOMのポリフィルに関するいくらか詳細な理解があると役立ちます。
 
-Because shadow DOM is not available on all platforms, Polymer takes advantage of the shady DOM and
-shady CSS polyfills if they're installed. These polyfills are included in the `webcomponents-lite.js`
-polyfill bundle.
+### ポリフィルの仕組み
 
-These polyfills provide reasonable emulation of native shadow DOM while maintaining good performance.
-However, there are some shadow DOM features that can't be polyfilled completely. If you're
-supporting browsers that don't include native shadow DOM, you need to be aware of these limitations.
-It's also helpful to understand some details of the shady DOM polyfill when debugging applications
-under shady DOM.
+ポリフィルは、Shadow DOMをエミュレートするために複数の技術を組み合わせて使用します。：
 
-### How the polyfills work
+*   Shady DOM：Shady DOMはShadow Tree及びその子孫ツリーの論理的な分割を内部的に維持します、それによりLight DOMやShadow DOMに追加された子は正しくレンダリングされます。さらにShady DOMはネイティブのShadow DOM APIをエミュレートするために、影響を受ける要素のDOM APIにパッチを適用します。
 
-The polyfills use a combination of techniques to emulate shadow DOM:
+*   Shady CSS： Shady CSSは、Shadow DOMの子にクラスを追加したり、スタイルルールの書き換えを行うことでスタイルのカプセル化を提供します。それによって、正しいスコープを適用します。
 
+以降のセクションでは、各ポリフィルについて掘り下げて考察しています。
 
+#### Shady DOMポリフィル
 
-*   Shady DOM. Maintains the logical divisions of shadow tree and descendant tree internally, so
-    children added to the light DOM or shadow DOM render correctly. Patches DOM APIs on affected
-    elements in order to emulate the native shadow DOM APIs.
-*   Shady CSS. Provides style encapsulation by adding classes to shadow DOM children and rewriting
-    style rules so that they apply to the correct scope.
+ネイティブShadow DOMをサポートしていないブラウザでは、ドキュメント及びその子孫ツリーだけがレンダリングされます。
 
-The following sections discuss each polyfill in more depth.
+*フラット化されたツリー*におけるShadow DOMのレンダリングをエミュレートするのに、Shady DOMポリフィルは、論理的にツリーを分割しながら、仮想的な(virtual)`children`と`shadowRoot`プロパティを維持する必要があります。各ホスト要素の実際の`children`（ブラウザに表示される子孫ツリー）は、事前にフラット化されたShadow DOMとLight DOMの子のツリーです。開発者ツールを使用して表示されるツリーは、レンダーツリーのように見えますが、論理的なツリーではありません。
 
-#### Shady DOM polyfill
+ポリフィルを使用した場合、ブラウザのツリーのビューに`slot`要素は現れません。したがって、ネイティブのShadow DOMと異なり、スロットがイベントバブリングに加わることもありません。
 
-A browser without native shadow DOM only renders the document and its tree of descendants.
+ポリフィルはShadow DOMに影響を受けるノードの既存のDOM APIにパッチを適用します。影響を受けるノードは、Shadow Tree内のノード、Shadow TreeをホストするノードやShadowホストのLight DOMの子ノードです。例えば、あるノード上で、Shadow Rootを渡して`appnedChild`メソッドを呼び出すと、ポリフィルはLight DOMの子の*仮想*ツリーに子を追加し、レンダリングツリーのどこに表示すべきか計算した後で、それを実際の子孫ツリーのあるべき場所へ追加します。
+(訳補：説明だけでは分かりにくいので、READ MEに記載されたサンプルコードを引用して紹介します。)
 
-To emulate shadow DOM's rendering of the flattened tree, the shady DOM polyfill has to maintain
-virtual `children` and `shadowRoot` properties with separate logical trees. Each host element's
-actual `children`—the descendant tree visible to the browser—is a pre-flattened tree of shadow and
-light DOM children. The tree you'll see using developer tools looks like the rendered tree, not the
-logical tree.
+詳細には、[Shady DOM polyfill README](https://github.com/webcomponents/shadydom/blob/master/README.md)を参照してください。
 
-Under the polyfill, the slot elements don't appear in the browser's view of the tree. So unlike
-native shadow DOM, slots don't take part in event bubbling.
+#### Shady CSSポリフィル
 
-The polyfill patches existing DOM APIs on nodes that are affected by shadow DOM—that is, nodes
-are in a shadow tree, nodes that hose a shadow tree, or nodes that are light DOM children of shadow
-hosts. For example, when you call `appendChild` on a node with a shadow root, the polyfill adds the
-child to a *virtual* tree of light DOM children, calculates where the child should appear in the
-*rendered* tree, and then adds it to the actual descendant tree in the correct place.
+Shady CSSポリフィルはShadow DOMのスタイルのカプセル化をエミュレートするだけでなく、CSSカスタムプロパティとカスタムプロパティミックスインのエミュレーションも提供します。
 
-For more information, see the [Shady DOM polyfill README](https://github.com/webcomponents/shadydom/blob/master/README.md).
+カプセル化をエミュレートするために、Shady CSSポリフィルは、Shady DOMツリー内の要素にクラスを追加します。また、要素のテンプレート内で定義されたスタイルルールを書き換えて要素だけに適用されるようにします。
 
-#### Shady CSS polyfill
-
-The Shady CSS polyfill emulates shadow DOM style encapsulation, and also provides emulation for CSS
-custom properties and custom property mixins.
-
-To emulate encapsulation, the shady CSS polyfill adds classes to elements inside a shady DOM tree.
-It also rewrites style rules defined inside an element's template so that they're confined to the
-element.
-
-Shady CSS does not rewrite style rules in document-level stylesheets. This means that document-level
-styles can leak into shadow trees. However, it provides a custom element, `<custom-style>` for
-writing polyfilled styles outside of an element. This includes support for custom CSS properties and
-rewriting rules so they don't leak into shadow trees.
-
+Shady CSSは、ドキュメントレベル(document-level)のスタイルシートに定義されたスタイルルールについては書き換えません。つまり、ドキュメントレベルで定義したスタイルがShadow Treeにリークする可能性があるこということです。ただし、カスタム要素には`<custom-style>`が用意されており、要素の外側でもポリフィルが適用されたスタイルを記述できます。これには、カスタムCSSプロパティのサポートや、スタイルがShadow Treeへのリークを防ぐために行うルールの書き換えも含まれます。
 
 ```html
 <custom-style>
@@ -637,17 +521,14 @@ rewriting rules so they don't leak into shadow trees.
 </custom-style>
 ```
 
+詳細については、[Shady CSS polyfill README](https://github.com/webcomponents/shadycss/blob/master/README.md)を参照してください。
 
-For more information, see the [Shady CSS polyfill README](https://github.com/webcomponents/shadycss/blob/master/README.md).
+## 参考情報
 
-## Resources
+さらなる理解のために：
 
-For further reading:
-
-
-
-*   [Shadow DOM v1: self-contained web components](https://developers.google.com/web/fundamentals/primers/shadowdom/?hl=en) on Web Fundamentals.
-*   [Custom properties specification](https://www.w3.org/TR/css-variables-1/).
-*   [Custom property mixins proposal](https://tabatkins.github.io/specs/css-apply-rule/).
-*   [Shady DOM polyfill README](https://github.com/webcomponents/shadydom/blob/master/README.md).
-*   [Shady CSS polyfill README](https://github.com/webcomponents/shadycss/blob/master/README.md).
+*   Web Fundamentalsの[Shadow DOM v1: self-contained web components](https://developers.google.com/web/fundamentals/primers/shadowdom/?hl=ja)
+*   [Custom properties specification](https://www.w3.org/TR/css-variables-1/)
+*   [Custom property mixins proposal](https://tabatkins.github.io/specs/css-apply-rule/)
+*   [Shady DOM polyfill README](https://github.com/webcomponents/shadydom/blob/master/README.md)
+*   [Shady CSS polyfill README](https://github.com/webcomponents/shadycss/blob/master/README.md)

@@ -1,49 +1,32 @@
 ---
-subtitle: What's in the box?
+subtitle: ボックスには何が入っているか？
 title: Polymer App Toolbox
 ---
 
-Polymer App Toolbox is a collection of components, tools and templates for
-building
-[Progressive Web Apps](https://developers.google.com/web/progressive-web-apps)
-with Polymer. App Toolbox features:
+Polymer App Toolboxは、Polymerを使用して[Progressive Web Apps(PWA)](https://developers.google.com/web/progressive-web-apps/)を構築するためのコンポーネントやツール、テンプレートのコレクションです。App Toolboxの機能は以下の通りです。：
 
--   Component-based architecture using Polymer and web components.
--   Responsive design using the [app layout components](https://www.webcomponents.org/element/PolymerElements/app-layout).
--   Modular routing using the
-    [`<app-route>`](https://www.webcomponents.org/element/PolymerElements/app-route) elements.
--   Localization with
-    [`<app-localize-behavior>`](https://www.webcomponents.org/element/PolymerElements/app-localize-behavior).
--   Turnkey support for local storage with
-    [app storage elements](https://www.webcomponents.org/element/PolymerElements/app-storage).
--   Offline caching as a progressive enhancement, using service workers.
--   Build tooling to support serving your app multiple ways: unbundled for
-    delivery over HTTP/2 with server push, and bundled for delivery over HTTP/1.
+-   PolymerとWebコンポーネントを利用したコンポーネント指向のアーキテクチャ
+-   [`<app-layout>`](https://www.webcomponents.org/element/PolymerElements/app-layout)コンポーネントを利用したレスポンシブルデザイン
+-   [`<app-route>`](https://www.webcomponents.org/element/PolymerElements/app-route)要素を使用したモジュラールーティング
+-   [`<app-localize-behavior>`](https://www.webcomponents.org/element/PolymerElements/app-localize-behavior)によるローカリゼーション
+-   [`<app-storage>`](https://www.webcomponents.org/element/PolymerElements/app-storage)要素によるローカルストレージの簡易なサポート
+-   Service Workerを使った、オフラインキャッシュによる[Progressive Enhancement](https://en.wikipedia.org/wiki/Progressive_enhancement)
+-   ビルドツールは複数のアプリケーション配信手段をサポートしており、サーバープッシュを使うHTTP/2向けにはunbundledファイルを配信し、HTTP/1向けにはbundledファイルを配信します。
 
-You can use any one of these components separately, or use them together to build a full-featured
-Progressive web app. Most importantly, each component is _additive_. For a simple app you may only
-need app-layout. As it gets more complicated, you can add routing, offline caching, and a
-high-performance server as required.
+これらコンポーネントのいずれか一つを個別に使用することも、それらを併用してフル機能のProgressive Web Apps(PWA)を構築することもできます。最も重要なのは、各コンポーネントが付加的(additive)であることです。シンプルなアプリであれば、`app-layout`だけで十分かもしれません。アプリが複雑化するにつれ、必要に応じてルーティング、オフラインキャッシュ、ハイパフォーマンスな配信方法を追加することができます。
 
-**Hybrid compatible.** The Toolbox elements and behaviors are available as hybrid versions, which
-can be used with both Polymer 1 and Polymer 2. Use the `2.0` branch of the elements when
-working with 2.0 Release.
+**ハイブリッド互換** Toolboxの要素と機能には、Polymer 1とPolymer 2の両方で利用可能なハイブリッド版が用意されています。2.0リリース候補(RC)を使う場合は、要素の`2.0-preview`ブランチを使用してください。
 {.alert .alert-info}
 
-To get a feel for these components in action, you can try out one of the two demo apps:
+これらのコンポーネントの実際の動作を体感したい場合は、次のいずれかのデモアプリケーションを試してみてください。：
 
--   [Shop](https://shop.polymer-project.org/). Shop is a full-featured e-commerce progressive
-    web app demo built using the Toolbox. Read about how it's built in
-    [Case study: the Shop app](case-study).
+-   [Shop](https://shop.polymer-project.org/)：Shopは、ツールボックスを使用して構築された、フル機能を備えたECのPWAデモです。ビルド方法は、[Case study: the Shop app](case-study)を読んでください。
 
--   [News](https://news.polymer-project.org/). News is a full-featured progressive
-    web app demo like Shop, but focusing on publishing. Read about how it's built in
-    [Case study: the News app](news-case-study).
+-   [News](https://news.polymer-project.org/)：NewsはShopのようなフル機能のPWAのデモですが、コンテンツの配信に焦点を当てています。ビルド方法は、[Case study: the News app](news-case-study)を読んでください。
 
+App Toolboxの利用を開始するには、[App Toolboxでアプリを構築](/2.0/start/toolbox/set-up)を参照してください。
 
-To get started with the App Toolbox, visit [Build an app with App Toolbox](/2.0/start/toolbox/set-up).
-
-Or read on to find out about [Responsive app layout](app-layout).
+または、[レスポンシブアプリのレイアウト](app-layout)を読んでみてください。
 
 <a href="/2.0/start/toolbox/set-up" class="blue-button">Build an app
 </a>

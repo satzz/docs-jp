@@ -4,75 +4,55 @@ title: PRPL Pattern
 
 <!-- toc -->
 
-To optimize delivery, the Toolbox uses the _PRPL pattern_, which
-stands for:
+配信を最適化するために、Toolboxは_PRPLパターン_を使用します。：
 
-*  Push critical resources for the initial route.
-*  Render initial route.
-*  Pre-cache remaining routes.
-*  Lazy-load and create remaining routes on demand.
+*  重要なリソースを初期ルート(initial route)へプッシュ(**P**ush)します。
+*  初期ルートをレンダリング(**R**ender)します。
+*  残りのルートをプレキャッシュ(**P**re-cache)する。
+*  必要に応じて残りのルートをレイジーロード(**L**azy-load)し生成します。
 
-To do this, the server needs to be able to identify the resources required by each of the app's
-routes. Instead of bundling the resources into a single unit for download, it uses HTTP2 push to
-deliver the individual resources needed to render the requested route.
+これらを実行するために、サーバーはアプリケーションの各ルートで必要とされるリソースを識別できるようにする必要があります。リソースを一つのダウンロード単位にバンドルする代わりに、HTTP2プッシュを使用して、要求されたルートのレンダリングに必要なリソースを個別に配信します。
 
-The server and service worker together work to precache the resources for the inactive routes.
+サーバーとサービスワーカーは、非アクティブなルートに対するリソースを事前にキャッシュするために連動して動作します。
 
-When the user switches routes, the app lazy-loads any required resources that haven't been cached
-yet, and creates the required views.
+ユーザーがルートを切り替えると、アプリケーションは未キャッシュだが必要されたリソースをレイジーロード(lazy-load)し、要求されたビューが生成されます。
 
-## App structure
+## アプリケーションの構造
 
-Currently, the Polymer CLI and reference server support a single-page app (SPA) with the
-following structure:
+現在、Polymer CLIおよびリファレンスサーバーは、以下のような構造のシングルページアプリケーション（SPA）をサポートしています。(訳注：下の図を参照しながら説明を読んで下さい。)：
 
--   The main _entrypoint_ of the application which is served from every valid route. This
-    file should be very small, since it will be served from different URLs therefore be cached
-    multiple times. All resource URLs in the entrypoint need to be absolute, since it may be served
-    from non-top-level URLs.
+-   すべての有効なルートから供給されるアプリケーションのメインの_エントリーポイント_(index.html)。このファイルは可能な限り小さくすべきです。異なるURLから提供されるため、何度もキャッシュされるかもしれないからです。エントリポイント内のすべてのリソースのURLは、トップレベルではないURLからも提供される可能性があるので、絶対パスを使用する必要があります。
+-   _シェル_やapp-shellには、トップレベルのアプリケーションロジックやルーターなどが含まれます。
+-   レイジーロードされるアプリケーションの_フラグメント_。フラグメントとして、個々のビューのコードやレイジーロード可能なその他コード（例えば、ユーザーがアプリケーションとやりとりするまで表示されないメニューのように、最初の描画に不要なメインアプリケーションの一部）を表すことができます。シェルには、必要に応じてフラグメントを動的にインポートする責任があります。
 
--   The _shell_ or app-shell, which includes the top-level app logic, router, and so on.
-
--   Lazily loaded _fragments_ of the app. A fragment can represent the code for a particular
-    view, or other code that can be loaded lazily (for example, parts of the main app not required
-    for first paint, like menus that aren't displayed until a user interacts with the app). The
-    shell is responsible for dynamically importing the fragments as needed.
-
-The diagram below shows the components of a simple app:
+下の図は、単純なアプリケーションのコンポーネントを示しています。：
 
 ![diagram of an app that has two views, which have both individual and shared dependencies](/images/2.0/toolbox/app-build-components.png)
 
-In this diagram, the solid lines represent _static dependencies_, external resources identified
-in the files using `<link>` and `<script>` tags. Dotted lines represent _dynamic_ or _demand-loaded
-dependencies_: files loaded as needed by the shell.
 
-The build process builds a graph of all of these dependencies, and the server uses this information
-to serve the files efficiently. It also builds a set of vulcanized bundles, for browsers that don't
-support HTTP2 push.
+この図では、実線は静的な依存関係を表し、`<link>`タグと`<script>`タグを使ってファイル内で識別される外部リソースを表しています。点線は、動的な依存関係や読み込み要求のあった依存関係(シェルからの要求に応じて読み込まれるファイル)を表現しています。
 
-### App entrypoint
+ビルドプロセスでは、これらのすべての依存関係に関するグラフを構築し、サーバーはこの情報を利用してファイルを効率的に提供します。また、HTTP2のプッシュをサポートしていないブラウザ向けに、vulcanizeされた各種バンドルも生成します。
 
-The entrypoint must import and instantiate the shell, as well as conditionally load any
-required polyfills.
+### アプリケーションのエントリーポイント
 
-The main considerations for the entrypoint are:
+エントリーポイントは、シェルをインポートしてインスタンス化するだけでなく、必要な場合にはポリフィルをロードします。
 
--   Has minimal static dependencies—not much beyond the app-shell itself.
--   Conditionally loads required polyfills.
--   Uses absolute paths for all dependencies.
+エントリーポイントの主な考慮事項は次のとおりです。；
 
-When you generate an App Toolbox project using Polymer CLI, the new project contains an entrypoint
-`index.html`. For most projects, you shouldn't need to update this file.
+-   静的な依存は最小限に抑えます。これはapp-shellそのものの依存より遥かに少ないものです。
+-   必要であれば条件に応じてポリフィルをロードします。
+-   すべての依存関係に対して絶対パスを使用します。
 
-### App shell
+Polymer CLIを使用してApp Toolboxプロジェクトを生成すると、新しいプロジェクトにはエントリーポイント`index.html`が含まれます。ほとんどのプロジェクトでは、このファイルを書き換える必要はないはずです。
 
-The shell is responsible for routing and usually includes the main navigation UI for the app.
+### アプリケーションのシェル(App Shell)
 
-The app should call `importHref` to lazy-load fragments as they're required. For example, when the
-user changes to a new route, it imports the fragment(s) associated with that route. This may
-initiate a new request to the server, or simply load the resource from the cache.
+シェルはルーティングを担当し、通常はアプリケーションのメインナビゲーションUIが含まれます。
 
-importHref example (class-style element) {.caption}
+アプリケーションは、フラグメントが必要とされるまで読み込まれるのを遅延するために、`importHref`を呼び出す必要があります。例えば、ユーザーが新しいルートに変更すると、そのルートに関連付けられたフラグメントがインポートされます。これにより、サーバーへの新たなリクエストが送られるか、あるいは、キャッシュからリソースがロードされるだけかもしれません。
+
+importHrefの例(クラススタイル要素) {.caption}
 
 ```js
 // get a URL relative to this element
@@ -86,7 +66,7 @@ Polymer.importHref(
     true); /* make import async */
 ```
 
-importHref example (hybrid element) {.caption}
+importHrefの例(ハイブリッド要素) {.caption}
 
 ```js
 var resolvedPageUrl = this.resolveUrl('my-' + page + '.html');
@@ -96,64 +76,53 @@ this.importHref(resolvedPageUrl,
     true);
 ```
 
-The shell (including its static dependencies) should contain everything needed for first paint.
+シェル（静的な依存関係を含む）には、最初の描画に必要なものが全て含まれている必要があります。
 
-## Build output
+## ビルドの出力
 
 By default, the Polymer CLI build process produces an unbundled build designed for server/browser combinations that support HTTP/2 and HTTP/2 server push to deliver the resources the browser needs for a fast first paint while optimizing caching.
 
 To generate a bundled build, designed to minimize the number of round-trips required to get the application running on server/browser combinations that don't support server push, you will need to pass a command line option or configure your [polymer.json file](polymer-json) appropriately.
 
-If you have multiple builds, your server logic must deliver the appropriate build for each browser.
+複数のビルドを生成した場合、サーバーロジックでブラウザごとに適切なビルドを供給する必要があります。
 
 ### Bundled build
 
-For browsers that don't handle HTTP2 Push, the `--bundle` flag outputs a set of bundles:
-one bundle for the shell, and one bundle for each fragment. The diagram below shows how a simple
-app would be bundled:
+HTTP2のプッシュを扱わないブラウザの場合、`--bundle`フラグバンドルのセットを出力します。：
+一方はシェル用のバンドルで、もう一方は各フラグメント用のバンドルです。
+下の図は、単純なアプリケーションがどのようにバンドルされるかを示しています。：
 
 ![diagram of the same app as before, where there are 3 bundled dependencies](/images/2.0/toolbox/app-build-bundles.png)
 
-Any dependency shared by two or more fragments is bundled in with the shell and its static
-dependencies.
+二つ以上のフラグメントによって共有された依存関係はすべて、シェルとその静的な依存関係にバンドルされています。
 
-Each fragment and its _unshared_ static dependencies are bundled into a single bundle. The server
-should return the appropriate version of the fragment (bundled or unbundled), depending on the browser.
-This means that the shell code can lazy-load `detail-view.html` _without having to know whether
-it is bundled or unbundled_. It relies on the server and browser to load the dependencies in the
-most efficient way.
+各フラグメントと_共有されていない_静的な依存関係は、一つにバンドルされています。サーバーは、ブラウザに応じて、適切なバージョンのフラグメント（bundledまたはunbundled）を返す必要があります。つまり、_シェルのコードは、bundledかunbundledか知らなくても_、`detail-view.html`をレイジーロードできるということです。依存関係が最も効率な方法でロードされるかは、サーバーとブラウザ次第です。
 
 
-## Background: HTTP/2 and HTTP/2 server push
+## HTTP/2とHTTP/2サーバープッシュの背景
 
-HTTP/2 allows _multiplexed_ downloads over a single connection, so that multiple small files can be
-downloaded more efficiently.
+HTTP/2を使用すると、単一の接続上で多重ダウンロードを行うことができるため、複数の小さなファイルをより効率的にダウンロードできます。
 
-HTTP/2 server push allows the server to preemptively send resources to the browser.
+HTTP/2のサーバープッシュにより、サーバーはブラウザからの要求を先取りしてリソースを送信できます。
 
-For an example of how HTTP/2 server push speeds up downloads, consider how the browser retrieves an
-HTML file with a linked stylesheet.
+HTTP/2のサーバープッシュのダウンロード速度をどのように上げるかについては、ブラウザがスタイルシートのリンクを使ってどのようにHTMLファイルを読み出しているか考察してみてくだい。
 
-In HTTP/1:
-*   The browser requests the HTML file.
-*   The server returns the HTML file and the browser starts parsing it.
-*   The browser encounters the `<link rel="stylesheet">` tag, and starts a new request for the
-    stylesheet.
-*   The browser receives the stylesheet.
+HTTP/1では：
 
-With HTTP/2 push:
-*   The browser requests the HTML file.
-*   The server returns the HTML file, and pushes the stylesheet at the same time.
-*   The browser starts parsing the HTML. By the time it encounters the `<link rel="stylesheet">`,
-the stylesheet is already in the cache.
+*   ブラウザがHTMLファイルを要求します。
+*   サーバがHTMLファイルを返し、ブラウザが解析を開始します。
+*   ブラウザは`<link rel="stylesheet">`タグを見つけると、スタイルシートの新しい要求を開始します。
+*   ブラウザはスタイルシートを受信します。
 
-In this simplest case, HTTP/2 server push eliminates a single HTTP request-response.
 
-With HTTP/1, developers bundle resources together to reduce the number of HTTP requests required to
-render a page. However, bundling can reduce the efficiency of the browser's cache. if resources for
-each page are combined into a single bundle, each page gets its own bundle, and the browser can't
-identify shared resources.
+HTTP/2のプッシュを利用すると：
 
-The combination of HTTP/2 and HTTP/2 server push can provide the _benefits_ of bundling (reduced
-latency) without needing to bundle resources. Keeping resources separate means they can be cached
-efficiently and be shared between pages.
+*   ブラウザがHTMLファイルを要求します。
+*   サーバーはHTMLファイルを返すと同時にスタイルシートをプッシュします。 
+*   ブラウザがHTMLの解析を開始します。`<link rel="stylesheet">`が見つかりますが、スタイルシートはすでにキャッシュに入っています。
+
+この最も単純なケースでは、HTTP/2のサーバープッシュはHTTPのリクエスト/レスポンスを一つなくすことができました。
+
+HTTP/1では、開発者はリソースをまとめてバンドルすることで、ページのレンダリングに必要なHTTPリクエストの数を減らします。ただし、バンドルすることでブラウザのキャッシュ効率が低下する可能性があります。仮に各ページのリソースが一つのバンドルに結合されているとしたら、個々のページはそれぞれ独自のバンドルを取得することになり、ブラウザは共有リソースを識別することができません。
+
+HTTP/2とHTTP/2のサーバープッシュの組み合わせは、リソースをバンドルすることなく、バンドル処理の利点（遅延時間の短縮）を享受できます。リソースを分割しておくことで、これらは効率的にキャッシュされページ間で共有することができます。

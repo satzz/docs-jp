@@ -1,16 +1,16 @@
 ---
-title: DOM templating
+title: DOMテンプレート
 ---
 
 <!-- toc -->
 
-Many elements use a subtree of DOM elements to implement their features. DOM templating provides an easy way to create a DOM subtree for your element.
+多くの要素は、その機能の実装にDOM要素のサブツリーを利用しています。DOMテンプレートを利用することで、要素にDOMのサブツリーを簡単に作成することができます。
 
-By default, adding a DOM template to an element causes Polymer to create a shadow root for the element and clone the template into the shadow tree.
+デフォルトでは、要素にDOMテンプレートを追加すると、Polymerは要素にShadow Rootを作成し、テンプレートをShadow Tree内部に複製(clone)します。
 
-The DOM template is also processed to enable data binding and declarative event handlers.
+また、DOMテンプレートによってデータバインディングと宣言型イベントハンドラが利用できるようになります。
 
-## Specify a DOM template
+## DOMテンプレートの概要
 
 Polymer provides three basic ways to specify a DOM template:
 
@@ -28,15 +28,15 @@ element.
 ### Specify a template using dom-module
 
 To specify an element's DOM template using a `<dom-module>`:
+`<dom-module>`を使って要素のDOMテンプレートを記述するには：
 
-1.  Create a `<dom-module>`element with an `id` attribute that matches the element's name.
-2.  Create a `<template>` element inside the `<dom-module>`.
-3.  Give the element a static `is` getter that matches the element's name. Polymer uses this to
-    retrieve the `<dom-module>` for the element.
+1.  要素の名前と同名の`id`属性を持つ`<dom-module>`要素を作成します。
+2.  `<dom-module>`の内部に`<template>`要素を作成します。
+3.  Give the element a static `is` getter that matches the element's name. Polymer uses this to retrieve the `<dom-module>` for the element.
 
-Polymer clones this template's contents into the element's shadow DOM.
+Polymerは、このテンプレートの内容を要素のShadow DOM内部に複製(clone)します。
 
-Example: { .caption }
+例: { .caption }
 
 ```html
 <dom-module id="x-foo">
@@ -53,11 +53,9 @@ Example: { .caption }
 </dom-module>
 ```
 
-In this example, the DOM template and the JavaScript that defines the element are in the same file. You can also put these portions in separate files, but the DOM template must be parsed before the element is defined.
+この例では、DOMテンプレートとその要素を定義するJavaScriptが同じファイルにあります。これらを別々のファイルに分割して配置することもできますが、DOMテンプレートの解析は要素が定義される前に行われる必要があります。
 
-**Note:** Elements should generally be defined outside of the main document,
-except for testing. For caveats about defining elements in the main document,
-see [main document definitions](registering-elements#main-document-definitions).
+**注意**：テスト環境を除き、要素はメインドキュメントの外で定義すべきです。メインドキュメント内における要素の定義に関する注意事項は、[main document definitions](registering-elements#main-document-definitions)を参照してください。
 {.alert .alert-info}
 
 ### Specify a string template
@@ -205,22 +203,18 @@ by hybrid elements.
 
 
 
-## Static node map {#node-finding}
+## 静的ノードマップ {#node-finding}
 
-Polymer builds a static map of node IDs when the element initializes its DOM template, to provide
-convenient access to frequently used nodes without the need to query for them manually. Any node
-specified in the element's template with an `id` is stored on the `this.$` hash by `id`.
+Polymerは、要素がDOMテンプレートを初期化する際に、ノードIDの静的マップを作成し、頻繁に使用されるノードに手軽にアクセスできるようにします。手動でクエリを記述する必要はありません。要素のテンプレートに`id`付きで記述されたノードはそれぞれ、`id`によってハッシュ化され`this.$`として格納されます。
+
 
 The `this.$` hash is created when the shadow DOM is initialized. In the `ready` callback, you must
 call `super.ready()` before accessing `this.$`.
 
-**Note:** Nodes created dynamically using data binding (including those in
-`dom-repeat` and `dom-if` templates) are _not_ added to the
-`this.$` hash. The hash includes only _statically_ created local DOM nodes
-(that is, the nodes defined in the element's outermost template).
+**注意：**データバインディングを使用して動的に作成されたノード(`dom-repeat`テンプレートや`dom-if`テンプレートによるものが含まれます)は、ハッシュ`this.$`には追加されません。ハッシュには、静的に作成されたローカルDOMノード(つまり要素の最も外側のテンプレートに定義されたノード)だけが含まれます。
 {.alert .alert-info}
 
-Example: { .caption }
+例: { .caption }
 
 ```html
 <dom-module id="x-custom">
@@ -242,8 +236,7 @@ Example: { .caption }
 </dom-module>
 ```
 
-For locating dynamically-created nodes in your element's shadow DOM,
-use the standard DOM `querySelector`  method.
+要素のShadow DOM内に動的に生成されたノードを配置する場合、標準DOMの`querySelector`メソッドを利用してください。
 
 <code>this.shadowRoot.querySelector(<var>selector</var>)</code>
 

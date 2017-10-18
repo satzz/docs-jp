@@ -2,108 +2,95 @@
 title:  "Polymer 3.0 preview: npm and ES6 Modules"
 ---
 
+本日コペンハーゲンで開催されたPolymer Summit 2017において、私たちはPolymerプロジェクトの歴史において一つのとても大きなワークフローの転換を発表しました。それは以下の二つの大きな変更です。：
 
 
-Today at the 2017 Polymer Summit in Copenhagen, we announced one of the biggest changes to our developer workflow in the project's history. Actually, it's *two* changes:
+*   PolymerはBowerからnpmへ移行します。
+*   HTML importsの代わりにES6モジュールを使用するように変更を行っています。
+
+私たちは現在、これらの変更のプレビューを行っています。Polymerの次のメジャーバージョンに含まれるこれらの変更に対して、フィードバックを得ることができるようにプロジェクトは公開しながら開発を行っています。是非プレビューを試してみてください。プロダクション上のプロジェクトでは、現在使用している既存のPolymer 1.xまたは2.xライブラリを使用してください。これから新しいプロジェクトを開始する場合は、Polymer 2.xの利用をお勧めします。
+
+これらは重要な変更とはなるものの、我々は可能な限りシームレスに移行できるようにするように努めています。Polymer 3.0 APIは、2.x APIと基本的には同一です。APIの変更が必要な部分においては、小さな変更で済み、機械的に変更に対応できるようにしたいと考えています。Polymer 2.xの一部であるすべてのクラス、ミックスイン、エレメント、テンプレートシステム、その他のAPIは、レガシーなPolymer 1.xの構文も含め、モジュールに移植中です。Polymer開発者が持っているすべての知識は、Polymer 3.0にそのまま活かされるでしょう。
+
+現在のエレメントやアプリケーションをPolymer 3.0に自動的に変換するためのPolymer Modulizerというツールも提供する予定です。このツールは、プレビューの一部としてすぐに利用でき、PolymerライブラリとすべてのPolymerエレメントに対してすでにテスト済みです。
+
+今日の記事では、Polymer 3.0への移行の背景にある理由と、安定版リリースまでに必要となる段階について解説します。明日は、プレビューのコードを実際に試してみましょう。
 
 
+## なぜNPMとES6モジュールに切り替えるのか？
 
-*   Polymer is moving from Bower to npm.
-*   We're switching to using ES6 modules instead of HTML Imports.
+Polymerでは初期から、BowerとHTML Importsを使用して依存関係を管理しました。Bowerで依存関係をインストールし、HTML Importsはそれらを読み込みます。
 
-We're currently previewing these changes—which will be included in the next major version of Polymer—so we can get feedback, and continue working on them in public. By all means, experiment with the preview. For production work, continue using the existing Polymer 1.x or 2.x library you're using today. If you're starting a new project today, we recommend using Polymer 2.x.
+これらの技術は、Polymerの提示する方法に従って作成されたPolymerあるいはサードパーティ製のWebコンポーネントのようにHTML Importsベースのワークフローに取り組んでいればうまくいきました。しかしながら、これらの方法はWeb開発の主流から外れて行き、他のフレームワークを使って作業する人やツールの作成者にとっては困難の元になりました。
 
-While these changes will be significant, we’re committed to making the transition as seamless as possible. The Polymer 3.0 API will be essentially identical to the 2.x API. To the extent that any API changes are necessary, we expect them to be minor and easy to apply mechanically. All of the classes, mixins, elements, template system, and other APIs that are a part of Polymer 2.x are being ported to modules, including the Polymer 1.x legacy syntax. All of the knowledge that Polymer developers have will translate directly to Polymer 3.0.
+また一方で、ES6モジュールとnpmに移行することにはいくつかの利点もあります。：
 
-We’ll also be providing a tool called Polymer Modulizer to automate the conversion of your current elements and apps to Polymer 3.0. This tool will be available immediately as part of the preview and has already been tested against the Polymer library and the full set of Polymer elements.
+*   Polymerは、大多数のJavaScript開発者が精通しているワークフローやツールと互換性が高まります。
+*   最新バージョンのChrome、Opera、Safariでは、Polymerエレメントやアプリケーションがポリフィルなしに実行できます。EdgeとFirefoxがCustom ElementsとShadow DOMに対応すると、Polymerはこれらのブラウザでもポリフィルなしにを実行可能となります。
+*   他の一般的なJavaScriptライブラリとの連携がより簡単にできるようになります。それは、Polymerエレメントを他のライブラリにインポートする場合、エレメント内に他のライブラリを使用する場合の両方に当てはまります。
 
-Today's post describes our reasoning behind the changes in Polymer 3.0, and the next steps that need to happen before a stable release. Tomorrow, we'll get you started working hands-on with the preview code.
-
-
-## Why are we switching to NPM and ES6 modules?
-
-Since the early days of Polymer, we've used Bower and HTML Imports to manage dependencies: Bower to install dependencies, and HTML Imports to load them.
-
-These technologies have worked great if you committed to an HTML Imports-based workflow, like Polymer and third-party web components that have followed Polymer’s lead. But they've put us outside the mainstream of web development, and made it hard for people working with other frameworks or build tools.
-
-On the other hand, moving to ES6 modules and npm has several advantages:
-
-
-
-*   Polymer becomes more compatible with the workflow and tools that a huge number of JavaScript developers are familiar with.
-*   Polymer elements and applications will run *without any polyfills* on recent versions of Chrome, Opera, *and Safari*. When Edge and Firefox ship custom elements and shadow DOM, Polymer will run polyfill-free on those browsers, too.
-*   You'll be able to work with regular JavaScript libraries more easily, whether you're importing a Polymer element into a library, or using a libraries inside an element.
-
-The following sections describe these changes in more depth.
+以下のセクションでは、これらの変更点について詳しく説明していきます。
 
 
 ## HTML Imports ➙ ES6 Modules
 
-Since the beginning, Polymer has used HTML Imports to load dependencies. HTML Imports have a lot of benefits:
 
+初期からPolymerはHTML Importsを使用して依存関係を読み込んでいます。 HTML importsには多くのメリットがあります。：
 
+*   Webネイティブなロード機構。HTML importsを使用してコードをロードするのでビルドツールは必要ありません。
+*   依存関係は順序付けられた評価により段階的にロードされます。つまり、AがBをインポートし、BがCをインポートすると、CとBはAの前にロードされ評価されます。
+*   URLによる依存関係の重複排除。各インポートは、複数回インポートされた場合でも、一度だけダウンロードされ、評価されます。
+*   ネイティブのHTML解析。
 
-*   Web-native loading mechanism. No build tools are required to load code using HTML Imports.
-*   Transitive loading of dependencies with ordered evaluation. That is, if A imports B, and B imports C, C and B are loaded and evaluated before A.
-*   Deduplication of dependencies by URL. Each import is downloaded and evaluated only once, even if imported multiple times.
-*   Native HTML parsing.
+しかし、HTML importsは、標準委員会やブラウザベンダーの間で合意を得て進められているものではありません。後継の技術に関する活発な議論はありますが、新しい標準は何年も先のことです。
 
-But HTML Imports have not gotten traction among the standards committees or other browsers. There are active discussions on a successor, but any new standard would be years away.
+ES6モジュールを取り入れます。 ECMAScript 2015標準（ECMAScript 6またはES6とも呼ばれます）は、JavaScript用のネイティブモジュールとモジュールロードシステムを導入しました。これは、最終的にすべての主要なブラウザによってサポートを得ています。Safari、Chrome、そしてFirefoxとEdgeでサポートされています。
 
-Enter ES6 modules. The ECMAScript 2015 standard (also known as ECMAScript 6 or ES6) introduced a native module and module loading system for JavaScript, which is finally getting support in all major browsers. They're supported in Safari, Chrome, and behind flags in Firefox and Edge.
+ES6モジュールを使用することで、JavaScriptファイルが他のファイルをインポートし、ブラウザによってロードされ実行されることになります。 ES6モジュールの読み込み動作は、HTML importsとほぼ同じです。：
 
-ES6 modules allow JavaScript files to import other files, causing them to be loaded and executed by the browser.  The loading behavior of ES6 modules is nearly identical to HTML Imports:
+*   Webネイティブな読み込み機構
+*   順序付けられた評価による依存関係の段階的なロード。
+*   URLによる依存関係の重複排除。
 
+ES6モジュールから明らかに欠落しているHTML imports機能の1つは、インポートされたHTMLをネイティブに読み込み解析することです。この機能をプラットフォームに取り戻したいと思っていますが、開発者やそのユーザーにとってベストなことは何かを考えれば、標準に関する議論が展開されている間に、広く採用済みの標準としてES6モジュールを採用することは理にかなったことです。
 
-
-*   Web-native loading mechanism.
-*   Transitive loading of dependencies with ordered evaluation.
-*   Deduplication of dependencies by URL.
-
-The one HTML Imports feature obviously missing from ES6 modules is native loading and parsing of imported HTML. We’d like to see the platform get this feature back, but while standards discussions unfold we believe that embracing the widely adopted ES6 modules standard is what’s best for our developers and their users.
-
-In the meantime, there’s a range of reasonable options for representing HTML in JavaScript, and we look forward to exploring those options with the community.
+他方、JavaScriptでHTMLを表現するための合理的なオプションはいくつもあります。これらのオプションについてコミュニティで議論を深めることを楽しみにしています。
 
 
 ## Bower ➙ npm
 
-Like HTML Imports, Bower has been with us for a long time. Bower's flat dependency tree is ideal for front-end projects. But Bower has never been as widely adopted as npm, and while it's still maintained, it's no longer being actively developed.
+HTML importsと同じくらいBowerは長い間私たちと一緒に開発を共にしてきました。 Bowerのフラット型の依存ツリーは、フロントエンドプロジェクトに最適です。しかし、Bowerはnpmほど広く普及しておらず、今もメンテナンスされていますが、もはや活発に開発されているものではありません。
 
-Moving to npm will make Polymer packages seamlessly available to the millions of npm users, and allow Polymer packages to easily use other packages from the massive npm ecosystem.
+npmに移行すると、数百万人のnpmユーザーがPolymerパッケージをシームレスに利用できるようになり、Polymerパッケージもnpmエコシステムに存在する膨大な他のパッケージを簡単に利用できます。
 
-This has been a long requested feature, but we've been waiting until we had good solutions for supporting flat installs of modules and keeping Bower and npm packages in sync.
+このような移行に対する要求は長らく存在していましたが、モジュールのフラット型のインストールをサポートし、Bowerとnpmパッケージを同期させておくための良い解決策が得られるまで見送られていました。
 
-The Yarn npm client provides support for flat installs, which solves our #1 issue with npm.
+npmクライアントであるYarnはフラット型インストールをサポートしています。これにより、＃1(訳注：原文まま)の問題がnpm上で解決されます。
 
-After considering a number of approaches to keeping Bower and npm packages in sync, we concluded that maintaining parallel versions was impractical. So we're making a clean break at 3.x and moving to npm exclusively.
+Bowerとnpmパッケージを同期して利用するための様々なアプローチを検討した結果、並行してバージョンを維持することは実用的ではないと結論づけました。そこで私たちは3.xを区切りとしてnpmだけに移行することとしました。
 
+## これらの変更はいつ行われますか？
 
-## When will this happen?
+ライブラリとエレメントの新しいバージョンをプレビューすることができますが、完全なプロダクションリリースを完成するにはまだいくつかのピースが必要です。
 
-You can preview the new version of the library and elements now, but there are still a number of pieces that need to come together to make a full, production release.
+現時点において、私たちは以下に取り組んでいます。：
 
-Right now, we have:
+*   Polymerコアライブラリとエレメントのワーキングバージョンのnpmへの公開
+*   BowerおよびHTML Importsベースで作られたプロジェクトをnpmおよびJavaScriptモジュールベースに変換するPolymer Modulizerツール。
+*   `polymer serve`におけるnpmパッケージのサポート
 
+Polymer 3.0をリリースする前に、もう少し多くのことが必要です。
 
+*   動的インポートなど、モジュール仕様を完全にサポートするブラウザが少なくとも1つは必要です。（Safari 10.1とChrome 61はすでにモジュールをサポートしていますが、動的インポートはサポートしていません）。
+*   より包括的なパフォーマンステストを行う必要があります。ES6モジュールのネイティブサポートはまだ道半ばで、実際のところ試験的なものです。
+*   ES6モジュールとnpmに対応するようにPolymer CLIや関連ツールをアップデートする必要があります。
+*   より良いドキュメント、サンプルコード、テンプレートを完成させなければいけません。
 
-*   Working versions of the Polymer core library and elements published to npm.
-*   The Polymer Modulizer tool for converting Bower and HTML Imports-based projects to npm and JavaScript modules.
-*   Support for npm packages in `polymer serve`.
-
-We need a few more things to come together before we release Polymer 3.0:
-
-
-
-*   We'd like to see at least one browser shipping full support for modules, including dynamic imports. (Safari 10.1 and Chrome 61 already support modules, but not dynamic imports).
-*   We need to do more comprehensive performance testing—native support for ES6 modules is still in the process of landing and relatively untried..
-*   We need to finish updating the Polymer CLI and related tools for modules and npm.
-*   We need to write documentation, samples, templates, and all that good stuff.
-*   Most importantly, we need your feedback, input and participation to help us get Polymer Modulizer, Polymer 3.0, and the 3.0-compatible Polymer elements ready for production use. We’ll also need your help to get the booming ecosystem of third-party web components transitioned.
+*   なにより重要なことは、私たちがPolymer Modulizer、Polymer 3.0、および3.0互換のPolymerエレメントをプロダクション環境で利用可能なものとするには、プレビューの利用と参加を介してみなさまからのフィードバックが必要です。また、サードパーティのWebコンポーネントを活気あるエコシステムに移行させるためにもみなさまの助けが必要です。
 
 
+## 次は？
 
-## What's next?
+私たちと同じくらい皆さまながPolymer 3.0 Previewにエキサイトしてくれることを願い、フィードバックを心待ちにしています。
 
-We hope you’re as excited as we are about the Polymer 3.0 preview and we'd love to have your feedback.
-
-Tune in tomorrow to get hands-on with the new code!
+明日は、ハンズオンを通して新しいコードを試してみてください！

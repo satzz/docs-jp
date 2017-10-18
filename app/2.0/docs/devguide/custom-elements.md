@@ -1,25 +1,20 @@
 ---
-title: Custom element concepts
+title: カスタム要素のコンセプト
 ---
 
 <!-- toc -->
 
-Custom elements provide a component model for the web. The custom elements specification provides:
+カスタム要素(Custom Elements)は、Webにコンポーネントモデルを提供します。カスタム要素の仕様は次の通りです。：
 
-*   A mechanism for associating  a class with a custom element name.
-*   A set of lifecycle callbacks invoked when an instance of the custom element changes state (for
-    example, added or removed from the document).
-*   A callback invoked whenever one of a specified set of attributes changes on the instance.
+*   クラスをカスタム要素の名前に関連付けるためのメカニズム。
+*   カスタム要素のインスタンスの状態が変化した（例えば、ドキュメントに追加またはドキュメントから削除された）際に呼び出される一連のライフサイクルコールバック。
+*   インスタンス上で指定した属性グループのいずれかが変更された際に呼び出されるコールバック。
 
-Put together, these features let you build an element with its own public API that reacts to state
-changes.
+まとめると、これらの機能を利用することで、状態変化に応じて処理を行う独自のパブリックAPIを持った要素が構築できます。
 
-This document provides an overview of custom elements as they relate to Polymer. For a more detailed
-overview of custom elements, see: [Custom Elements v1: Reusable Web
-Components](https://developers.google.com/web/fundamentals/getting-started/primers/customelements)
-on Web Fundamentals.
+このドキュメントでは、Polymerに関連するカスタム要素の概要について説明します。カスタム要素のより詳細な概要については、[Custom Elements v1: Reusable Web Components](https://developers.google.com/web/fundamentals/getting-started/primers/customelements)を参照してください。
 
-To define a custom element, you create an ES6 class and associate it with the custom element name.
+カスタム要素を定義するには、ES6のクラスを作成し、それをカスタム要素の名前に関連付けます。
 
 ```
 // Create a class that extends HTMLElement (directly or indirectly)
@@ -29,38 +24,30 @@ class MyElement extends HTMLElement { … };
 window.customElements.define('my-element', MyElement);
 ```
 
-
-You can use a custom element just like you'd use a standard element:
-
+標準の要素と同じように、カスタム要素を利用できます。：
 
 ```html
 <my-element></my-element>
 ```
 
-Or:
+または：
 
 ```js
 const myEl = document.createElement('my-element');
 ```
 
-Or:
+または：
 
 ```js
 const myEl = new MyElement();
 ```
 
-The element's class defines its behavior and public API. The class must extend `HTMLElement` or one
-of its subclasses (for example, another custom element).
+要素のクラスには、その動作(behavior)とパブリックAPIを定義します。クラスは、`HTMLElement`クラスまたは、そのサブクラスの一つ（例えば、他のカスタム要素）を拡張しなければいけません。
 
-**Custom element names.** By specification, the custom element's name **must start with a lower-case
-ASCII letter and must contain a dash (-)**. There's also a short list of prohibited element names
-that match existing names. For details, see the [Custom elements core
-concepts](https://html.spec.whatwg.org/multipage/scripting.html#custom-elements-core-concepts)
-section in the HTML specification.
+**Custom element names.** 仕様上、**カスタム要素の名前は、小文字のASCII文字で始まり、ダッシュ(-)を含まなければなりません。**既出の名前は短いリストで管理され、それに一致する命名は禁止されています。詳細については、HTML仕様の[Custom elements core concepts](https://html.spec.whatwg.org/multipage/scripting.html#custom-elements-core-concepts)を参照してください。
 {.alert .alert-info}
 
-Polymer provides a set of features on top of the basic custom element specification. To add these
-features to your element, extend Polymer's base element class, `Polymer.Element`:
+Polymerは、基本的なカスタム要素の仕様に対して付加的な機能群を提供します。これらの機能を要素に付加するには、Polymer要素の基底クラス`Polymer.Element`を拡張します。：
 
 ```html
 <link rel="import" href="/bower_components/polymer/polymer-element.html">
@@ -74,43 +61,40 @@ features to your element, extend Polymer's base element class, `Polymer.Element`
 </script>
 ```
 
-Polymer adds a set of features to the basic custom element:
+Polymerは基本的なカスタム要素に対して以下の機能を付与します。：
 
-*   Instance methods to handle common tasks.
-*   Automation for handling properties and attributes, such as setting a property based on the
-    corresponding attribute.
-*   Creating shadow DOM trees for element instances based on a supplied `<template>`.
-*   A data system that supports data binding, property change observers, and computed properties.
+*   一般的なタスクを処理するためのインスタンスメソッド。
+*   対応する属性に応じてプロパティを設定するなど、プロパティと属性を自動的に処理するための機能。
+*   `<template>`の記述を元に要素のインスタンスにShadow DOMツリーを生成する。
+*   データバインディング、プロパティ変更のオブザーバーや算出プロパティをサポートするデータシステム。
 
-## Custom element lifecycle {#element-lifecycle}
+## カスタム要素のライフサイクル {#element-lifecycle}
 
-The custom element spec provides a set of callbacks called "custom element reactions" that allow you
-to run user code in response to certain lifecycle changes.
+カスタム要素の仕様では、「カスタム要素の反応(reactions)」と呼ばれる一連のコールバックが定義されています。これによって、特定のライフサイクルの変化に応じてユーザーコードを実行することができます。
 
 <table>
   <tr>
-   <th>Reaction
+   <th>リアクション
    </th>
-   <th>Description
+   <th>説明
    </th>
   </tr>
   <tr>
    <td>constructor
    </td>
-   <td>Called when the element is upgraded (that is, when an  element is created, or when a
-   previously-created element becomes defined).
+   <td>要素がアップグレードされたとき（つまり、要素が作成されたとき(created)、あるいは以前に作成された要素が定義された(defined)とき）に呼び出されます。
    </td>
   </tr>
   <tr>
    <td>connectedCallback
    </td>
-   <td>Called when the element is added to a document.
+   <td>要素がドキュメントに追加されたときに呼び出されます。
    </td>
   </tr>
   <tr>
    <td>disconnectedCallback
    </td>
-   <td>Called when the element is removed from a document.
+   <td>要素がドキュメントから削除されたときに呼び出されます。
    </td>
   </tr>
   <!-- <tr>
@@ -122,13 +106,12 @@ to run user code in response to certain lifecycle changes.
   <tr>
    <td>attributeChangedCallback
    </td>
-   <td>Called when any of the element's attributes are changed, appended, removed, or replaced,
+   <td>要素のいずれかの属性が変更、追加、削除または置換されたときに呼び出されます。
    </td>
   </tr>
 </table>
 
-For each reaction, the first line of your implementation must be a call to the superclass
-constructor or reaction. For the constructor, this is simply the `super()` call.
+各リアクション(訳注：リアクションはコールバックの仕様上の呼称)は、実装の最初の行で、スーパークラスのコンストラクタまたはリアクションを呼び出す必要があります。`constructor`の場合には、以下のように単に`super()`を呼び出すだけです。
 
 ```js
 constructor() {
@@ -137,8 +120,7 @@ constructor() {
 }
 ```
 
-For other reactions, call the superclass method. This is required so Polymer can hook into the
-element's lifecycle.
+その他リアクションについては、スーパークラスのメソッドを呼び出します。これは、Polymerが要素にライフサイクルコールバックを導入するために必要になります。
 
 ```js
 connectedCallback() {
@@ -147,22 +129,19 @@ connectedCallback() {
 }
 ```
 
-The element constructor has a few special limitations:
+要素のコンストラクタにはいくつか特別な制限があります。：
 
-*   The first statement in the constructor body must be a parameter-less call to the `super` method.
-*   The constructor can't include a return statement, unless it is a simple early return (`return`
-    or `return this`).
-*   The constructor can't examine the element's attributes or children, and the constructor can't
-    add attributes or children.
+*   コンストラクタ本体の最初の行で、`super`メソッドを引数なしで呼び出さなければなりません。
+*   単純な早期return（`return`または`return this`）を意図とするのでない限り、コンストラクタにreturn文を含めることはできません。
+*   コンストラクタで要素自身の属性や子を調べたり追加したりすることはできません。
 
-For a complete list of limitations, see [Requirements for custom element constructors](https://html.spec.whatwg.org/multipage/scripting.html#custom-element-conformance) in the WHATWG HTML Specification.
+コンストラクタの制限事項について完全なリストは、WHATWGが公開するHTML仕様の[Requirements for custom element constructors](https://html.spec.whatwg.org/multipage/scripting.html#custom-element-conformance)を参照してください。
 
-Whenever possible, defer work until the `connectedCallback` or later instead of performing it in the constructor.
+可能であれば常に、コンストラクタ内ではなく、`connectedCallback`より後に遅延して実行するようにしてください。
 
-### One-time initialization
+### ワンタイムの初期化
 
-The custom elements specification doesn't provide a one-time initialization callback. Polymer
-provides a `ready` callback, invoked the first time the element is added to the DOM.
+カスタム要素の仕様では、ワンタイムの初期化コールバックは提供されません。そこでPolymerは、要素がDOMに初めて追加されたときだけ呼び出される`ready`コールバックを用意しています。
 
 ```js
 ready() {
@@ -176,31 +155,31 @@ ready() {
 ```
 
 
-The `Polymer.Element` class initializes your element's template and data system during the `ready`
-callback, so if you override ready, you must call `super.ready()` at some point.
+`Polymer.Element`クラスは、`ready`コールバックの中で要素のテンプレートやデータシステムを初期化します。したがって、`ready`コールバックを上書きする場合には、独自の`ready`のどこかで`super.ready()`呼び出す必要があります。
 
-When the superclass `ready` method returns, the element's template has been instantiated and initial
-property values have been set. However, light DOM elements may not have been distributed when
-`ready` is called.
+スーパークラスの`ready`メソッドから戻ると、要素のテンプレートはインスタンス化され、初期プロパティ値が設定された状態になります。ただし、Light DOM要素は、`ready`が呼び出された時点で割り当てられて(distributed)いないかもしれません。
 
-Don't use `ready` to initialize an element based on dynamic values, like property values or an
-element's light DOM children. Instead, use [observers](observers) to react to property changes, and
-`observeNodes` or the `slotchange` event to react to children being added and removed from the
-element.
+要素のLight DOMの子やプロパティ値のように、動的な値を元に要素を初期化する場合には、`ready`コールバックを使用しないでください。代わりに、プロパティの変更であれば[オブザーバー](observers)を設定し、追加・削除される子に対しては`observeNodes`メソッドや`slotChanged`イベントで監視を行ってください。
 
-Related topics:
+関連トピック：
 
-*   [DOM templating](dom-template)
-*   [Data system concepts](data-system)
-*   [Observers and computed properties](observers)
-*   [Observe added and removed children](shadow-dom#observe-nodes)
+*   [DOM templating]()
+*   [Data system concepts]()
+*   [Observers and computed properties]()
+*   [Observe added and removed children]()
 
-## Element upgrades
+- [DOMテンプレート](dom-template)
+- [データシステムのコンセプト](data-system)
+- [オブザーバーと算出プロパティ](observers)
+- [子の追加と削除を監視](shadow-dom#observe-nodes)
+
+## 要素のアップグレード
 
 By specification, custom elements can be used before they're defined. Adding a definition for an
 element causes any existing instances of that element to be *upgraded* to the custom class.
+仕様によれば、カスタム要素は定義する前であっても利用することができます。要素の定義を追加すると、既存の要素のインスタンスはすべてカスタムクラスに*アップグレード*されます。
 
-For example, consider the following code:
+例として、次のようなコードを考えます。：
 
 ```html
 <my-element></my-element>
@@ -213,32 +192,21 @@ For example, consider the following code:
 ```
 
 
-When parsing this page, the browser will create an instance of `<my-element>` before parsing and
-executing the script. In this case, the element is created as an instance of `HTMLElement`, not
-`MyElement`. After the element is defined, the `<my-element>` instance is upgraded so it has the
-correct class (`MyElement`). The class constructor is called during the upgrade process, followed
-by any pending lifecycle callbacks.
+このページを解析すると、ブラウザはスクリプトを解析して実行する前に`<my-element>`のインスタンスを作成します。この場合、要素は`MyElement`ではなく`HTMLElement`のインスタンスとして生成されます。要素が定義されると、`<my-element>`のインスタンスはアップグレードされ適切なクラス(`MyElement`)になります。クラスのコンストラクタは、アップグレードの過程で呼び出され、その後他の待機中のライフサイクルコールバックが続けて呼び出されます。
 
-Element upgrades allow you to place elements in the DOM while deferring the cost of initializing them. It's a progressive enhancement feature.
+要素をアップグレードさせることで、要素の初期化にかかるコストを遅延させながらDOMに追加することができます。これは進歩的な機能の強化といえるでしょう。
 
-Elements have a *custom element state* that takes one of the following values:
+要素は、次のいずれかの*カスタム要素の状態*を持っています。：
 
-
-
-*   "uncustomized". The element does not have a valid custom element name. It is either a built-in
-    element (`<p>`, `<input>`) or an unknown element that cannot become a custom element
-    (`<nonsense>`)
-*   "undefined". The element has a valid custom element name (such as "my-element"), but has not
-    been defined.
+*   "uncustomized"：要素には有効なカスタム要素名がありません。これは、ビルトイン要素(`<p>`、`<input>`)または、カスタム要素になることができない未知の要素(`<nonsense>`)のどちらかです。
+*   "undefined"：要素に有効なカスタム要素名(例えば、my-elementのような)はありますが、まだ定義されていません。
+- "custom"：要素は有効なカスタム要素名を持ち、定義もなされ、アップグレードもされています。
 *   "custom". The element has a valid custom element name and has been defined and upgraded.
-*   "failed". An attempt to upgrade the element failed (for example, because the class was invalid).
+*   "failed"：要素のアップグレードに失敗しました（例えば、クラスが無効な場合）。
 
-The custom element state isn't exposed as a property, but you can style elements depending on
-whether they're defined or undefined.
+*カスタム要素の状態*はプロパティとして公開はされませんが、要素が定義済みかどうかに関わらずスタイルを設定することができます。
 
-Elements in the "custom" and "uncustomized" state are considered "defined". In CSS you can use the
-`:defined` pseudo-class selector to target elements that are defined. You can use this to provide
-placeholder styles for elements before they're upgraded:
+"custom"及び"uncustomized"状態にある要素は、定義済み(defied)であるとみなされます。定義済みの要素に対しては、擬似クラスセレクタ`:defined`を使用することができます。これを利用して、要素がアップグレードされる前のプレースホルダ用スタイルを提供できます。：
 
 ```
 my-element:not(:defined) {
@@ -249,9 +217,9 @@ my-element:not(:defined) {
 **`:defined` is not supported by the Custom Elements polyfill.** See the [documentation on styling](style-shadow-dom#style-undefined-elements) for a workaround.
 {.alert .alert-warning}
 
-## Extending other elements {#extending-elements}
+## 他の要素の拡張 {#extending-elements}
 
-In addition to `HTMLElement`, a custom element can extend another custom element:
+カスタム要素は、HTMLElementだけでなく他のカスタム要素を拡張することもできます。：
 
 
 ```
@@ -274,12 +242,7 @@ class ExtendedElement extends MyElement {
 customElements.define(ExtendedElement.is, ExtendedElement);
 ```
 
-**Polymer does not currently support extending built-in elements.** The custom elements spec
-provides a mechanism for extending built-in elements, such as `<button>` and `<input>`. The spec
-calls these elements *customized built-in elements*. Customized built-in elements provide many
-advantages (for example, being able to take advantage of built-in accessibility features of UI
-elements like `<button>` and `<input>`). However, not all browser makers have agreed to support
-customized built-in elements, so Polymer does not support them at this time.
+**Polymerは現在、ビルトイン要素の拡張をサポートしていません。**カスタム要素の仕様では、`<button>`や`<input>`のようなビルトイン要素を拡張するためのメカニズムを用意します。仕様では、これらの要素を「カスタマイズされたビルトイン要素(customized built-in elements)」と呼んでいます。*カスタマイズされたビルトイン要素*には、多くの利点があります。（例えば、`<button>`や`<input>`のようなビルトインUI要素でユーザー補助機能(accessibility feature)を利用することができます）しかし、すべてのブラウザベンダーが__カスタマイズされたビルトイン要素__をサポートすることに同意おらず、現時点でPolymerはそれらをサポートしていません。
 {.alert .alert-info}
 
 When you extend custom elements, Polymer treats the `properties` object and
@@ -290,24 +253,20 @@ by the superclass.
 A subclass can also inherit a template from its superclass. For details, see
 [Inherited templates](dom-template#inherited-templates).
 
-## Sharing code with class expression mixins {#mixins}
+## クラス式のミックスインでコードを共有 {#mixins}
 
-ES6 classes allow single inheritance, which can make it challenging to share code between unrelated
-elements. Class expression mixins let you share code between elements without adding a common
-superclass.
+ES6のクラスでは単一継承のみサポートしており、異なる要素間でコードを共有するには困難が伴います。クラス式のミックスインを利用すると、要素間でコードを共有できるようになります。
 
-A class expression mixin is basically a function that operates as a *class factory*. You pass in a
-superclass, and the function generates a new class that extends the superclass with the mixin's
-methods.
+クラス式のミックスインは基本的にクラスのファクトリーとして機能する関数です。以下の例のように、スーパークラスを渡すことで、関数はミックスインのメソッドを使いスーパークラスを拡張した新たなクラスを生成します。
 
 ```js
 const fancyDogClass = FancyMixin(dogClass);
 const fancyCatClass = FancyMixin(catClass);
 ```
 
-### Using mixins
+### ミックスインの使用
 
-Add a mixin to your element like this:
+要素にミックスインを追加するには以下のように記述します。：
 
 ```js
 class MyElement extends MyMixin(Polymer.Element) {
@@ -315,7 +274,7 @@ class MyElement extends MyMixin(Polymer.Element) {
 }
 ```
 
-If that isn't clear, it may help to see it in two steps:
+もしわかりにくい場合には、2つのステップに分けて考えるといいかもしれません。：
 
 ```js
 // Create new base class that adds MyMixin's methods to Polymer.Element
@@ -327,7 +286,7 @@ class MyElement extends polymerElementPlusMixin {
 }
 ```
 
-So the inheritance hierarchy is:
+継承の階層は次のようになります。：
 
 ```js
 MyElement <= polymerElementPlusMixin <= Polymer.Element
@@ -341,13 +300,13 @@ class MyExtendedElement extends SomeMixin(MyElement) {
 }
 ```
 
-You can also apply multiple mixins in sequence:
+複数のミックスインを順々に(in sequence)適用することもできます。：
 
 ```js
 class AnotherElement extends AnotherMixin(MyMixin(Polymer.Element)) { … }
 ```
 
-### Defining mixins
+### ミックスインの定義
 
 A mixin is simply a function that takes a class and returns a subclass:
 
@@ -386,7 +345,7 @@ MyMixin = (superClass) => class extends superClass {
 }
 ```
 
-The mixin class can define properties, observers, and methods just like a regular element class. In
+ミックスインは、通常の要素のクラスのように、プロパティ、オブザーバーやメソッドを定義することができます。In
 addition, a mixin can incorporate other mixins:
 
 ```js
@@ -457,6 +416,6 @@ MyNamespace.MyMixin = Polymer.dedupingMixin((base) =>
 );
 ```
 
-## Resources
+## 参考情報
 
-More information: [Custom elements v1: reusable web components](https://developers.google.com/web/fundamentals/primers/customelements/?hl=en) on Web Fundamentals.
+詳細情報：Web Fundamentals上の[Custom Elements v1：reusable web components](https://developers.google.com/web/fundamentals/primers/customelements/?hl=ja)

@@ -1,17 +1,16 @@
 ---
-title: Style an element's shadow DOM
+title: Shadow DOMのスタイリング
 ---
 
 <!-- toc -->
 
-## Style your elements
+## 要素のスタイリング
 
-Polymer supports DOM templating and the shadow DOM API. When you provide a DOM template for your 
-custom element, Polymer then copies in the contents of the template you provided for your element.
+PolymerはDOMテンプレートとShadow DOM APIをサポートしています。カスタム要素にDOMテンプレートを利用すると、Polymerはあなたが要素に用意したテンプレートの内容をコピーします。
 
-Here's an example:
+例:
 
-[See it on Plunker](http://plnkr.co/edit/TOgaxeSzuQsWFSIpzN7S?p=preview)
+[Plunkerで動作を確認](http://plnkr.co/edit/TOgaxeSzuQsWFSIpzN7S?p=preview)
 
 `custom-element.html` { .caption }
 ```html
@@ -54,20 +53,15 @@ onents-loader.js"></script>
 <custom-element></custom-element>
 ```
 
-The HTML elements in your template become children in your custom element's shadow DOM. Shadow DOM 
-provides a mechanism for encapsulation, meaning that elements inside the shadow DOM don't match 
-selectors outside the shadow DOM.
+テンプレート内のHTML要素は、カスタム要素のShadow DOMの子になります。Shadow DOMは、カプセル化のメカニズムを提供するので、Shadow DOMの内部の要素がShadow DOM外部のセレクタにマッチすることはありません。
 
-Likewise, styling rules in side the shadow DOM can't "leak" out to affect elements outside the 
-shadow DOM.
+同様に、Shadow DOM内部のスタイルルールについても、Shadow DOM外部の要素にリークして影響を与えることはありません。
 
-Shadow DOM permits encapsulation of styling rules for custom elements. You can freely define 
-styling information for your elements, such as fonts, text colors, and classes, without fear of the 
-styles applying outside the scope of your element.
+Shadow DOMは、カスタム要素に対するスタイルルールのカプセル化を可能にします。要素のスコープ外にスタイルが適用されてしまう心配をせず、フォントやテキスト色、クラスなどのスタイル情報を要素に自由に定義できます。
 
-Here's an example:
+例:
 
-[See it on Plunker](http://plnkr.co/edit/cHSjdQTa0h6fWXAygkje?p=preview)
+[Plunkerで動作を確認](http://plnkr.co/edit/cHSjdQTa0h6fWXAygkje?p=preview)
 
 `x-foo.html` { .caption}
 ```html
@@ -104,18 +98,15 @@ Here's an example:
 leak to me.</p>
 ```
 
-For a detailed explanation of shadow DOM as it applies to Polymer, see [Shadow DOM 
-concepts](shadow-dom).
+PolymerにおけるShadow DOMの詳細な解説は、[Shadow DOMのコンセプト](shadow-dom)を参照してください。
 
-For an exploration of the shadow DOM v1 API, see [Shadow DOM v1: Self-Contained Web 
-Components](https://developers.google.com/web/fundamentals/getting-started/primers/shadowdom).
+Shadow DOM v1のAPIの詳細については、[Shadow DOM v1: Self-Contained Web Components](https://developers.google.com/web/fundamentals/getting-started/primers/shadowdom)を参照してください。
 
-### Use inheritance from document-level styles
+### ドキュメントレベルのスタイルから継承を利用
 
-When used in an HTML document, your element will still inherit any styling information that applies 
-to its parent element:
+HTMLドキュメントで使用された場合、要素はその親要素に適用される全てのスタイル情報を継承します。：
 
-[See it on Plunker](http://plnkr.co/edit/7ugStflqbexg2dNqmtDQ?p=preview)
+[Plunkerで動作を確認](http://plnkr.co/edit/7ugStflqbexg2dNqmtDQ?p=preview)
 
 `x-foo.html` { .caption}
 ```html
@@ -147,9 +138,9 @@ to its parent element:
 <p><x-foo></x-foo></p>
 ```
 
-Styles declared inside shadow DOM will override styles declared outside of it:
+Shadow DOMの内側で宣言されたスタイルは、その外側で宣言されたスタイルを上書きします：
 
-[See it on Plunker](http://plnkr.co/edit/0Fid1Gupd0jk9jggAKuv?p=preview)
+[Plunkerで動作を確認](http://plnkr.co/edit/0Fid1Gupd0jk9jggAKuv?p=preview)
 
 `x-foo.html` { .caption}
 ```html
@@ -181,15 +172,14 @@ Styles declared inside shadow DOM will override styles declared outside of it:
 <p><x-foo></x-foo></p>
 ```
 
-### Style the host element
+### ホスト要素のスタイリング
 
-The element to which shadow DOM is attached is known as the host. To style the host, use the 
-`:host` selector.
+Shadow DOMが追加された要素は、*ホスト*と呼ばれます。ホストにスタイルを設定するには、セレクタ`:host`を使用してください。
 
-Inheritable properties of the host element will inherit down the shadow tree, where they apply to 
-the shadow children.
+ホスト要素の継承可能なプロパティは、Shadow Treeを下って継承され、Shadowの子にも適用されます。
 
-[See it on Plunker](http://plnkr.co/edit/7771DvsQ3iPWnn2gEIf8?p=preview)
+
+[Plunkerで動作を確認](http://plnkr.co/edit/7771DvsQ3iPWnn2gEIf8?p=preview)
 
 `x-foo.html` { .caption}
 ```html
@@ -217,9 +207,9 @@ the shadow children.
 <x-foo></x-foo>
 ```
 
-You can also style the host element from outside - for example, using a type selector:
+また、ホスト要素を外部からスタイリングすることもできます。例えば、*要素型セレクタ*を使用したとします。：
 
-[See it on Plunker](http://plnkr.co/edit/AHXFX0zeQTbO2rGELTbS?p=preview)
+[Plunkerで動作を確認](http://plnkr.co/edit/AHXFX0zeQTbO2rGELTbS?p=preview)
 
 ```css
 x-foo {
@@ -227,16 +217,16 @@ x-foo {
 }
 ```
 
-#### Use CSS selectors to style the host element
+#### CSSセレクタを使用してホスト要素をスタイリング
 
 You can use CSS selectors to determine when and how to style the host. In this code sample:
 
-* The selector `:host` matches any `<x-foo>` element
-* The selector `:host(.blue)` matches `<x-foo>` elements of class `blue`
-* The selector `:host(.red)` matches `<x-foo>` elements of class `red`
-* The selector `:host(:hover)` matches `<x-foo>` elements when they are hovered over
+* セレクタ`:host`は、どんな`<x-foo>`要素にもマッチします
+* セレクタ`:host(.blue)`は、classが`blue`の`<x-foo>`要素にマッチします
+* セレクタ`:host(.red)`は、classが`red`の`<x-foo>`要素にマッチします
+* セレクタ`:host(:hover)`は、`<x-foo>`要素にマウスがホバーした時にマッチします
 
-[See it on Plunker](http://plnkr.co/edit/FsXnCAz65SR6fZ7YKuy6?p=preview)
+[Plunkerで動作を確認](http://plnkr.co/edit/FsXnCAz65SR6fZ7YKuy6?p=preview)
 
 `x-foo.html` { .caption}
 ```html
@@ -261,10 +251,9 @@ You can use CSS selectors to determine when and how to style the host. In this c
 <x-foo class="red"></x-foo>
 ```
 
-Descendant selectors after `:host` match elements in the shadow tree. In this example, the CSS 
-selector applies to any `p` element in the shadow tree if the host has class "warning":
+セレクタ`:host`の後に、子孫セレクタがShadow Tree内の要素にマッチします。次の例では、CSSセレクタがShadow Tree内の全ての`p`要素へホストがクラス`warning`を持っているか問い合わせを行います。：
 
-[See it on Plunker](http://plnkr.co/edit/MRN9blKg6A3w8G0RkyJD?p=preview)
+[Plunkerで動作を確認](http://plnkr.co/edit/MRN9blKg6A3w8G0RkyJD?p=preview)
 
 `x-foo.html` { .caption}
 ```html
@@ -288,14 +277,9 @@ selector applies to any `p` element in the shadow tree if the host has class "wa
 <x-foo></x-foo>
 ```
 
-Styling with the `:host` selector is one of two instances where rules inside a shadow tree can 
-affect an element outside a shadow tree. The second instance uses the `::slotted()` syntax to apply 
-styling rules to distributed children. See [*Composition and slots* in Eric Bidelman's article on 
-shadow 
-DOM](https://developers.google.com/web/fundamentals/getting-started/primers/shadowdom#composition_sl
-ot) for more information.
+Shadow Tree内部ルールがShadow Tree外部の要素に影響を与える可能性のあるインスタンスは二つあり、`:host`セレクタによるスタイリングはその内の一つです。もう一つのインスタンスは、次のセクションで紹介する`::slotted()`構文を使用した、割り当てられた子(distributed children)へのスタイリングルールの適用です。詳細については、[Composition and slots in Eric Bidelman's article on shadow DOM](https://developers.google.com/web/fundamentals/getting-started/primers/shadowdom#composition_slot)を参照してください。
 
-### Style slotted content (distributed children)
+### スロットのコンテンツ(割り当てられた子)へのスタイリング
 
 You can create **slots** in an element's template that are populated at runtime. For more 
 information on slots, see the documentation on [shadow DOM and 
@@ -303,7 +287,7 @@ composition](/2.0/docs/devguide/shadow-dom#shadow-dom-and-composition).
 
 The basic syntax for incorporating slotted content looks like this:
 
-[See it on Plunker](http://plnkr.co/edit/bNvOvQqCEmC4DaoeNtwZ?p=preview)
+[Plunkerで動作を確認](http://plnkr.co/edit/bNvOvQqCEmC4DaoeNtwZ?p=preview)
 
 `x-foo.html` { .caption}
 ```html
@@ -326,15 +310,15 @@ The basic syntax for incorporating slotted content looks like this:
 </x-foo>
 ```
 
-To style slotted content, use the `::slotted()` syntax.
+スロットされたコンテンツにスタイルを適用するには、`::slotted()`構文を使用します。
 
 **Note:** To work within the Shady CSS scoping shim limitations, and to ensure consistent 
 cross-browser behavior, add a selector to the left of the `::slotted(.classname)` notation (for 
 example, `p ::slotted(.classname)`.
 
-`::slotted(*)` selects all slotted content:
+`::slotted(*)`はスロットされた全てのコンテンツを選択します。：
 
-[See it on Plunker](http://plnkr.co/edit/pb0D6r15jvvxYVWsZ95U?p=preview)
+[Plunkerで動作を確認](http://plnkr.co/edit/pb0D6r15jvvxYVWsZ95U?p=preview)
 
 `x-foo.html` { .caption}
 ```html
@@ -366,9 +350,9 @@ example, `p ::slotted(.classname)`.
 </x-foo>
 ```
 
-[See it on Plunker](http://plnkr.co/edit/Xb4j1r4wEgGuyUM9huFV?p=preview)
+[Plunkerで動作を確認](http://plnkr.co/edit/Xb4j1r4wEgGuyUM9huFV?p=preview)
 
-You can select by element type:
+要素の型で選択することもできます：
 
 `x-foo.html` { .caption}
 ```html
@@ -401,9 +385,9 @@ You can select by element type:
 </x-foo>
 ```
 
-You can select by class:
+クラスで選択することもできます：
 
-[See it on Plunker](http://plnkr.co/edit/Ep8AVOHgiwQjtv8x5kwd?p=preview)
+[Plunkerで動作を確認](http://plnkr.co/edit/Ep8AVOHgiwQjtv8x5kwd?p=preview)
 
 `x-foo.html` { .caption}
 ```html
@@ -437,9 +421,9 @@ You can select by class:
 </x-foo>
 ```
 
-And you can select by slot name:
+スロットの`name`で選択することもできます：
 
-[See it on Plunker](http://plnkr.co/edit/PzypR0973pxg3fquWhco?p=preview)
+[Plunkerで動作を確認](http://plnkr.co/edit/PzypR0973pxg3fquWhco?p=preview)
 
 `x-foo.html` { .caption}
 ```html
@@ -515,15 +499,13 @@ class myElement extends Polymer.Element(){
 }
 ```
 
-## Share styles between elements
+## 要素間でスタイルを共有する
 
-### Use style modules {#style-modules}
+### スタイルモジュール(Style Modules)を使用 {#style-modules}
 
-The preferred way to share styles is with *style modules*. You can package up styles in a style 
-module, and share them between elements.
+スタイルを共有するのに望ましい方法は、*スタイルモジュール*を使うことです。スタイルモジュールにスタイルをパッケージ化し、要素間でそれを共有することができます。
 
-To create a style module, wrap your style block in `<dom-module>` and `<template>` elements, like 
-this:
+スタイルモジュールを作成するには、スタイルのブロックを`<dom-module>`要素と`<template>`要素で以下のようにラップします。：
 
 ```html
 <dom-module id="my-style-module">
@@ -535,8 +517,7 @@ this:
 </dom-module>
 ```
 
-When you create the element that will use the styles, include the style module in the opening tag 
-of the style block:
+これらスタイルを利用して要素を作成する場合、スタイルブロックの開始タグでスタイルモジュールをインクルードします。：
 
 ```html
 <dom-module id="new-element">
@@ -549,12 +530,11 @@ of the style block:
 </dom-module>
 ```
 
-You'll most likely want to package the style module in its own html file. In that case, the element 
-that uses the styles will need to import that file.
+スタイルモジュールを独自のHTMLファイルにパッケージ化したいと考えるかもしれません。その場合は、スタイルを利用する要素でそのHTMLファイルをインポートする必要があります。
 
-Here's an example:
+例：
 
-[See it on Plunker](http://plnkr.co/edit/Cd9XdfAF0RNEw5MGOudE?p=preview)
+[Plunkerで動作を確認](http://plnkr.co/edit/Cd9XdfAF0RNEw5MGOudE?p=preview)
 
 `my-colors.html` { .caption}
 ```html
@@ -600,11 +580,9 @@ Here's an example:
 ```
 
 
-### Use external stylesheets (deprecated) {#external-stylesheets}
+### 外部スタイルシートを使用する(非推奨) {#external-stylesheets}
 
-**Deprecated feature.** This experimental feature is now deprecated in favor of
-[style modules](#style-modules). It is still supported, but support will
-be removed in the future.
+**非推奨の機能。**この実験的な機能は、現在、[スタイルモジュール](#style-modules)に代替され、その利用は推奨されていません。今もサポートはされていますが、そのサポートも今後削除される見込みです。
 {.alert .alert-info}
 
 Polymer includes an experimental feature to support loading external stylesheets
@@ -622,7 +600,7 @@ place a special HTML import `<link>` tag with `type="css"` in your
 
 For example:
 
-[See it on Plunker](http://plnkr.co/edit/7AvgX9jQApbJoWHbdPkI?p=preview)
+[Plunkerで動作を確認](http://plnkr.co/edit/7AvgX9jQApbJoWHbdPkI?p=preview)
 
 `style.css` { .caption}
 ```css
@@ -652,34 +630,27 @@ For example:
 <x-foo></x-foo>
 ```
 
-## Use `custom-style` in document-level styles {#custom-style}
+## ドキュメントレベルのスタイルで`custom-style`使用する {#custom-style}
 
-Browsers that implement the current Shadow DOM v1 specifications will automatically encapsulate 
-styles, scoping them to the elements in which they were defined.
+最新のShadow DOM v1仕様を実装しているブラウザは、スタイルを自動でカプセル化し、スタイルが定義された要素の内部にスコープします。
 
-Some browsers have not implemented the Shadow DOM v1 specifications. To make sure your apps and 
-elements display correctly in these browsers, you'll need to use `custom-style` to ensure that 
-styling information doesn't "leak" into the local DOM of your elements.
+一部のブラウザでは、Shadow DOM v1仕様が実装されていません。あなたのアプリや要素をこれらのブラウザ上で正常に表示されるようにするには、`custom-style`を使用して、スタイル情報が要素のローカルDOM内にリークしないようにする必要があります。.
 
-`custom-style` enables a set of polyfills that ensure that styles in your apps and elements behave 
-as you would expect from the Shadow DOM v1 specifications, even in browsers that don't implement 
-these specifications.
+`custom-style`はShadow DOM v1仕様を実装していないブラウザであっても、ポリフィルを有効にすることでアプリケーションや要素のスタイルが、これらの仕様に沿って期待した通りに動作するようにします。
 
-To ensure that your styles behave according to the Shadow DOM v1 specifications in all browsers, 
-use `custom-style` when you define *document-level* styles. `custom-style` is not included with 
-`Polymer.Element` and must be imported separately.
-`custom-style` is included with the legacy `polymer.html` import.
+定義したスタイルをすべてのブラウザ上でShadow DOM v1仕様に従って動作するようにするには、ドキュメントレベルのスタイルを定義する際に`custom-style`を使用します。`custom-style`は`Polymer.Element`には含まれておらず、別途インポートする必要があります。`custom-style`はレガシーな`polymer.html`インポートには含まれています。
 
 *Note: You should only use `custom-style` to define styles for the main document. To define styles 
 for an element's local DOM, just use a `<style>` block.*
 
-### Examples
+  **注意** ：`custom-style`はメインドキュメントのスタイルの定義にだけ使用してください。要素のローカルDOMのスタイルを定義するには単に`<style>`ブロックを使用します。
 
-In the first code sample, the style for the `p` element “leaks” into Paragraph B in browsers that 
-haven’t implemented the Shadow DOM v1 specs. In the second code sample, the developer has used 
-`custom-style` to wrap the style block, preventing this leak.
 
-[See it on Plunker](http://plnkr.co/edit/0o1zuMHgmt4novf2DS8z?p=preview)
+### 例
+
+最初のコードサンプルは、Shadow DOM v1仕様を実装していないブラウザ上で、`p`要素に適用したスタイルがパラグラフBにリークしている様子を示しています。二番目のコードサンプルでは、`​​custom-style`でスタイルブロックをラップすることでリークを防いでいます。
+
+[Plunkerで動作を確認](http://plnkr.co/edit/0o1zuMHgmt4novf2DS8z?p=preview)
 
 `x-foo.html` { .caption}
 ```html
@@ -708,7 +679,7 @@ haven’t implemented the Shadow DOM v1 specs. In the second code sample, the de
 <x-foo></x-foo>
 ```
 
-[See it on Plunker](http://plnkr.co/edit/yiD9XWPHaMjHaGGwu4V9?p=preview)
+[Plunkerで動作を確認](http://plnkr.co/edit/yiD9XWPHaMjHaGGwu4V9?p=preview)
 
 `x-foo.html` { .caption}
 ```html
@@ -737,10 +708,9 @@ haven’t implemented the Shadow DOM v1 specs. In the second code sample, the de
 <x-foo></x-foo>
 ```
 
-### Syntax and compatibility
+### 構文と互換性
 
-The syntax of `custom-style` has changed. In Polymer 2.x, `<custom-style>` is a wrapper element. 
-You can use a hybrid syntax to ensure compatibility between Polymer 1.x and other versions.
+`custom-style`の構文は変更されました。Polymer 2.xでは、`<custom-style>`はラッパー要素となりました。ハイブリッド構文を使用することで、Polymer 1.xと他のバージョンとの互換性を担保することができます。
 
 Polymer 2.x { .caption}
 ```html

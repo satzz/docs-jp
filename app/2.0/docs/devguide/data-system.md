@@ -1,5 +1,5 @@
 ---
-title: Data system concepts
+title: データシステムのコンセプト
 ---
 
 <!-- toc -->
@@ -16,23 +16,17 @@ table.config-summary td {
 }
 </style>
 
-Polymer lets you observe changes to an element's properties and take various actions based on data
-changes. These actions, or *property effects*, include:
+Polymerでは、要素のプロパティの変更を監視(observe)し、データ変更に基づき様々なアクションを実行することができます。これらのアクションや、*プロパティエフェクト*(property effects)には、次のものがあります。
 
+*   オブザーバー(observers)：データの変更時に呼び出されるコールバック
 
-*   Observers. Callbacks invoked when data changes.
+*   算出プロパティ(computed properties)：他のプロパティに基づき算出され、入力データが変更されたときに再計算が行われる仮想的なプロパティ。
 
-*   Computed properties. Virtual properties computed based on other properties, and recomputed when
-    the input data changes.
+*   データバインディング(data binding)：データが変更されたとき、DOMノードのプロパティまたは属性、テキストコンテンツをアップデートするアノテーション。
 
-*   Data bindings. Annotations that update the properties, attributes, or text content of a DOM node
-    when data changes.
+各Polymer要素は、独自のデータモデルとローカルDOM要素を管理します。要素のモデルとは、要素のプロパティです。データバインディングは、要素のモデルをローカルDOM内の要素とリンクします。
 
-Each Polymer element manages  its own data model and local DOM elements. The *model* for an element
-is the element's properties. Data bindings link an element's model with the elements in its local
-DOM.
-
-Consider a very simple element:
+非常にシンプルな要素について考えてみましょう。：
 
 ```html
 <dom-module id="name-card">
@@ -57,14 +51,11 @@ a JavaScript object. An arrow labeled 2 connects the element to a box labeled lo
 which contains a single element, div. An arrow labeled 3 connects the JavaScript object to the
 div element.](/images/1.0/data-system/data-binding-overview-new.png)
 
-1.  The `<name-card>` element has a `name` property that _refers_ to a JavaScript object.
-2.  The `<name-card>` element _hosts_ a local DOM tree, that contains a single `<div>` element.
-3.  Data bindings in the template link the JavaScript object to the `<div>` element.
+1. `<name-card>`要素は、JavaScriptオブジェクトを参照する`name`プロパティを持っている。
+2. `<name-card>`要素は、`<div>`を一つだけ持ったローカルDOMのホストになる。
+3. テンプレート内のデータバインディングは、Javascriptオブジェクトを`<div>`要素にリンクする。 
 
-The data system is based on *paths*, not objects, where a path represents a property or subproperty
-*relative to the host element*. For example, the `<name-card>` element has data bindings for the paths
-`"name.first"` and `"name.last"`. If a `<name-card>` has the following object for its `name`
-property:
+データシステムは、オブジェクトではなくパスに基づいており、パスはホスト要素に関連するプロパティやサブプロパティを表します。例えば、`<name-card>`要素は、パス`name.first`とパス`name.last`に対するデータバインディングを持っています。仮に、`<name-card>`要素が`name`プロパティとして次のオブジェクトを持っている場合：
 
 
 ```js
@@ -74,86 +65,75 @@ property:
 }
 ```
 
-The path "`name`" refers to the element's `name` property (an object).The paths "`name.first`" and
-`"name.last"` refer to properties of that object.
+パス`name`は要素の`name`プロパティ(オブジェクト)を参照します。パス`name.first`とパス`name.last`はオブジェクトのプロパティを参照します。
 
 ![The name-card element from the previous figure. An arrow labeled 1 connects the name property
 to a JavaScript object that contains two properties, first: 'Lizzy' and last: 'Bennet'. Two arrows
 labeled 2 connect the paths name and name.first with the object itself and the subproperty,
 first, respectively.](/images/1.0/data-system/paths-overview-new.png)
 
-1.  The `name` property refers to the JavaScript object.
-2.  The path "name" refers to the object itself. The path "name.first" refers to its subproperty,
-    `first` (the string, `Lizzy`).
+1. `name`プロパティはJavascirptのオブジェクトを参照します。
+2. パス`name`はそのオブジェクト自身を参照します。パス`name.first`はサブプロパティ`first`(文字列`Lizzy`)を参照します。
 
-Polymer doesn't automatically detect all data changes. Property effects occur when there is
-an [_observable change_](#observable-changes) to a property or subproperty.
+Polymerは自動ですべてのデータ変更を検出するわけではありません。*プロパティエフェクト*は、プロパティまたはサブプロパティへ[監視可能(obsevable)な変更](#observable-changes)があった場合に生じます。
 
-**Why use paths?** Paths and observable changes might seem a little strange at first. But this
-results in a very high-performance data binding system. When an observable change occurs, Polymer
-can make a change to just those points in the DOM that are affected by that change.
+**なぜパスを使うのでしょうか？**パスや*監視可能(obsevable)な変更*は、初めは少し奇妙にみえるかもしれません。しかし、これらによって、非常にハイパフォーマンスなデータバインディングシステムが実現されています。*監視可能な変更*が発生した場合、PolymerはDOM内で、その変更によって影響を受ける箇所にだけ変更を加えることができます。
 { .alert .alert-info }
 
-In summary:
+要約：
 
-*   While a single JavaScript object or array can be referenced by multiple elements, a path is
-    **always relative to an element**.
-*   An **observable change** to a path can produce **property effects**, like updating bindings or
-    calling observers.
-*   Data bindings establish connections between paths on different elements.
+*   単一のJavaScriptオブジェクトや配列は複数の要素から参照するこができますが、パスは**常に特定の要素に関連づけられます**。
+*   あるパスに対して**監視可能(observable)な変更**があると、バインドされた値の更新やオブザーバーの呼び出しといった**プロパティエフェクト**を発生させます。
+*   データバインディングは、異なる要素上のパス間にコネクションを確立します。
 
-## Observable changes {#observable-changes}
+## 監視可能(observable)な変更 {#observable-changes}
 
-An *observable change* is **a data change that Polymer can associate with a path**. Certain changes
-are automatically *observable*:
+*監視可能な変更*とは、**Polymerがパスに関連付けることができるデータの変更**です。以下のような変更については自動的に監視することができます。：
 
-*   Setting a *direct property* of the element.
+*   要素のプロパティに直接設定する。
 
-    `this.owner = 'Jane';`
+    ~~~javascript
+    this.owner = 'Jane';
+    ~~~
 
-    If a property has any associated property effects (such as observers, computed properties, or
-    data bindings), Polymer creates a setter for the property, which automatically invokes the
-    property effects.
+    もし、あるプロパティに関連した*プロパティエフェクト*が発生した場合（オブザーバー、算出プロパティやデータバインディングなど）、Polymerはプロパティエフェクトを自動的に発生させるプロパティに対してsetterメソッドを作成します。
 
-*   Setting a subproperty of the element using a two-way data binding.
+*   双方向データバインディングを使用して要素のサブプロパティを設定する。
 
-    ```html
+    ~~~html
     <local-dom-child name="{{hostProperty.subProperty}}"></local-dom-child>
-    ```
+    ~~~
 
-    Changes made by the data binding system are automatically propagated. In this example, if
-    `<local-dom-child>` makes a change to its `name` property, the change propagates up to the host,
-    as a change to the path `"hostProperty.subProperty"`.
+    データバインディングシステムによってもたらされた変更は、自動的に伝播されます。この例で言えば、`<local-dom-child>`要素が自身の`name`プロパティに変更を加えると、パス`hostProperty.subProperty`に変更が行われたように、その変更をホストに向けて上に伝播します。
 
 
-### Unobservable changes
+### 監視不能(unobservable)な変更
 
-Changes that **imperatively mutate an object or array are *not* observable**. This includes:
+**オブジェクトまたは配列を命令的に変更した場合は、監視することができません**。例えば、以下のような場合です。：
 
-*   Setting a subproperty of an object:
+*   オブジェクトのサブプロパティを設定：
 
-    ```js
+    ~~~javascript
     // unobservable subproperty change
     this.address.street = 'Elm Street';
-    ```
+    ~~~
 
-    Changing the subproperty `address.street` here *doesn't* invoke the setter on `address`, so it
-    isn't automatically observable.
+    ここでサブプロパティ`address.street`を変更しても、`address`のsetterメソッドが呼び出されることはないので、自動的に監視することはできません。
 
-*   Mutating an array:
+*   配列の変更：
 
-    ```js
+    ~~~javascript
     // unobservable change using native Array.push
-    this.users.push({ name: 'Maturin'});
-    ```
+    this.users.push({ name: 'Maturin});
+    ~~~
 
-    Mutating the array doesn't invoke the setter on `users`, so it isn't automatically observable.
+    配列を変更しても`users`のsetterメソッドが呼び出されることはないので、自動的に監視することはできません。
 
-In both cases, you need to use Polymer methods to ensure that the changes are observable.
+どちらの場合も、変更を監視できるようにするには、Polymerの用意したメソッドを利用する必要があります。
 
-### Mutating objects and arrays observably {#make-observable-changes}
+### オブジェクトと配列の変更を監視可能に {#make-observable-changes}
 
-Polymer provides methods for making observable changes to subproperties and arrays:
+Polymerは、サブプロパティや配列を監視できるようにするメソッドを用意しています。：
 
 ```js
 // mutate an object observably
@@ -163,30 +143,18 @@ this.set('address.street', 'Half Moon Street');
 this.push('users', { name: 'Maturin'});
 ```
 
-In some cases, you can't use the Polymer methods to mutate objects and arrays (for example, if
-you're using a third-party library). In this case, you can use  the
-[`notifyPath`](/{{{polymer_version_dir}}}/docs/api/elements/Polymer.Element#method-notifyPath) and
-[`notifySplices`](/{{{polymer_version_dir}}}/docs/api/elements/Polymer.Element#method-notifySplices)
-methods to *notify* the element about changes that have **already taken place.**
-
+特定のケースにおいては、Polymerのメソッドを利用してオブジェクトや配列を変更することができません。(サードパーティのライブラリを使用している場合など)。この場合には、[`notifyPath`](/{{{polymer_version_dir}}}/docs/api/elements/Polymer.Element#method-notifyPath)メソッドや[`notifySplices`](/{{{polymer_version_dir}}}/docs/api/elements/Polymer.Element#method-notifySplices)メソッドを使用することで、**すでに発生した**変更を要素に通知できます。
 
 ```js
 // Notify Polymer that the value has changed
 this.notifyPath('address.street');
 ```
 
-When you call `notifyPath` or `notifySplices`, the element applies the appropriate property effects,
-as if the changes had just taken place.
+`notifyPath`メソッドや`notifySplices`メソッドを呼び出すと、あたかも変更が発生したかのように、要素は適切な*プロパティエフェクト*を作用させます。
 
-When calling `set` or `notifyPath`, you need to use the **exact path** that changed. For example,
-calling `this.notifyPath('address')` doesn't pick up a change to `address.street` if the `address`
-object itself remains unchanged. This is because Polymer performs dirty checking for objects
-and arrays using object equality. It doesn't produce any property effects if the value at the
-specified path hasn't changed.
+`set`や`notifyPath`を呼び出す際は、変更された**正確なパス**を使用する必要があります。例えば、`address`オブジェクト自体は変更されていないのに、`this.notifyPath('address')`の呼び出しを行なった場合、`address.street`の変更は検出されません。これは、Polymerがオブジェクトの等価性からオブジェクトと配列に*ダーティチェック*を行うためです。指定されたパスの値が変更されていなければ、プロパティエフェクトは一切生じることがありません。
 
-In most cases, if one or more properties of an
-object have changed, or one or more items in an array have changed, you can force Polymer to skip
-the dirty check by cloning the object or array.
+ほとんどの場合、オブジェクトの一つ以上のプロパティが変更された場合、または配列内の一つ以上のアイテムが変更された場合、オブジェクトや配列を複製(cloning)することで、Polymerによる*ダーティチェック*を強制的に回避させることができます。
 
 ```js
 // Shallow clone array
@@ -195,38 +163,32 @@ this.addresses.push(address2)
 this.addresses = this.addresses.slice();
 ```
 
-If you have a data structure with multiple levels of objects and arrays, you may need to perform a
-deep copy to pick up changes.
+多層的な(multiple levels)データ構造を持ったオブジェクトや配列の場合には、その変更内容を検出するために深いコピー(deep copy)を実行する必要があるかもしれません。
 
-If your application requires it, you can eliminate dirty-checking of objects and arrays on a
-per-element basis using the `Polymer.MutableData` mixin. This mixin may trade some performance
-for increased ease of use. For details, see [Using the MutableData mixin](#mutable-data).
+アプリケーションでそのような必要性が生じた場合は、`Polymer.MutableData`ミックスインを使用することで、要素ごとにオブジェクトや配列のダーティチェックを回避できます。このミックスインは、利便性向上ためにいくらかパフォーマンスを犠牲にすることがあるかもしれません。詳細については、[MutableDataミックスインの利用](#mutable-data)を参照してください。
 
-Related tasks:
 
-*   [Set object subproperties](model-data#set-path).
-*   [Mutate an array](model-data#array-mutation).
-*   [Notify Polymer of subproperty changes](model-data#notify-path).
-*   [Notify Polymer of array mutations](model-data#notifysplices).
+関連タスク：
+*   [オブジェクトのサブプロパティの設定](model-data#set-path)
+*   [配列の変更](model-data#array-mutation)
+*   [サブプロパティの変更をPolymerに通知](model-data#notify-pat)
+*   [配列の変更をPolymerに通知](model-data#notifysplices)
 
-### Batched property changes
+### バッチ処理によるプロパティの変更
 
-Propagation of data through the binding system is  batched, so complex observers and computing
-functions run once with a set of coherent changes. There's several ways to create a set of coherent
-changes:
+バインディングシステム内におけるデータの伝播はバッチで処理されます、そうすることで複雑なオブザーバーや算出関数による変更は一度にまとまて実行されます。*まとまった変更*を生成する方法はいくつか存在します。：
 
-*   An element automatically creates a set of coherent changes when it initializes its properties.
+*   要素が自身のプロパティを初期化する際は、*まとまった変更*を自動的に生成します。
 
-*   Setting an object or array can create a set of coherent changes.
+*   オブジェクトまたは配列を設定する際は、*まとまった変更*を自動的に生成します。
 
-*   You can atomically set multiple properties using the `setProperties` method.
+*   `setProperties`メソッドを使用することで、複数のプロパティをアトミック(atomically)に設定できます。
 
 ```js
 this.setProperties({item: 'Orange', count: 12 });
 ```
 
-Single property accessors still propagate data synchronously. For example, given an observer that
-observes two properties, `a` and `b`:
+単一プロパティのアクセサメソッドについては、データは同期的に伝播されます。例えば、`a`と`b`の2つのプロパティを監視するオブザーバーがあったとします。以下の二つの動作の違いに留意して下さい。：
 
 ```js
 // observer fires twice
@@ -237,33 +199,25 @@ this.b = 20;
 this.setProperties({a: 10, b: 20});
 ```
 
-## Data paths {#paths}
+## データパス {#paths}
 
-In the data system, a _path_ is a string that identifies a property or subproperty *relative to a
-scope*. In most cases, the scope is a host element. For example, consider the following
-relationships:
+データシステムにおいて、*パス*はスコープ内のプロパティまたはサブプロパティを識別するための文字列です。多くの場合、スコープはホスト要素です。例えば、次のような関係を考えてみましょう。：
 
 ![Two elements, user-profile and address card. The user-profile element has a primaryAddress
 property. An arrow labeled 1 connects the property to a JavaScript object. The address-card
 element has an address property. An arrow labeled 2 connects the property to the same JavaScript
 object.](/images/1.0/data-system/data-binding-paths-new.png)
 
-1.  The `<user-profile>` element has a property `primaryAddress` that refers to a JavaScript object.
-2.  The `<address-card>` element has a property `address` that refers to the same object.
+1. `<user-profile>`要素は、Javascriptのオブジェクトを参照する`primaryAddress`プロパティを持っています。
+2. `<address-card>`要素は、同じオブジェクトを参照する`address`プロパティを持っています
 
-Importantly, **Polymer doesn't automatically know that these properties refer to the same object**.
-If `<address-card>` makes a change to the object, no property effects are invoked on `<user-profile>`.
+重要なことですが、**Polymerは、これらのプロパティが同じオブジェクトを参照していることを自動的に認識するわけではありません。**`<address-card>`がオブジェクトへの変更を行っても、`<user-profile>`上でプロパティエフェクトは生じるわけではありません。
 
-**For data changes to flow from one element to another, the elements must be connected with a data
-binding.**
+**ある要素から別の要素へデータの変更が流れるようにするには、要素はデータバインディングによってコネクトされている必要があります。**
 
+### データバインディングによるパスのリンク
 
-### Linking paths with data bindings
-
-Data bindings can create links between paths on different elements. In fact, **data binding is the
-only way to link paths on different elements**. For example, consider the `<user-profile>` example
-in the previous section. If `<address-card>` is in the local DOM of the `<user-profile>` element,
-the two paths can be connected with a data binding:
+データバインディングは、異なる要素のパス間にリンクを作成することができます。実は、**データバインディングは、異なる要素のパスにリンクを設定する唯一の手段です。**例えば、前のセクションの`<user-profile>`の例で考えてみましょう。`<address-card>`が`<user-profile>`要素のローカルDOM内に存在する場合、二つのパスはデータバインディングを使ってコネクトすることができます。：
 
 
 ```html
@@ -277,54 +231,43 @@ the two paths can be connected with a data binding:
 </dom-module>
 ```
 
-Now the paths are connected by data binding.
+これでパスはデータバインディングによってコネクトされました。
 
 ![Two elements, user-profile and address-card, both referring to a shared JavaScript object. An arrow labeled 1 connects the primaryAddress property on the user-profile element to the object. An arrow labeled 2 connects the address property on the address-card element to the same object. An double-headed arrow labeled 3 connects the path primaryAddress on user-profile to the path address on address-card.](/images/1.0/data-system/data-bound-paths-new.png)
 
-1.  The `<user-profile>` element has a property `primaryAddress` that refers to a JavaScript object.
-2.  The `<address-card>` element has a property `address` that refers to the same object.
-3.  The data binding connects the path `"primaryAddress"` on `<user-profile>` to the path `"address"`
-    on `<address-card>`
+1. `<user-profile>`要素は、Javascriptのオブジェクトを参照する`primaryAddress`プロパティを持っています。
+2. `<address-card>`要素は、同じオブジェクトを参照する`address`プロパティを持っています。
+3. データバインディングは`<user-profile>`のパス`primaryAddress`と`<address-card>`のパス`address`をリンクさせます。
 
-If `<address-card>` makes an observable change to the object, property effects are invoked on
-`<user-profile>` as well.
+もし`<address-card>`がオジェクトに対して*監視可能な変更*を加えた場合、`<user-profile>`上でも同様に*プロパティエフェクト*が発生します。
 
-### Data binding scope {#data-binding-scope}
+### データバインディングのスコープ {#data-binding-scope}
 
-Paths are relative to the current data binding *scope*.
+パスは、現在のデータバインディングのスコープに関連づいています。
 
-The topmost scope for any element is the element's properties. Certain data binding helper elements
-(like [template repeaters](/{{{polymer_version_dir}}}/docs/devguide/templates#dom-repeat)) introduce new, nested scopes.
+どの要素にとっても最上位のスコープは要素のプロパティです。いつくかのデータバインディングのヘルパー要素([テンプレートリピーター](/{{{polymer_version_dir}}}/docs/devguide/templates#dom-repeat))のような)では、新たに入れ子のスコープを導入します。
 
-For observers and computed properties, the scope is always the element's properties.
+オブザーバーと算出プロパティの場合、スコープは常に要素のプロパティになります。
 
-### Special paths
+### 特別なパス
 
-A path is a series of path segments. *In most cases*, each path segment is a property name.
+あるパスは、パスセグメント(*多くの場合*、各パスセグメントはプロパティの名前)の連続体です。
 
-There are a few special types of path segments.
+いくつか特殊なタイプのパスセグメントがあります。
 
-
-*   The wildcard character, `*`, can be used as the last segment in a path (like `foo.*`).
-    This wildcard path represents _all changes to a given path and its subproperties_, including
-    array mutations.
-*   The string `splices` can be used as the last segment in a path (like `foo.splices`) to represent
-    all array mutations to a given array.
-*   Array item paths (like `foo.11`) represent an item in an array, where the numeric path segment
-    represents an array index.
+*   ワイルドカード記号(`*`)は、パス内の最後のセグメントとして使用できます。(例：`foo.*`)ワイルドカードパスは、配列の変更を含む、指定されたパス及びそのサブプロパティに対する全ての変更を表します。
+*   文字列`splices`は、パス内の最後のセグメントとして使用できます。(例：`foo.splices`)splicesは指定された配列における全ての変更を表します。
+*   配列アイテムのパスは、(例：`foo.11`)ある配列内のアイテムを表し、数字のパスセグメントは配列のインデックスを表します。
 
 
 
-#### Wildcard paths {#wildcard-paths}
+#### ワイルドカードパス {#wildcard-paths}
 
-When used as the last segment in a path, the wildcard character (`*`) represents any change to the
-previous property or its subproperties. For example, if `users` is an array, `users.*` indicates an
-interest in any changes to the `users` array or its subproperties.
+ワイルドカード記号(`*`)をパス内の最後のセグメントとして使用すると、前のプロパティやそのサブプロパティへの変更を表します。例えば、`users`という配列があった場合、`users.*`と記述すると`users`配列自身またはそのサブプロパティへの変更について関心があることを示します。
 
-Wildcard paths are only used in observers, computed properties and computed bindings. You can't use
-a wildcard path in a data binding.
+ワイルドカードパスは、オブザーバー、算出プロパティ、算出バインディングだけに使用されます。データバインディングにおいてワイルドカードパスを使用することはできません。
 
-#### Array mutation paths
+#### 配列変更パス
 
 When used as the last segment in a path, `splices` represents any array *mutations* to the
 identified array (additions or deletions). For example, if `users` is an array, the path
@@ -336,95 +279,78 @@ registered by a wildcard path (for example, you won't see changes to subproperti
 *inside* the array). **In most cases, it's more useful to use a wildcard observer for arrays.**
 
 
-### Two paths referencing the same object {#two-paths}
+パスの最後のセグメントとして`splices`を使用した場合には、指定された配列に対するすべての変更(追加や削除)を表します。例えば、`users`という配列があった場合、パス`users.splices`は配列に行われたどんな追加や削除も認識します。
 
-Sometimes an element has two paths that point to the same object.
+パス`.splices`は、オブザーバー、算出プロパティ、算出バインディングで利用され、配列の変更に関心があることを示します。パス`.splices`の監視は、ワイルドカードパスによって登録された変更の**サブセット**を提供します。(例えば、配列内のオブジェクトのサブプロパティを監視することはないかもしれません)。**多くの場合、配列に対しては、ワイルドカードを使ったオブザーバーが役立ちます。**
 
-For example, an element has two properties, `users` (an array) and `selectedUser` (an object). When
-a user is selected, `selectedUser` refers one of the objects in the array.
+### 同一オブジェクトを参照する二つのパス {#two-paths}
+
+時々、一つの要素に同じオブジェクトを指し示す、二つのパスが存在することがあります。
+
+例えば、要素に配列`users`やオブジェクト`selectedUser`を参照する二つのプロパティがあったとします。あるユーザーが選択されると`selectedUser`は配列内の一つのオブジェクトを参照します。
 
 
 ![A user-list element and an array with four items labeled \[0\] through \[3\]. The user-list has two properties, users and selectedUser. The users property is connected to the array by an arrow labeled 1. The selectedUser property is connected to the array item, \[1\] by an arrow labeled 2.](/images/1.0/data-system/linked-paths-new.png)
 
-1.  The `users` property references the array itself.
-2.  The `selectedUser` property references an item in the array.
+1. プロパティ`users`は配列そのものを参照します。
+2. プロパティ`selectedUser`は配列内のアイテムを参照します。
 
-In this example, the element has several paths that refer to the second item in the array:
+この例では、要素には、配列内の二番目のアイテムを参照する以下の二つのパスが存在します。
 
+*   `selectedUser`
+*   `users.1`（`1`は配列`users`内のアイテムのインデックスです）
 
-*   `"selectedUser"`
-*   `"users.1"` (where 1 is the item's index in the `users` array)
+デフォルトでは、Polymerには(`users.1`のような)配列のパスを`selectedUser`に関連付ける方法がありません。
 
-By default, Polymer has no way to associate the array paths (like `users.1`) with `selectedUser`.
-
-For this exact use case, Polymer provides a data binding helper element, `<array-selector>`, that
-maintains path linkages between an array and a selected item from that array. (`<array-selector>`
-also works when selecting multiple items from an array.)
-
-For other use cases, there's an imperative method,
-[`linkPaths`](/{{{polymer_version_dir}}}/docs/api/elements/Polymer.Element#method-linkPaths) to
-associate two paths. When two paths are *linked*, an [observable change](#observable-changes) to one
-path is observable on the other path, as well.
+このようなケースに最適な手段として、Polymerは、データバインディングのヘルパー要素`<array-selector>`を用意しており、配列とその配列から選択されたアイテムの間でパスの結合を保持します。(`<array-selector>`は、配列から複数のアイテムを選択する場合にも動作します)。
 
 
-Related task:
+他のユースケースのために、二つのパスを関連付けるための命令的なメソッドとして[linkPaths](/{{{polymer_version_dir}}}/docs/api/elements/Polymer.Element#method-linkPaths)があります。二つのパスがリンクされている場合、一方のパスに[監視可能な変更](#observable-changes)を加えると、もう一方のパスでも同様にその変更を監視できます。
 
-*   [Link two paths to the same object](model-data#linkpaths)
+関連タスク：
 
-*   [Data bind an array selection](templates#array-selector)
+*   [二つのパスを同一オブジェクトにリンク](model-data#linkpaths)
+*   [配列の選択をデータバインド](templates#array-selector)
 
+## データフロー {#data-flow}
 
+Polymerは*Mediatorパターン*を実装しており、ホスト要素は、要素自身とそのローカルDOMのノード間のデータフローを管理します。
 
-## Data flow {#data-flow}
+二つの要素がデータバインディングでコネクトされると、データの変更は、ホストからターゲットへ下に向けて(downward)、またターゲットからホストへ上に向けて、あるいはその両方に向けて流すことができます。
 
-Polymer implements the mediator pattern, where a host element manages data flow between itself and
-its local DOM nodes.
+ローカルDOM内の二つの要素が同一のプロパティにバインドされている場合、データはある要素から別の要素に流れるように思われますが、この流れはホストによって仲介(mediate)されたものです。一つの要素で生じた変更がホストへ**上に**伝播すると、ホストはその変更を他方の要素へ**下に**伝播させます。
 
-When two elements are connected with a data binding, data changes can flow _downward_, from
-host to target, _upward_, from target to host, or both ways.
+### データフローは同期的
 
-When two elements in the local DOM are bound to the same property data appears to flow from one
-element to the other, but this flow is _mediated_ by the host. A change made by one element
-propagates **up** to the host, then the host propagates the change **down** to the second element.
+データフローは**同期的**です。あなたの記述したコードが[監視可能な変更](#observable-changes)を発生させると、その変更による全てのデータフローとプロパティエフェクトは、要素がアクションを明示的に遅延させない限り(例えば、非同期メソッドを呼び出すことによって)、次の行のJavaScriptが実行される前に発生します。
 
-### Data flow is synchronous
+### データフローの制御の仕組み {#data-flow-control}
 
-Data flow is **synchronous**. When your code makes an [observable change](#observable-changes),
-all of the data flow and property effects from that change occur before the next line of your
-JavaScript is executed, unless an element explicitly defers action (for example, by calling an
-asynchronous method).
+個々のバインディングによってサポートされるデータフローのタイプは、以下の項目に依存して決まります。：
 
-### How data flow is controlled {#data-flow-control}
+*   使用されるバインディングアノテーションのタイプ。
+*   ターゲットプロパティーの設定。
 
-The type of data flow supported by an individual binding depends on:
+二種類あるデータバインディングアノテーションは以下の通りです。：
 
-*   The type of binding annotation used.
-*   The configuration of the target property.
-
-The two types of data binding annotations are:
-
-*   **Automatic**, which allows upward (target to host) and downwards (host to target) data flow.
-    Automatic bindings use double curly brackets (`{{ }}`):
+*   **自動的(automatic)**：上向き(ターゲットからホストへ)及び下向き(ホストからターゲットへ)のデータフローを許可します。自動バインディングには二重中括弧(`{{ }}`)を使用します。)：
 
     ```html
     <my-input value="{{name}}"></my-input>
     ```
 
-*   **One-way**, which only allows downwards data flow. Upward data flow is disabled. One-way bindings
-    use double square brackets (`[[ ]]`).
+*   **一方向(one-way)**：下向きのデータフローだけ許可します。上向きのデータフローは無効です。一方向バインディングには二重角括弧(`[[ ]]`)を使用します。
 
     ```html
     <name-tag name="[[name]]"></name-tag>
     ```
 
-The following configuration flags affect data flow to and from target properties:
+次の設定フラグは、**ターゲットプロパティ間**におけるデータフローに影響を与えます。：
 
-*   `notify`. A notifying property **supports upward data flow**. By default, properties are
-    non-notifying, and don't support upward data flow.
-*   `readOnly`. A read-only property **prevents downward data flow**. By default, properties are
-    read/write, and support downward data flow.
+*   `notify`：**上向きのデータフローをサポートします**。デフォルトでは、プロパティは`false`(non-notifying)であり、上向きのデータフローはサポートされません。
+*   `readOnly`：**下向きのデータフローを防ぎます**。デフォルトでは、プロパティは`false`(read/write)であり、下向きのデータフローをサポートします。
 
-Example property definitions {.caption}
+プロパティ定義の例 {.caption}
 
 ```js
 properties: {
@@ -443,58 +369,56 @@ properties: {
 }
 ```
 
-This table shows what kind of data flow is supported by automatic bindings based on the
-configuration of the target property:
+以下の表は、ターゲットプロパティの設定を基に自動バインディングがどのようなタイプのデータフローをサポートするのか示したものです。：
 
 <table class="config-summary">
   <tr>
     <th>
-      Configuration
+      設定
     </th>
     <th>
-      Result
+      結果
     </th>
   </tr>
   <tr>
     <td><pre><code>notify: false,
 readOnly: false</code></pre></td>
     <td>
-      One-way, downward
+      一方向、下向き
     </td>
   </tr>
   <tr><td><pre><code>notify: false,
 readOnly: true</code></pre></td>
     <td>
-      No data flow
+      データフローなし
     </td>
   </tr>
   <tr>
     <td><pre><code>notify: true,
 readOnly: false</code></pre></td>
     <td>
-      Two-way
+      双方向
     </td>
   </tr>
   <tr>
     <td><pre><code>notify: true,
 readOnly: true</code></pre></td>
     <td>
-      One-way, upward
+      一方向、上向き
     </td>
   </tr>
 </table>
 
-By contrast, one-way bindings only allow one-way, downward data flow, so the `notify` flag doesn't
-affect the outcome:
+これとは対照的に、一方向バインディングは下向きのデータフローだけを許可するため、`notify`フラグは結果に影響することはありません。：
 
 
 <table class="config-summary">
   <tr>
     <th>
-      Configuration
+      設定
     </th>
     <th>
-      Result
+      結果
     </th>
   </tr>
   <tr>
@@ -503,7 +427,7 @@ affect the outcome:
       <pre><code>readOnly: false</code></pre>
     </td>
     <td>
-      One-way, downward
+      一方向、下向き
     </td>
   </tr>
   <tr>
@@ -511,25 +435,20 @@ affect the outcome:
       <pre><code>readOnly: true</code></pre>
     </td>
     <td>
-      No data flow
+      データフローなし
     </td>
   </tr>
 </table>
 
 
- **Property configuration _only affects the property itself_, not
-subproperties**. In particular, binding a property that's an object or array creates shared data
-between the host and target element. There's no way to prevent either element from mutating a shared
-object or array. For more information, see [Data flow for objects and
-arrays](#data-flow-objects-arrays)
+**プロパティの設定(readOnlyやnotify)は、プロパティそのものに影響するだけで、サブプロパティには及びません。**特に、値にオブジェクトや配列を持つプロパティをバインディングした場合、ホストとターゲット要素の間で共有データが生成されますが、プロパティの設定による制御ができないので、どちらの要素でも共有されたオブジェクトや配列の変更を防ぐ方法はありません。詳細については、[オブジェクト及び配列のデータフロー](#data-flow-objects-arrays)を参照してください。
 {.alert .alert-warning}
 
-### Data flow examples
+### データフローの例
 
-The following examples show the various data flow scenarios described above.
+以下の例で、上記のさまざまなデータフローのシナリオを示しています。
 
-
-Example 1: Two-way binding { .caption }
+例1：双方向バインディング { .caption }
 
 ```html
 <script>
@@ -569,10 +488,9 @@ Example 1: Two-way binding { .caption }
   </script>
 ```
 
-Example 2: One-way binding (downward) { .caption }
+例2：一方向バインディング(下向き) { .caption }
 
-Changing the binding to a one-way binding `[[ ]]` produces a one-way binding. This example uses the
-same `x-target` element as example 1.
+バインディングを一方向のバインディング(`[[ ]]`)に変更すると、*一方向バインディング*が生成されます。この例では、例1と同じ`x-target`要素を使用しています。
 
 ```html
 <dom-module id="x-host">
@@ -592,10 +510,8 @@ same `x-target` element as example 1.
   </script>
 ```
 
-Example 3: One-way binding (downward) { .caption }
-
-Similarly, using the two-way binding delimiters but omitting the `notify: true` on `someProp` yields
-a one-way, downward binding.
+例3：一方向バインディング（下向き）
+同様に、双方向バインディングデリミタは使用しながら、`someProp`プロパティで`notify: true`を省略すると、下向きの一方向バインディングが生成されます。`someProp` 
 
 ```html
 <script>
@@ -634,7 +550,7 @@ a one-way, downward binding.
   </script>
 ```
 
-Example 4: One-way binding (upward, child-to-host) { .caption }
+Example 例4：一方向バインディング(上向き、子からホストへ) { .caption }
 
 
 ```html
@@ -676,7 +592,7 @@ Example 4: One-way binding (upward, child-to-host) { .caption }
   </script>
 ```
 
-Example 5: No data flow / nonsensical state { .caption }
+例5：データフローなし/意味のない(nonsensial)状態 { .caption }
 
 
 ```html
@@ -719,201 +635,148 @@ Example 5: No data flow / nonsensical state { .caption }
 ```
 
 
-### Upward and downward data flow
+### 上向きおよび下向きデータフロー
 
-Since the host element manages data flow, it can directly interact with the target element. The host
-propagates data downward by setting the target element’s properties or invoking its methods.
+ホスト要素はデータフローを管理しているので、ターゲット要素と直接的にやりとりすることができます。ホストは、ターゲット要素のプロパティを設定したり、メソッドを呼び出すことで下に向けてデータを伝播します。
 
 
 ![An element, host-element connected to an element, target-element by an arrow labeled 1.](/images/1.0/data-system/data-flow-down-new.png)
 
-1.  When a property changes on the host element, it sets the corresponding property on the target
-    element, triggering the associated property effects.
+1. ホスト要素でプロパティが変更されると、ターゲット要素の対応するプロパティが設定され、関連するプロパティエフェクトが発生します。
 
-Polymer elements use events to propagate data upward. The target element fires a non-bubbling event
-when an observable change occurs. (Change events are described in more detail in [Change
-notification events](#change-events).)
+Polymer要素は、イベントを使用してデータを上に向けて伝播させます。ターゲット要素は、*監視可能な変更*が発生するとノンバブリングイベントを発火します。(変更イベントに関する詳細は、[変更通知イベント](#change-events)で説明しています)。
 
-For **two-way bindings**, the host element listens for these change events and propagates the
-changes—for example, setting a property and invoking any related property effects. The property
-effects may include:
+**双方向バインディング**の場合、ホスト要素は、これらの変更イベントを監視(listen)し、その変更を伝播させます。これら変更は、プロパティを設定したり、関連する*プロパティエフェクト*が作用することで生じます。プロパティエフェクトには以下のようなものが含まれるかもしれません。
 
-
-*   Updating data bindings to propagate changes to sibling elements.
-*   Generating another change event to propagate the change upward.
+*   兄弟要素(sibling elements)へ変更を伝播させるためにデータバインディングをアップデートする。
+*   変更を上に向けて伝播させるため、別の変更イベントを生成する。
 
 
 ![An element, target-element connected to an element, host-element by an arrow labeled 1. An arrow labeled 2 connects from the host element back to itself.](/images/1.0/data-system/data-flow-up-new.png)
 
-1.  A property change on the target element causes a property change event to fire.
-2.  The host element receives the event and sets the corresponding property, invoking the related
-    property effects.
+1. ターゲット要素におけるプロパティの変更によって、プロパティ変更イベントが発生します。
+2. ホスト要素はイベントを受け取ると対応するプロパティを設定し、関連するプロパティエフェクトを発生させます。
 
-For **one-way binding** annotations, the host doesn't create a change listener, so upward data changes
-aren't propagated.
+**一方向バインディング**アノテーションを使うと、ホストは変更リスナーを生成しませんので、データ変更が上に向かって伝播することはありません。
 
-### Data flow for objects and arrays {#data-flow-objects-arrays}
+### オブジェクトと配列のデータフロー  {#data-flow-objects-arrays}
 
-For object and array properties, data flow is a little more complicated. An object or array can be
-referenced by multiple elements, and there's no way to prevent one element from mutating a shared
-array or changing a subproperty of an object.
+プロパティがオブジェクトや配列の場合、データフローは少々複雑になります。オブジェクトや配列は複数の要素から参照することができ、また、ある要素が共有された配列を変更したり、オブジェクトのサブプロパティを変更したりするのを防ぐ術はありません。
 
-As a result, Polymer treats the contents of arrays and objects as always being **available** for two-
-way binding. That is:
+そのため、Polymerは配列やオブジェクトの内容を、常に双方向バインディング**可能なもの**として扱います。言い換えると：
+
+*   ターゲットプロパティが読み取り専用(`readOnly:true`)に設定されていても、データの更新はいつも下に向かって流れます。
+*   ターゲットプロパティが通知可能(`notify:ture`)に設定されていなくても、上向きのデータフローの変更イベントは常に発生します。
+
+一方向バインディングアノテーションはイベントリスナーを生成しないため、これらの変更通知がホスト要素に伝播されないようにします。
+
+### 変更通知イベント {#change-events}
+
+要素は、以下のいずれかの[監視可能な変更](#observable-changes)が発生した時点で*変更通知イベント*を発生させます。：
+
+*   通知設定されたプロパティへの変更
+*   サブプロパティの変更
+*   配列の変更
 
 
-*   Data updates always flow downwards, even if the target property is marked read-only.
-*   Change events for upward data flow are always fired, even if the target property is not marked
-    as notifying.
+イベントの`type`プロパティは、どのプロパティが変更されたか示しています。：<code><var>property</var>-changed</code>という命名規則従い、<code><var>property</var></code>の部分はダッシュケース(dash-case)に変換したプロパティ名になります。(つまり、`this.firstName`が変更されると`first-name-changed`が発火します)。
 
-Since one-way binding annotations don't create an event listener, they prevent these change
-notifications from being propagated to the host element.
+<code><var>property</var>-changed</code>リスナーを要素に手動で設定して、外部の要素、フレームワーク、またはライブラリにプロパティの変更を通知することができます。
 
+イベントの内容は、変更によって異なります。
 
-### Change notification events {#change-events}
+*   プロパティの変更の場合、`detail.value`フィールドにプロパティの新しい値が含まれます。
+*   サブプロパティの変更の場合、サブプロパティへのパスが`detail.path`フィールドに含まれます、そして新しい値が`detail.value`フィールドに含まれます。
+*   配列の変更の場合、`detail.path`フィールドは`myArray.splices`のように配列の変更パスになります。そして`detail.value`フィールドが変更レコードになります。変更レコードについては、ドキュメントの[配列オブザーバー](/{{{polymer_version_dir}}}/docs/devguide/observers#array-observation)で解説されています。
 
-An element fires a change notification event when one of the following
-[observable changes](#observable-changes) occurs:
-
-*   A change to a notifying property.
-
-*   A subproperty change.
-
-*   An array mutation.
-
-The event's type property indicates which property changed: it follows a naming convention of
-<code><var>property</var>-changed</code>, where <code><var>property</var></code> is the property
-name, in dash case (so changing `this.firstName` fires `first-name-changed`).
-
-You can manually attach a <code><var>property</var>-changed</code> listener to an element to
-notify external elements, frameworks, or libraries of property changes.
-
-The contents of the event vary depending on the change.
-
-*   For a property change, the new value of the property is included in the `detail.value` field.
-*   For a subproperty change, the _path_ to the subproperty is included in the `detail.path` field,
-    and the new value is included in the `detail.value` field.
-*   For an array mutation, the `detail.path` field is an array mutation path, such as
-    "myArray.splices", and the `detail.value` field is a change record, like the one described in the documentation on [array observation](/{{{polymer_version_dir}}}/docs/devguide/observers#array-observation).
-
-    When you mutate an array, Polymer also generates a change event for the array's `length` property (for example, `detail.path` is "`myArray.length`" and `detail.value` is the new length of the array).
-
-**Don't stop propagation on change notification events.** To avoid creating and discarding
-event objects, Polymer uses cached event objects for change notifications. Calling `stopPropagation`
-on a change notification event **prevents all future events for that property.** Change notification
-events don't bubble, so there should be no reason to stop propagation.
+**注意**：**変更通知イベントの伝播は停止しないでください。**イベントオブジェクトの生成と廃棄を避けるため、Polymerは変更通知にキャッシュされたイベントオブジェクトを使用します。変更通知イベントで`stopPropagation`を呼び出ことで、**そのプロパティにおけるすべてのイベントを将来に渡って防止します。**変更通知イベントはバブリングしないので、伝播を停止する必要はありません。
 {.alert .alert-warning}
+### カスタム変更通知イベント
 
-### Custom change notification events
-
-Native elements like `<input>` don't provide the change notification events that Polymer uses for
-upward data flow. To support two-way data binding of native input elements, Polymer lets you
-associate a **custom change notification event** with a data binding. For example, when binding to a
-text input, you could specify the `input` or `change` event:
+`<input>`のようなネイティブ要素は、Polymerが上向きのデータフローに利用する変更通知イベントを用意していません。ネイティブの`input`要素で双方向データバインディングをサポートするために、Polymerでは**カスタム変更通知イベント**をデータバインディングと関連付けることができるようになっています。例えば、テキスト入力にバインドすると、その`input`または`change`イベントを指定することができるようになります。：
 
 
 ```html
 <input value="{{firstName::change}}">
 ```
 
+この例では、`firstName`プロパティが`input`要素の`value`プロパティにバインドされています。`input`要素が`change`イベントを発生させるたびに、Polymerは`firstName`プロパティが`input`の`value`と一致させるように更新し、また関連するプロパティエフェクトがあればすべて発生させます。**イベントの内容は重要ではありません。**
 
-In this example, the `firstName` property is bound to the input's `value` property. Whenever the
-input element fires its `change` event, Polymer updates the `firstName` property to match the input
-value, and invokes any associated property effects. **The contents of the event aren't important.**
+この手法は、特にネイティブの`input`要素にとって便利ですが、Polymerを使って作成されていないコンポーネント(プロパティを公開しており、その変更時にイベントを発生させる)に双方向バインディングを提供する手段としても使うことができます。
 
-This technique is especially useful for native input elements, but can be used to provide two-way
-binding for any non-Polymer component that exposes a property and fires an event when the property
-changes.
+関連タスク：
 
-Related tasks:
+*   [Polymer要素でない要素への双方向バインディング](data-binding#two-way-native)
 
-*   [Two-way bind to a non-Polymer element](data-binding#two-way-native)
+### 要素の初期化
 
-### Element initialization
+要素がローカルDOMを初期化する際は、要素はローカルDOMの子のプロパティを設定し、データバインディングの初期化も行います。
 
-When an element initializes its local DOM, it configures the properties of its local DOM children and
-initializes data bindings.
+初期化処理の中では、ホストの値が優先されます。例えば、ホストプロパティがターゲットプロパティにバインドされている場合、host要素とtarget要素の両方でデフォルト値を指定すると、親のデフォルト値が使用されます。
 
-The host’s values take priority during initialization. For example, when a host property is bound to
-a target property, if both host and target elements specify default values, the parent's default
-value is used.
+## プロパティエフェクト(property effects) {#property-effects}
 
-## Property effects {#property-effects}
+*   算出プロパティの再計算
+*   データバインディングの更新
+*   プロパティ値をホスト要素の属性に反映
+*   オブザーバーの呼び出し
+*   変更通知イベントの発火
 
-Property effects are actions triggered by [observable changes](#observable-changes) to a given
-property (or path). Property effects include:
+これらのプロパティエフェクトの実行順序は、しっかり定義されています。：
 
-*   Recomputing computed properties.
-*   Updating data bindings.
-*   Reflecting a property value to an attribute on the host element.
-*   Invoking observers.
-*   Firing change notification events.
+1. 算出プロパティ
+2. データバインディング
+3. 反映された(reflected)値
+4. オブザーバー
+5. 変更通知イベント
 
-These property effects run in a well-defined order:
+このような実行順序によって、変更が下方に伝播される前に算出プロパティが再計算され、その変更がオブザーバーの実行前にローカルDOMの子に伝播されることが保証されます。
 
-1.  Computed properties.
-2.  Data bindings.
-3.  Reflected values.
-4.  Observers.
-5.  Change notification events.
+### データバインディング
 
-This order ensures that computed properties are recomputed before changes are propagated
-downward, and that changes are propagated to the local DOM children before observers run.
+*データバインディング*は、ホスト要素のデータとホストのローカルDOM内の`target`ノードのプロパティや属性の間にコネクションを確立します。要素のローカルDOMのテンプレートにアノテーションを追加することでデータバインディングを生成します。
 
-### Data bindings
+*アノテーション*とは、ターゲット要素でデータバインディング用デリミタ`{{ }}`又は`[[ ]]`を使用した属性値です。
 
-A *data binding* establishes a connection between data on the host
-element and a property or attribute of a `target node` in the host's local DOM. You create data
-bindings by adding _annotations_ to an element's local DOM template.
-
-Annotations are attribute values set on a target element that include the data binding delimiters
-`{{ }}` or `[[ ]]`.
-
-Two-way property binding:
+双方向プロパティバインディング：
 
 <code><var>target-property</var>="{{<var>hostProperty</var>}}"</code>
 
-One-way property binding:
+一方向プロパティバインディング：
 
 <code><var>target-property</var>="[[<var>hostProperty</var>]]"</code>
 
-Attribute binding:
+属性バインディング：
 
 <code><var>target-attribute</var>$="[[<var>hostProperty</var>]]"</code>
 
-You can also use a data binding annotation in the body of an element, which is equivalent to binding
-to the element's `textContent` property.
+また、要素の本体にデータバインディングアノテーションを使用することもできます。これは、要素の`textContent`プロパティに対してバインディングを行なったのと同じことです。
 
 ```html
 <div>{{hostProperty}}</div>
 ```
 
-The text inside the delimiters can be one of the following:
+デリミタ内のテキストは、次のいずれかになります。：
 
-*   A property or subproperty path (`users`, `address.street`).
-*   A computed binding (`_computeName(firstName, lastName, locale)`)
-*   Any of the above, preceded by the negation operator (`!`).
+*   プロパティまたはサブプロパティのパス(`users`、`address.street`)。
+*   算出バインディング（`_computeName(firstName, lastName, locale)`）。
+*   上記のそれぞれに、否定演算子(`!`)を後置したもの
 
-For more information, see [Data binding](data-binding).
+詳細については、[データバインディング](data-binding)を参照してください。
 
 
-## Using the MutableData mixin {#mutable-data}
+## UMutableDataミックスインの使用 {#mutable-data}
 
-Polymer 1.x uses a dirty-checking mechanism to prevent the data system from doing extra work.
-Polymer 2.x retains this mechanism by default, but lets elements opt out of dirty checking objects
-and arrays.
+Polymer 1.xでは、*ダーティチェック*(dirty check)メカニズムを使用して、データシステムが余計な作業をするのを防いでいました。Polymer 2.xでもデフォルトでこのメカニズムを維持していますが、要素においてオブジェクトや配列に対する*ダーティチェック*をオプトアウト(利用者が機能の使用を制限)できるようになっています。
 
-With the default dirty-checking mechanism, the following code doesn't generate any property effects:
+デフォルトの*ダーティチェック*メカニズムによって、次のコードでは*プロパティエフェクト*を生成させません。：
 
 ```js
 this.property.subproperty = 'new value!';
 this.notifyPath('property');
 ```
 
-This strict dirty checking for objects and arrays is based in object equality. Because `property`
-still points to the same object, the dirty check fails, and sub-property changes don't get
-propagated. Instead, you need to use the Polymer `set` or array mutation methods, or call
-`notifyPath` on the exact path that changed:
+オブジェクトと配列に対する厳密なダーティチェックは、オブジェクトの同一性に基づいています。`property`は依然として同じオブジェクトを指しているので、ダーティチェックは失敗し、サブプロパティの変更は伝播しません。代わりに、Polymerの`set`メソッドや*配列変更メソッド*を使用するか、変更された正確なパス指定して`notifyPath`を呼び出す必要があります。：
 
 ```js
 this.set('property.subproperty', 'new value!');
@@ -922,29 +785,25 @@ this.property.subproperty = 'new value!';
 this.notifyPath('property.subproperty');
 ```
 
-In general, the dirty-checking mechanism is more performant. It works well for apps where one of
-the following is true:
+一般に、ダーティチェックメカニズムはパフォーマンスの向上をもたらします。以下いずれかの要件が当てはまるアプリケーションでは特にうまくいきます。：
 
-*   You use immutable data.
-*   You always use the Polymer data mutation methods to make granular changes.
+*   不変データを使用する。
+*   小さな変更についても必ずPolymerのデータ変更メソッドを使用する。
 
-However, for apps that don't use immutable data and can't use the Polymer data methods, Polymer 2.0
-provides the [`Polymer.MutableData`](/{{{polymer_version_dir}}}/docs/api/mixins/Polymer.MutableData)
-mixin.
+しかし、不変のデータを使用せず、Polymerのデータ関連メソッドを使用できないアプリケーションに対して、Polymer 2.0は[`Polymer.MutableData`](/{{{polymer_version_dir}}}/docs/api/mixins/Polymer.MutableData)ミックスインを用意しています。
 
 ```js
 class MyMutableElement extends Polymer.MutableData(Polymer.Element) { ... }
 ```
 
-The `MutableData` mixin eliminates the dirty check for that element, so the code above would work
-as intended.
+`MutableData`ミックスインは要素のダーティチェックを省略するので、上記コードは意図した通りに動作するでしょう。
 
 ```js
 this.property.subproperty = 'new value!';
 this.notifyPath('property');
 ```
 
-This mutable data mode also lets you batch several changes before invoking property effects:
+可変(mutable)データモードでは、*プロパティエフェクト*を呼び出す前に、いくつかの変更をバッチで処理することもできます：
 
 
 ```js
@@ -954,7 +813,7 @@ this.property.counter++;
 this.notifyPath('property');
 ```
 
-You can also use set or simply set a top-level property to invoke effects:
+*プロパティエフェクト*を呼び出すために、`set`メソッドを使ったり、または単純にトップレベルのプロパティを設定することもできます。：
 
 ```js
 this.set('property', this.property);
@@ -962,13 +821,9 @@ this.set('property', this.property);
 this.property = this.property;
 ```
 
-Using `set` to change a specific subproperty can often be the most efficient way to make changes.
-However, elements that use `MutableData` shouldn't need to use this API, making it
-more  compatible with alternate data-binding and state management libraries.
+特定のサブプロパティを変更するのに`set`メソッドを利用するのが、多くのケースで最も効率的な手段となります。しかし、`MutableData`を使用する要素ではこのAPIを使用する必要はなく、データバインディングや状態管理を行う代替ライブラリを利用することで互換性をさらに高めることができます。
 
-Note that when you re-set a property at the top-level, all property effects for that property and
-its subproperties, array items, and so-on are re-run. In addition, observers with wildcard paths
-(like `prop.*`) are only notified with the top-level change:
+トップレベルでプロパティを再設定すると、そのプロパティ、サブプロパティ、配列のアイテムなどに対する*プロパティエフェクト*が全て再実行されてしまうので注意が必要です。さらに、ワイルドカードパス(`prop.*`のような)を指定したオブザーバーには、トップレベルでの変更だけが通知されます。：
 
 ```js
 // With MutableData mixin
@@ -977,7 +832,7 @@ this.property.deep.path = 'another new value';
 this.notifyPath('property');
 ```
 
-Using `set` to set specific paths generates granular notifications:
+`set`メソッドを利用して特定のパスを設定すると、細かい通知も生成します。：
 
 
 ```js
@@ -985,17 +840,11 @@ Using `set` to set specific paths generates granular notifications:
 this.set('property.deep.path', 'new value');
 ```
 
-If an element's properties only take primitive values, like strings, numbers or booleans, you don't
-need to use `MutableData`. These values are always dirty-checked and `MutableData` would provide
-no benefit. This is true for most simple UI elements. `MutableData` is likely to be useful for
-complex reusable elements (like `dom-repeat` or `iron-list`), or for application-specific elements
-that hold complex state information.
+要素のプロパティが文字列、数値、ブール値などのプリミティブな値しか取らない場合には、`MutableData`を使用する必要はありません。これらの値は常にダーティチェックされており`MutableData`にはメリットがありません。これは多くのシンプルなUI要素について言えることです。`MutableData`は複雑で再利用可能な要素(`dom-repeat`または`iron-list`のような)や、複雑な状態の情報を持つアプリケーション固有の要素に対しては役立つでしょう。
 
-Note that the `MutableData` mixin does not affect the element's shadow DOM children. **Any element
-that doesn't use the `Polymer.MutableData` mixin uses the default dirty-checking policy.**
+`MutableData`ミックスインは、要素のShadow DOMの子には影響を与えないことに注意してください。`Polymer.MutableData`**ミックスインを使用しないすべての要素は、すべてデフォルトのダーティチェックポリシーに従います。**
 
-If you're using the `dom-repeat` element, you can enable mutable data mode by setting its
-`mutableData` property:
+`dom-repeat`要素を使用している場合は、`mutableData`プロパティを設定することで*可変データモード*を有効にすることができます：
 
 ```html
 <!-- standard dom-repeat in MutableData mode -->
@@ -1005,12 +854,9 @@ If you're using the `dom-repeat` element, you can enable mutable data mode by se
 ```
 
 
-### Optional mutable data for reusable elements {#optional-mutable-data}
+### 再利用可能な要素のオプションとしての可変(mutable)データ {#optional-mutable-data}
 
-If you're building a reusable element that takes structured data, you can use the
-[`Polymer.OptionalMutableData`](/{{{polymer_version_dir}}}/docs/api/mixins/Polymer.OptionalMutableData)
-mixin. This mixin lets the element user select `MutableData` mode by setting the `mutableData`
-property on the element.
+構造化されたデータを取り込む再利用可能な要素を構築する場合は、[`Polymer.OptionalMutableData`](/{{{polymer_version_dir}}}/docs/api/mixins/Polymer.OptionalMutableData)ミックスインが使用できます。このミックスインを使用すると、要素上に`mutableData`プロパティを設定することで、`MutableData`モードを選択できます。
 
 ```js
 class MyStructuredDataElement extends Polymer.OptionalMutableData(Polymer.Element) {
@@ -1018,7 +864,7 @@ class MyStructuredDataElement extends Polymer.OptionalMutableData(Polymer.Elemen
 }
 ```
 
-The user can then use your element with either standard data flow, or the mutable data mode.
+これにより、要素の利用者は、標準のデータフローまたは可変データモードのいずれかで要素を利用することができます。
 
 ```html
 <!-- custom element using standard data flow -->
@@ -1030,7 +876,6 @@ The user can then use your element with either standard data flow, or the mutabl
 </my-structured-data-element>
 ```
 
-
-The `dom-repeat` element is an example of an element built with this mixin.
+`dom-repeat`要素は、このミックスインを利用して構成された要素の例です。
 
 

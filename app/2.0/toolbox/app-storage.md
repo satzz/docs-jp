@@ -4,31 +4,17 @@ title: App storage
 
 <!-- toc -->
 
-The app storage family of elements gives you a new set of tools for managing data in your app. The
-initial set includes ready-made elements for integrating with Firebase and PouchDB.
+`app-storage`関連の要素は、アプリ内のデータを管理するための新しいツール群を提供します。初期ツールには、アプリをFirebaseやPouchDBを可能にする要素が含まれています。
 
-## Firebase integration
+## Firebaseとの統合
 
-The Firebase 3.0.0 SDK supports a new set of Firebase elements, built with app storage, called
-[PolymerFire](https://github.com/Firebase/PolymerFire). These elements make critical
-Firebase SDK integrations such as app initialization, user authentication, and database access
-declarative, and easier than ever before.
+Firebase 3.0.0 SDKは、`app-storage`で構築された新しいFirebase要素のセットをサポートしており、[PolymerFire](https://github.com/Firebase/PolymerFire)と呼ばれています。これらの要素は、Firebase SDKと垣根のない統合を提供し、アプリ初期化時のユーザ認証、データベースアクセスのような処理をこれまで以上に簡単なものにしてくれます。
+### オフラインデータのミラーリング
 
-### Offline data mirroring
+[`<app-indexeddb-mirror>`](https://www.webcomponents.org/element/PolymerElements/app-storage/app-indexeddb-mirror)要素は、Firebaseのようなデータベースに読み取り専用のミラー機能を提供します。これにより、接続可能なネットワークがない場合でも、ユーザーは自身の個人データにアクセスできます。
 
-The [`<app-indexeddb-mirror>`](https://www.webcomponents.org/element/PolymerElements/app-storage/app-indexeddb-mirror)
-element provides a read-only mirror of a database like Firebase. This ensures that
-users will have access to their personal data even when there is no network available.
+Firebaseには、ユーザがアプリケーションの利用中に突然トンネルを通過した場合など、ネットワーク接続の一時的な切断から回復する能力もあります。ネットワークに再接続するとすぐ、Firebaseはサーバとの連携と更新を継続します。しかしFirebaseやその他の人気のストレージを使用したレイヤがうまく処理できないケースは他にもあります。例えば、ユーザーがオフライ環境でアプリ起動したような場合です。
 
-Firebase is resilient to temporary losses of network connectivity—like when a user suddenly goes
-through a tunnel while using your Firebase app. Firebase continues to work and update the server as
-soon it reconnects to the network. But there are other offline cases that Firebase—and other popular
-storage layers—don’t handle very well, like when a user starts the app while offline.
+## PouchDB要素
 
-## PouchDB Elements
-
-The Polymer [`app-pouchdb`](https://www.webcomponents.org/element/PolymerElements/app-pouchdb) component
-contains elements for PouchDB document access, database querying, synchronization across local and
-remote databases and even user authentication with a remote CouchDB instance. Since PouchDB can
-automatically synchronize data with a local IndexedDB database, it has
-never been easier to add offline-first data access to your progressive web app.
+Polymerの[app-pouchdb](https://www.webcomponents.org/element/PolymerElements/app-pouchdb)コンポーネントに含まれる要素は、PouchDBのドキュメントへのアクセス、データベースへのクエリ、ローカルデータベースとリモートデータベース間の同期、さらにはリモートのCouchDBインスタンスを使ったユーザー認証などにも利用できます。PouchDBはローカルのIndexedDBデータベースとデータを自動的に同期させるので、プログレッシブウェブアプリ(PWA)にオフライン優先のデータアクセス機能を追加することは容易なことではありません。

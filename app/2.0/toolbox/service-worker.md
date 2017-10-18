@@ -1,43 +1,26 @@
 ---
-title: Offline caching with Service Worker Precache
+title: Service Workerのプリキャッシュを使ったオフラインキャッシング
 ---
 
-To provide a better experience in offline and spotty network situations, App
-Toolbox uses a service worker to provide offline caching of critical resources. A
-service worker is a script associated with a specific web site that acts as a
-client-side proxy for network requests. The service worker can intercept network
-requests, access the browser's cache, and serve requests out of the cache
-instead of accessing the network.
+オフライン環境や不安定なネットワーク環境でより良いエクスペリエンスを提供するため、App Toolboxは*サービスワーカー*を利用することで、重要なリソースのオフラインキャッシュ機能を提供します。サービスワーカーは、特定のWebサイトに関連付けられたスクリプトであり、ネットワークリクエストに対するクライアントサイドでのプロキシとして機能します。サービスワーカーは、ネットワークリクエストをインターセプトし、ネットワーク越しにアクセスする代わりに、ブラウザのキャッシュへアクセスしてそのキャッシュからリクエストに応答します。
 
-The first time someone opens the site, the browser installs the site's service
-worker, and the service worker ensures that the site's critical resources are
-cached. On subsequent visits, the service worker can load resources directly
-from the cache. If the user is completely offline, the service worker can still
-load the site, and display cached data or an offline message, as appropriate.
+誰かが初めてサイトを開くと、ブラウザはそのサイトのサービスワーカーをインストールし、サービスワーカーが重要なリソースをキャッシュします。その後のサイト訪問時は、サービスワーカーはキャッシュからリソースを直接ロードできます。ユーザーが完全にオフラインの場合、サービスワーカーは引き続きサイトを読み込むことができ、必要に応じてキャッシュデータやオフラインメッセージを表示します。
 
-Service worker works well with an _app shell_ strategy, where the app's main UI
-views and logic (the app shell) are cached so that they can be served from the
-cache.
+サービスワーカーは、*app shellストラテジー*とうまく連携します。そこでは、アプリケーションのメインUIのビューとロジック(app shell)がキャッシュされるので、それらはキャッシュから提供されます。
 
-App Toolbox uses the Service Worker Precache (`sw-precache`) module for offline
-support. This module takes a list of files to cache and generates a service
-worker at build time, so you don't need to write your own service worker code.
+App Toolboxでは、オフラインサポートのためにService Worker Precache(`sw-precache`)モジュールを使用します。このモジュールは、キャッシュするファイルのリストを受け取り、ビルド時にサービスワーカーを生成します。そのため独自にサービスワーカーのコードを記述する必要はありません。
 
-For background, gotchas and debugging tips on service workers, see [Introduction to Service
-Worker](https://developers.google.com/web/fundamentals/primers/service-worker/) on Web Fundamentals.
+サービスワーカーの背景、問題点、およびデバッグのヒントについては、Web Fundamentalsの[Introduction to Service Worker](https://developers.google.com/web/fundamentals/primers/service-worker/)を参照してください。
 
-## Prerequisites
+## 利用条件
 
-To work with service worker, your application **must** be served over HTTPS. However, you can
-test service worker on your local system without a SSL certificate, because `localhost` is
-considered a secure origin.
+サービスワーカーと連携させるには、アプリケーションをHTTPS上で提供する**必要があります**。ただし、ローカルシステム上ではあれば、SSL証明書を使用せずにサービスワーカーをテストすることができます。なぜなら`localhost`はセキュリティオリジンと見なされるからです。
 
-## Add a service worker
+## サービスワーカーの追加
 
-Support for Service Worker Precache is built into the [Polymer CLI](/{{{polymer_version_dir}}}/docs/tools/polymer-cli),
-so a service worker script is automatically generated when you build your app.
+サービスワーカーのプレキャッシュのサポート機能は[Polymer CLI](/{{{polymer_version_dir}}}/docs/tools/polymer-cli)に組み込まれており、サービスワーカーのスクリプトはアプリケーションのビルド時に自動的に生成されます。
 
-However, to use the service worker, you need to add code to register it:
+ただし、サービスワーカーを利用するためには、サービスワーカーを登録するコードを追加する必要があります：
 
 ```js
 // Register service worker if supported.
@@ -46,32 +29,21 @@ if ('serviceWorker' in navigator) {
 }
 ```
 
-Registering a service worker doesn't speed up the first load of your site, so you can delay
-registering it until after your app has loaded.
+サービスワーカーを登録しても、サイトの初回のロード速度が向上することはありませんので、アプリケーションのロードが完了するまでその登録作業を遅延することができます。
 
-## Configuring the service worker
+## サービスワーカーの設定
 
-You can specify any Service Worker Precache options by passing an options file
-to the build command:
+ビルドコマンドにオプション設定ファイルを渡すことで、サービスワーカーのプレキャッシュに任意のオプションを指定できます。：
 
 <code>polymer build --sw-precache-config <var>config-file</var>.json</code>
 
-The config file is a JavaScript file that exports a set of configuration options supported by
-Service Worker Precache. See [Options parameter](https://github.com/GoogleChrome/sw-precache#options-parameter)
-in the `sw-precache` README for more information.
+設定ファイルはJavaScriptファイルで、サービスワーカーのプレキャッシュでサポートされているオプション設定をエクスポートします。詳細は、`sw-precache`のREADMEの[Optionsパラメータ](https://github.com/GoogleChrome/sw-precache#options-parameter)を参照してください。
 
-If you identify resources using the `--entrypoint`, `--shell` and `--fragment`, arguments, those
-files are added in to the `staticFileGlobs` parameter to ensure that they're cached.
+もし`--entrypoint`、`--shell`、`--fragment`引数を使ってリソースを識別した場合には、それらのファイルは`staticFileGlobs`パラメータに追加され、それらが確実にキャッシュされるようになります。
 
-If you're writing a single-page app and you want it to work completely offline, you probably want
-to specify a _fallback_ document, to be served when the requested URL is not in the cache. For a
-single—page app, this is typically the same as the entrypoint.  Configure fallback using the
-[navigateFallback](https://github.com/GoogleChrome/sw-precache#navigatefallback-string) and
-[navigateFallbackWhitelist](https://github.com/GoogleChrome/sw-precache#navigatefallbackwhitelist-arrayregexp)
-parameters.
+シングルページアプリケーション(SPA)を作成していて、それを完全にオフラインで動作させたい場合は、リクエストされたURLがキャッシュにない場合に提供される**フォールバック**ドキュメントを指定したいかもしれません。シングルページアプリケーション(SPA)の場合、一般的にはエントリポイントと同じものになります。[navigateFallback](https://github.com/GoogleChrome/sw-precache#navigatefallback-string)や[navigateFallbackWhitelist](https://github.com/GoogleChrome/sw-precache#navigatefallbackwhitelist-arrayregexp)パラメータを使用してフォールバックを設定してください。
 
-The following config file sets up some common options, including falling back to the `/index.html`
-file when offline.
+以下の設定ファイルではいくつかの一般的なオプションを設定しています。これには、オフライン時に`/index.html`ファイルにフォールバックする処理も含まれています。
 
 ```js
 module.exports = {
@@ -86,17 +58,12 @@ module.exports = {
 }
 ```
 
-Only paths that match the whitelist fall back to `/index.html`. In this case, the whitelist includes
-all files _except_ those that end in `.html` (for HTML imports) and ones with `/data/` in the path
-(for dynamically-loaded data).
+ホワイトリストに一致したパスだけが`/index.html`へフォールバックされます。今回の例では、ホワイトリストには`.html`(HTMLインポート用)で終わるものと、パスに`/data/`が含まれるもの(動的に読み込まれたデータを指す)以外の全てのファイルが指定されています。
 
-## More resources
+## 追加リソース
 
-The library supports a number of other features, including runtime caching of
-your app's dynamic content.
+ライブラリはその他にも、動的に生成されたアプリケーションコンテンツの実行時におけるキャッシングなど、さまざまな機能をサポートしています。
 
-For more information on the library, see [Service Worker Precache Getting
-Started](https://github.com/GoogleChrome/sw-precache/blob/master/GettingStarted.md).
+ライブラリの詳細については、[Service Worker Precache入門](https://github.com/GoogleChrome/sw-precache/blob/master/GettingStarted.md)を参照してください。
 
-For background on service workers, see [Introduction to Service
-Worker](https://developers.google.com/web/fundamentals/primers/service-worker/) on Web Fundamentals.
+サービスワーカーの背景については、Web Fundamentalsの[サービスワーカーの紹介](https://developers.google.com/web/fundamentals/primers/service-worker/)を参照してください。

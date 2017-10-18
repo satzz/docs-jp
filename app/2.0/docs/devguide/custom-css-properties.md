@@ -1,32 +1,33 @@
 ---
-title: Use custom properties
+title: カスタムCSSプロパティ
 ---
 
 <!-- toc -->
 
-The author of a Polymer element can provide custom CSS properties that you can use to style the appearance of the element in your application.
+Polymer要素の作成者は、カスタムCSSプロパティを提供することで、アプリケーション内で要素の見た目をスタイリングすることができます。
 
-Custom properties allow CSS authors to define cascading CSS variables, which are accepted by all CSS properties.
+カスタムプロパティによって、CSSの作成者はすべてのCSSプロパティで利用可能なカスケーディングCSS変数を定義できます。
 
-CSS variables can be used outside the context of custom elements, simply as a way to avoid scattering style data throughout a stylesheet. A CSS author assigns values to a custom property, and then uses the `var()` function to use these values elsewhere in the stylesheet.
+CSS変数はカスタム要素のコンテキスト外で使用することができ、スタイルシート全体にスタイル情報が散らばるのを防ぐことができます。CSSの作成者がカスタムプロパティに値を割り当てると、これらは`var()`関数を使用することでスタイルシートの他のどんな場所からも利用できます。
 
-This makes editing your CSS much easier and less prone to author error.
+これにより、CSSの編集は遥かに容易になり、エラーの発生も抑制できます。
 
-For example, the [`<paper-checkbox>` element](https://www.webcomponents.org/element/PolymerElements/paper-checkbox) provides custom properties for styling the colors, spacing and size of the checkbox and its label.
 
-As a developer, you can use these properties to style `<paper-checkbox>` elements in your applications.
+例えば、[`<paper-checkbox>`要素](https://www.webcomponents.org/element/PolymerElements/paper-checkbox)は、チェックボックスの色や間隔、サイズ、そのラベルをスタイリングするためのカスタムプロパティを提供しています。
 
-When you create your own custom elements, you can use custom properties to build an interface for the users of your element so they can style it.
+開発者は、これらのプロパティを利用することで、アプリケーションの中で`<paper-checkbox>`要素のスタイルを設定できます。
 
-### Use a custom properties API to style an element
+独自のカスタム要素を作成する際は、カスタムプロパティを使用して要素の利用者に向けてインターフェイスを構築することで、彼らが要素のスタイルを設定できるようにします。
 
-To use the interface of custom properties provided by an element author, look at the element's API documentation.
+### カスタムプロパティのAPIを使った要素のスタイリング
 
-For a good example, visit the [`<paper-checkbox>` API documentation](https://www.webcomponents.org/element/PolymerElements/paper-checkbox/paper-checkbox)
+カスタム要素の作成者が用意したカスタムプロパティのインターフェイスを利用する場合は、要素のAPIドキュメントを参照してください。
 
-This code sample inserts a `<paper-checkbox>` element with its default styling:
+模範的な例として、[`<paper-checkbox>` API documentation](https://www.webcomponents.org/element/PolymerElements/paper-checkbox/paper-checkbox)を参照してください。
 
-[See it on Plunker](http://plnkr.co/edit/if8IardvWBwZ2uMZIlgI?p=preview)
+以下のコードサンプルでは、`<paper-checkbox>`をデフォルトのスタイルで要素に挿入しています。：
+
+[Plunkerで動作を確認](http://plnkr.co/edit/if8IardvWBwZ2uMZIlgI?p=preview)
 
 ```html
 <base href="//polygit2.appspot.com/components/">
@@ -37,14 +38,14 @@ This code sample inserts a `<paper-checkbox>` element with its default styling:
 <paper-checkbox>Check me</paper-checkbox>
 ```
 
-Notice that:
+次の点に注意してください。
 
-* The checkbox label defaults to Times New Roman. This is true of any web page with no style info.
-* The checkbox receives default colors from the paper-element theme.
+* チェックボックスのラベルのデフォルトのフォントはTimes New Romanです。これはスタイル情報の無いどんなウェブページにも適用されます。
+* チェックボックスは、`paper-element`のテーマからデフォルトのカラーを受け取ります。(訳注：paper-elementsに共通のスタイルは、paper-stylesに定義されています。ここで定義されているスタイルは、Googleの提唱するマテリアルデザインのガイドラインに沿ったものです。).
 
-The style properties of the `<paper-checkbox>` element are configurable with the custom CSS properties that the element author has provided for us.
+`<paper-checkbox>`要素のスタイルプロパティは、要素の作成者が用意したカスタムCSSプロパティを利用して設定できます。
 
-To use a custom property of a custom element, create a style rule using this syntax:
+カスタム要素のカスタムプロパティを利用するには、次の構文でスタイルルールを作成して下さい。：
 
 ```html
 paper-checkbox {
@@ -52,11 +53,11 @@ paper-checkbox {
 }
 ```
 
-[See it on Plunker](http://plnkr.co/edit/u41sHRHAWtYiYyjWnFlP?p=preview)
+[Plunkerで動作を確認](http://plnkr.co/edit/u41sHRHAWtYiYyjWnFlP?p=preview)
 
-The paper elements provide a consistent way to configure styles across elements when using the paper element set, with variables.
+Paper要素は、これらを複数利用した場合に、変数を通じてこれらの要素群に対して一貫したスタイリングを行う手段を提供しています。
 
-We can use variables to configure the custom CSS properties in `<paper-checkbox>`:
+`<paper-checkbox>`の中で変数を使用してカスタムCSSプロパティを設定できます。：
 
 ```html
 <style is="custom-style">
@@ -69,25 +70,15 @@ We can use variables to configure the custom CSS properties in `<paper-checkbox>
 </style>
 ```
 
-## Create custom properties
+## カスタムプロパティの作成
 
-Rather than exposing the details of an element's internal implementation for
-theming, an element author defines one or more custom CSS
-properties as part of the element's API.
+要素の作成者は、テーマに関する内部実装の詳細を公開する代わりに、要素のAPIの一部としてカスタムCSSプロパティを一つ以上定義します。
 
-These custom properties can be defined similarly to other standard CSS properties
-and will inherit from the point of definition down the composed DOM tree,
-similar to the effect of `color` and `font-family`.
+これらのカスタムプロパティは、他の標準的なCSSプロパティと同様に定義することができ、定義された時点で合成されたDOMツリー(composed DOM tree)を通じてスタイルを下位に継承します。これは`color`や`font-family`の及ぼす影響に似ています。
 
-In the simple example below, the author of `<my-toolbar>` identified the need for
-users of the toolbar to be able to change the color of the toolbar title.  The
-author exposed a custom property called `--my-toolbar-title-color` which is
-assigned to the `color` property of the selector for the title element.  Users
-of the toolbar may define this variable in a CSS rule anywhere up the tree, and
-the value of the property will inherit down to the toolbar where it is used if
-defined, similar to other standard inheriting CSS properties.
+以下の簡単な例において、`<my-toolbar>`の作成者は、要素の利用者によってツールバーのタイトルの色を変更できるようにすべきと考えました。そこで作成者は、セレクタ`.title`の`color`プロパティに`--my-toolbar-title-color`というカスタムプロパティを割り当て公開しました。ツールバーの利用者は、ツリー上のどこかのCSSルールにおいて、この変数を定義するかもしれません。変数が定義された場合、他の標準なCSSプロパティの継承と同様に、プロパティの値は定義された箇所からツールバーへ下位に継承されます。
 
-Example: { .caption }
+例: { .caption }
 
 ```html
 <dom-module id="my-toolbar">
@@ -114,7 +105,7 @@ Example: { .caption }
 </dom-module>
 ```
 
-Example usage of `<my-toolbar>`: { .caption }
+`<my-toolbar>`の利用例： { .caption }
 
 ```html
 <dom-module id="my-element">
@@ -144,55 +135,44 @@ Example usage of `<my-toolbar>`: { .caption }
 </dom-module>
 ```
 
-The `--my-toolbar-title-color` property only affects the color of the title
-element encapsulated in `<my-toolbar>`'s internal implementation.  In the
-future the `<my-toolbar>` author can rename the `title` class or
-restructure the internal details of `<my-toolbar>` without changing the custom
-property exposed to users.
+この`--my-toolbar-title-color`プロパティは、`<my-toolbar>`内部実装でカプセル化されたタイトル要素の色だけに作用します。`<my-toolbar>`の作成者は、ユーザーに公開されているカスタムプロパティを変えない限り、`title`クラスの名前を変更したり、`<my-toolbar>`の内部実装を再構築したりすることができます。
 
-You can also include a default value in the `var()` function, to use in case the user
-doesn't set the custom property:
+ユーザーがカスタムプロパティを設定しない場合に備えて、`var()`関数にデフォルト値を含めることもできます。：
 
 ```css
 color: var(--my-toolbar-title-color, blue);
 ```
 
-To include a default value that is a custom property, use this syntax:
+デフォルト値としてカスタムプロパティを利用する場合には、次の構文を使用します。：
 
 ```css
 color: var(--my-color, var(--my-default-color))
 ```
 
-Thus, custom CSS properties are a powerful way for element authors to
-expose a theming API to their users in a way that naturally fits right alongside
-normal CSS styling.
+このように、カスタムCSSプロパティは、通常のCSSのスタイリングと自然に調和するように、カスタム要素の作成者がテーマ設定に関するAPIを利用者に向けて公開するための有用な手段です。
 
-### Use custom CSS mixins
+### カスタムCSSミックスインを使用する
 
-It may be tedious (or impossible) for an element author to predict every
-CSS property that may be important for theming, let alone expose every
-property individually.
+(訳注：前のセクションで解説したCSS変数と異なり、CSSミックスインは仕様で標準化されているわけではありませんが、2016年9月にGoogleによって提案書が公開されました。詳細は、[公開中の提案書](https://tabatkins.github.io/specs/css-apply-rule/)を参照してください。)
 
-CSS mixins are a proposal to fill this gap in functionality. To use CSS mixins, import the CSS mixins polyfill:
+要素の作成者が、テーマ設定に関して重要と考えられる全てのCSSプロパティを予測し、プロパティを個別に公開するのはやっかい(または不可能)なことです。
+
+CSSミックスインは、この機能性の課題を解決するための提案です。CSSミックスインを使用するには、CSSミックスインのポリフィルをインポートします。：
 
 ```html
 <!-- import CSS mixins polyfill -->
 <link rel="import" href="/bower_components/shadycss/apply-shim.html">
 ```
 
-For backward compatibility, the `polymer.html` import includes the CSS mixins polyfill. No extra import is required when defining hybrid elements.
+下位互換性を保つため、`polymer.html`のインポートにはCSSミックスインのポリフィルも含まれています。ハイブリッド要素を定義する場合は、追加でインポートが必要なものはありません。
 
-Using CSS mixins, an element author can define a set of CSS properties as a single custom property and then allow all properties in the set to be applied to a specific CSS rule
-in an element's shadow DOM. The extension enables this with a mixin capability
-that is analogous to `var`, but which allows an entire set of properties
-to be mixed in.
+CSSミックスインを使用する場合、要素の作成者はCSSのプロパティセットを一つのカスタムプロパティとして定義することができ、Shadow DOM内で指定されたCSSルールに、プロパティセット内の全てのプロパティが適用されることになります。これらは、拡張機能がミックスインの能力(`@apply`を使いますが、これは`var`に似たのもです)を使って実現し、プロパティセット全体をミックスインできるようになります。
 
-Use `@apply` to apply a mixin:
+ミックスインを適用するには@applyを使用します：
 
 <pre><code class="language-css">@apply --<var>mixin-name</var>;</code></pre>
 
-Defining a mixin is just like defining a custom property, but the
-value is an object that defines one or more rules:
+ミックスインの定義は、カスタムプロパティの定義と似ていますが、値として一つ以上のルールを定義したオブジェクトをとる点が異なります。：
 
 <pre><code class="language-css"><var>selector</var> {
   --<var>mixin-name</var>: {
@@ -200,7 +180,7 @@ value is an object that defines one or more rules:
   };
 }</code></pre>
 
-Example: { .caption }
+例: { .caption }
 
 ```html
 <dom-module id="my-toolbar">
@@ -222,7 +202,7 @@ Example: { .caption }
 </dom-module>
 ```
 
-Example usage of `my-toolbar`: { .caption }
+`my-toolbar`の利用例:：{ .caption }
 
 ```html
 <dom-module id="my-element">
@@ -262,9 +242,9 @@ Example usage of `my-toolbar`: { .caption }
 </dom-module>
 ```
 
-## Use CSS inheritance
+## CSSの継承を利用
 
-If an element doesn't override styling information, that element inherits styles from its parent:
+要素がスタイル情報を上書きしない場合、要素はその親からスタイルを継承します。：
 
 ```html
 <link rel="import" href="components/polymer/lib/elements/custom-style.html">
@@ -284,9 +264,9 @@ If an element doesn't override styling information, that element inherits styles
 </body>
 ```
 
-## Create global styles
+## グローバルスタイルを作成
 
-Create global styles by styling the the html element of your document:
+ドキュメントの`html`要素をスタイリングすることで、グローバルなスタイルを作成します。：
 
 ```html
 <link rel="import" href="components/polymer/lib/elements/custom-style.html">
@@ -304,21 +284,15 @@ Create global styles by styling the the html element of your document:
 </custom-style>
 ```
 
-Note that the font family is inherited, but the text color is not. This is because `<paper-checkbox>` overrides the text color.
+フォントファミリーは継承されますが、テキストカラーは継承されない点に注意してください。これは`<paper-checkbox>`がテキストカラーを上書きしているためです。.
 
-### Custom property API for Polymer elements {#style-api}
+### Polymer要素のカスタムプロパティAPI {#style-api}
 
-Polymer's custom property shim evaluates and applies custom property values once
-at element creation time.  In order to have an element (and its subtree) re-
-evaluate custom property values due to dynamic changes such as application of
-CSS classes, call the [`updateStyles`](/2.0/docs/api/elements/Polymer.Element#method-updateStyles)
-method on the element. To update _all_ elements on the page, you can also call
-`Polymer.updateStyles`.
+Polymerのカスタムプロパティのshimは、要素の作成時に一度だけカスタムプロパティの値を評価し適用します。CSSクラスの適用など動的な変更があった場合に要素（及びそのサブツリー）を再評価するためには、要素上で[`updateStyles`](/2.0/docs/api/elements/Polymer.Element#method-updateStyles)メソッドを呼び出して下さい。ページ上のすべての要素をアップデートするには、`Polymer.updateStyles`を呼び出すことができます。
 
-`updateStyles` can take a object with property/value pairs to update the current values of
-custom properties.
+`updateStyles`は引数にプロパティ/値のペアを持つオブジェクトをとり、カスタムプロパティの現在の値を更新することができます。
 
-Example: { .caption }
+例： { .caption }
 
 ```html
 <dom-module id="x-custom">
@@ -355,8 +329,7 @@ this.updateStyles({
 });
 ```
 
-Occasionally an element needs to get the value of a custom property at runtime. This is handled
-slightly differently depending on whether the shady CSS polyfill is loaded:
+場合によっては、実行時に要素がカスタムプロパティの値を取得する必要があります。この場合、Shady CSSのポリフィルがロードされているかどうかによって多少処理が異なります。：
 
 ```js
 if (ShadyCSS) {
@@ -366,37 +339,22 @@ if (ShadyCSS) {
 }
 ```
 
-Elements using the legacy API can use the
-[`getComputedStyleValue`](/2.0/docs/api/mixins/Polymer.LegacyElementMixin#method-getComputedStyleValue)
-instance method instead of testing for `ShadyCSS`.
+レガシーAPIを使用する要素では、`Shady CSS`の利用をテストする代わりに、インスタンスメソッド[`getComputedStyleValue`](/2.0/docs/api/mixins/Polymer.LegacyElementMixin#method-getComputedStyleValue)を呼び出してみることができます。
 
 
-### Custom properties shim limitations
+### カスタムプロパティshimの制限
 
-Cross-platform support for custom properties is provided in Polymer by a
-JavaScript library that **approximates** the capabilities of the CSS Variables
-specification  *for the specific use case of theming custom elements*, while
-also extending it to add the capability to mixin property sets to rules as
-described above. For performance reasons, Polymer **does
-not attempt to replicate all aspects of native custom properties.**
-The shim trades off aspects of the full dynamism possible in CSS in the
-interests of practicality and performance.
+Polymerでは、クロスプラットフォーム上でカスタムプロパティをサポートするため、内部でJavaScriptのライブラリを利用しています。ライブラリはCSS Variables(カスタム要素のテーマ設定に利用される機能)の仕様に**ほぼ**準拠しながらも、これまで説明してきた通り、その機能を拡張してミックスインプロパティ(CSSのスタイルルールをセットで定義できる機能)を付加しています。パフォーマンス上の理由から、**Polymerはネイティブのカスタムプロパティのすべての機能を再現しようとしません**。shimは、CSSにおける機能のダイナミズムを最大限活かすため、実用性とパフォーマンスの利益のトレードオフ調整します。
 
-Below are current limitations of the shim. Improvements to performance and
-dynamism will continue to be explored.
+現時点におけるshimの制限は以下のとおりです。パフォーマンスとダイナミズムの改善については引き続き検討が行われています。
 
-#### Dynamism limitations
+#### ダイナミズムの限界　
 
-Only property definitions which match the element at *creation time* are applied.
-Any dynamic changes that update property values are not applied automatically. You
-can force styles to be re-evaluated by calling the
-[`updateStyles`](/{{{polymer_version_dir}}}/docs/api/elements/Polymer.Element#method-updateStyles) method on a
-Polymer element, or `Polymer.updateStyles` to update all element
-styles.
+作成時においては、要素とマッチしたプロパティの定義だけが適用されます。プロパティ値を更新する動的な変更が自動的に適用されることがありません。Polymer要素上で[`updateStyles`](/{{{polymer_version_dir}}}/docs/api/elements/Polymer.Element#method-updateStyles)メソッドを呼び出すか、`Polymer.updateStyles`を使って全ての要素のスタイルをアップデートすることで、スタイルの再評価を強制的に行うことができます。
 
-For example, given this markup inside an element:
+例えば、要素内に次のようなマークアップがあるとします。：
 
-HTML: { .caption }
+HTML： { .caption }
 
 ```html
 <div class="container">
@@ -404,7 +362,7 @@ HTML: { .caption }
 </div>
 ```
 
-CSS: { .caption }
+CSS：{ .caption }
 
 ```css
 /* applies */
@@ -421,13 +379,11 @@ x-foo.b {
 }
 ```
 
-After adding class `b` to `x-foo` above, the host element must call `this.updateStyles`
-to apply the new styling. This re-calculates and applies styles down the tree from this point.
+上記の`x-foo`にクラス`b`を追加した後、新しいスタイルを適用するためにホスト要素は`this.updateStyles`を呼び出す必要があります。この時点で再計算が行われ、ツリーを下ってスタイルが適用されます。
 
-Dynamic effects **are** reflected at the point of a property's application.
+動的な影響は、プロパティの適用時点で反映されます。
 
-For the following example, adding/removing the `highlighted` class on the `#title` element will
-have the desired effect, since the dynamism is related to *application* of a custom property.
+以下の例において、`#title`要素に`hilighted`クラスを追加/削除することで狙い通りの効果をもたらすことができるのは、動的変更による影響がカスタムプロパティの適用に関連づけられているためです。
 
 ```css
 #title {
@@ -439,15 +395,9 @@ have the desired effect, since the dynamism is related to *application* of a cus
 }
 ```
 
-#### Inheritance limitations
+#### 継承の制限
 
-Unlike normal CSS inheritance which flows from parent to child, custom
-properties in Polymer's shim can only change when inherited by a custom element
-from rules that set properties in scope(s) above it, or in a `:host` rule for
-that scope.  **Within a given element's local DOM scope, a custom property can
-only have a single value.**  Calculating property changes within a scope would be
-prohibitively expensive for the shim and is not required to achieve cross-scope
-styling for custom elements, which is the primary goal of the shim.
+親から子へ向かう通常のCSSの継承と異なり、Polymerのshimによって提供されるカスタムプロパティは、上位のスコープ内や、`:host`ルールのスコープ内でプロパティが設定され、カスタム要素に継承されている場合に限り変更することができます。**要素のローカルDOMのスコープ内では、カスタムプロパティが持てるのは単一の値だけです。**スコープ内でのプロパティ変更の計算は、shimにとって非常に大きなコストととなるばかりか、カスタム要素のスコープを越えたスタイリングというshimの主目的からすれば必要とされるものではありません。
 
 ```html
 <dom-module id="my-element">
@@ -482,9 +432,9 @@ styling for custom elements, which is the primary goal of the shim.
 </dom-module>
 ```
 
-#### Styling distributed elements not supported
+#### 割り当てられた要素(distributed elements)へのスタイル設定はサポートさていません
 
-The custom properties shim doesn't support styling distributed elements.
+カスタムプロパティのshimは、割り当てられた要素のスタイリングをサポートしていません。
 
 ```css
 /* Not supported */

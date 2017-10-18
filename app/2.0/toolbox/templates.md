@@ -1,63 +1,43 @@
 ---
-title: Application templates
+title: アプリケーションのテンプレート
 ---
 
 <!-- toc -->
 
-You can get started with the Polymer App Toolbox using one of several templates
-that incorporate the elements and patterns discussed here using the Polymer CLI.
+Polymer App Toolboxの利用は、Polymer CLIを使い、ここで紹介される要素やパターンが組み込まれたテンプレートから一つを選んで始めることができます。
 
-## Initialize project from template
+## テンプレートからプロジェクトを初期化
 
-To initialize a project from a template, ensure you have the
-[Polymer CLI](/{{{polymer_version_dir}}}/docs/tools/polymer-cli) installed, `cd` into an empty project folder,
-and simply run the following command, which will prompt you to select from
-the currently available templates.
+テンプレートからプロジェクトを初期化するには、[Polymer CLI](/{{{polymer_version_dir}}}/docs/tools/polymer-cli)がインストールされていることを確認し、空のプロジェクトフォルダに`cd`で移動し、次のコマンドを実行するだけです。そうすると現在利用可能なテンプレートから一つ選択するよう促されます。
 
 ```
     $ polymer init
 ```
 
-## Templates
+## テンプレート
 
-### Application
+### アプリケーション
 
-The  `polymer-2-application` template is the most basic starting point for any app built
-with Polymer. It starts with a single bare-bones custom element that can serve
-as the root of your application, from which you can build in any direction with
-maximum flexibility.
+`polymer-2-application`テンプレートは、Polymerで構築されるアプリケーションの最も基本的な出発点です。アプリケーションのルート(root)として配信可能な必要最小限の実装を備えたカスタム要素が一つ用意されています。非常に高い柔軟性を持っており、そこから思うままにアプリケーションを構築していけます。
 
 ### Starter Kit
 
 ![](/images/1.0/toolbox/starter-kit.png)
 
-The `polymer-2-starter-kit` introduces the [`app-layout`](app-layout) elements,
-and composes them in a common left-hand drawer arrangement with a toolbar.
-The template provides navigation between a series of views that load and
-are rendered in the main content area.
+`polymer-2-starter-kit`は[`app-layout`](app-layout)要素を取り入れ、汎用的なレフトドロワーパネルとツールバーを備えています。テンプレートは、メインコンテンツエリアへ読み込み描画される複数のビュー間にナビゲーションを提供します。
 
-The template is also set up to use the [PRPL pattern](server) for efficient
-and progressive loading of the application, where views are loaded on-demand
-and will be pre-cached for offline and subsequent use.
+テンプレートは、アプリケーションの効率的かつ進歩的な(progressive)ローディングのため[PRPLパターン](server)を用いてセットアップされます。PRPLパターンでは、ビューは必要に応じて読み込まれ、オフライン環境やその後の利用に備えてプリキャッシュされます。
 
-### Shop demo application
+### Shopアプリケーションデモ
 
 ![](/images/1.0/toolbox/shop-template-desktop.png)
 
-The `shop` template is a full-fledged application that builds on the
-`starter-kit` and implements a series of elements that compose into
-a complete e-commerce application.  It demonstrates a typical
-"home - list - detail" type of application flow, and can serve as inspiration
-or a starting point for a complete application.
+`shop`テンプレートは、`starter-kit`上に構築された本格的なアプリケーションで、PWA仕様の完全なECアプリケーションを構成する要素一式を実装しています。このテンプレートは、「home - list - detail」型の典型的なアプリケーションフローの見本であり、出発点となるイメージや必要な機能一式を備えたアプリケーションの雛形を提供します。
 
-See the [Shop case study](case-study) for more information.
+詳細については、[Shop case study](case-study)を参照してください。
 
-## Where to go from here
+## 次に進むところ
 
-The templates are starting points, and you are free to add web components
-discussed in the rest of the Polymer App Toolbox documentation according
-to the needs of your application, as well as from other sources such as the
-[WebComponents.org](https://www.webcomponents.org/).
+テンプレートは出発点であり、アプリケーションのニーズに合わせて、Polymer App Toolboxのドキュメント内で紹介されるWebコンポーネントに限らず、[WebComponents.org](https://www.webcomponents.org/)のような外部のソースからも自由にコンポーネントを追加することができます。
 
-See the section on [Building your first Polymer application](../start/toolbox/set-up)
-for a tutorial on getting started with one of the App Toolbox templates.
+App Toolboxのテンプレートの利用を開始するためのチュートリアルは、[Building your first Polymer application](../start/toolbox/set-up)を参照してください。

@@ -4,7 +4,7 @@ title: Try Polymer
 
 <!-- toc -->
 
-Polymer makes it simple to create web components, declaratively.
+Polymerを使えば、宣言的記述によりWeb Componentsを簡単に作成することができます。
 
 New web developers can simply add custom HTML elements on a web page with markdown. It’s just like using the HTML tags you’re already familiar with:
 
@@ -13,30 +13,21 @@ New web developers can simply add custom HTML elements on a web page with markdo
 <pre><code>&lt;fancy-thing&gt;A fancy thing!&lt;/fancy-thing&gt;</code></pre>
 
 
-Experienced web developers can use Polymer's special features to reduce boilerplate
-and make it even easier to build complex, interactive elements. In this tour, you'll
-learn how to:
+カスタム要素は、Polymerの提供する以下のような機能を利用でき、シンプルな記述によって複雑でインタラクティブな性質を持ったカスタム要素を容易に構築することができます。：
 
-- Register elements
-- Use lifecycle callbacks
-- Observe properties
-- Create shadow DOM with templates
-- Use data binding
+- カスタム要素の登録
+- ライフサイクルコールバック
+- プロパティの監視
+- Shadow DOMテンプレート
+- データバインディング
 
-In this section you can tour the Polymer library,
-without installing anything. Click the **Edit on Plunker** button to open any
-of the samples in an interactive sandbox.
+このチュートリアルでは、何もインストールすることなくPolymerライブラリのクイックツアーを体験できるようにしています。チュートリアル内の**PLUNKERのサンプルコード**というリンクをクリックすれば、サンドボックスの上でサンプルを試すことができます。
 
-Tap the buttons following each feature to learn more.
+また、ボタンをクリックすれば、各セクションで紹介した機能に関連するドキュメントの該当ページへ移動できます。
 
-### Register an element {#register}
+### カスタム要素を登録 {#register}
 
-To register a new element, create an ES6 class that extends
-`Polymer.Element`, then call the `customElements.define` method, which
-_registers_ a new element with the browser. Registering an element associates
-an element name with a class, so you can add properties and methods to your custom
-element. The custom element's name **must start with an ASCII letter and
-contain a dash (-)**.
+新しいカスタム要素を登録するには、ES6で導入されたclass構文を使い`Polymer.Element`クラスを拡張した上で、`customElements.define`メソッドを呼び出しカスタム要素をブラウザに_登録_します。この登録によってカスタム要素名とclass名が関連付けられます。なお、カスタム要素の名前は**ASCII文字で始まりダッシュ(-)を含める必要があります**。
 
 <demo-tabs selected="0" name="qt-1-register" src="http://plnkr.co/edit/Q4E8zO?p=preview">
   <demo-tab slot="demo-tab" heading="custom-element.html">
@@ -55,23 +46,19 @@ Try it out in **Plunker**:
   custom element’s `tagName` property to the console. 
   Hint: add `console.log(this.tagName);` to the constructor method!
 
-This sample uses a lifecycle callback
-to add contents to the `<custom-element>` when it's initialized.
-When a custom element finishes its initialization, the `ready` lifecycle callback is called.
-You can use the `ready` callback for one-time initialization work after the element is created.
+このサンプルでは、ライフサイクルコールバックをして`<custom-element>`の初期化時にコンテンツを追加しています。初期化が完了すると、`ready`というコールバックが呼び出されます。`ready`コールバックは、カスタム要素の生成後にワンタイムの初期化を行いたい場合に利用できます。
 
 <p><a href="/{{{polymer_version_dir}}}/docs/devguide/registering-elements" class="blue-button">
-  Learn more: element registration
+  Learn more: カスタム要素の登録
 </a></p>
 
 <p><a href="/{{{polymer_version_dir}}}/docs/devguide/registering-elements#lifecycle-callbacks" class="blue-button">
-  Learn more: lifecycle callbacks
+  Learn more: ライフサイクルコールバック
 </a></p>
 
-### Add shadow DOM
+### Shadow DOMの追加
 
-Many elements include some internal DOM nodes to implement the element's UI and behavior.
-You can use Polymer's DOM templating to create a shadow DOM tree for your element.
+多くの要素は、独自のUIや動作を実装するために内部にDOMノードを持っています。PolymerのDOMテンプレートを使うことで、カスタム要素にShadow DOMというDOMのサブツリーを作成できます。
 
 <demo-tabs selected="0" name="qt-2-shadow-dom" src="http://plnkr.co/edit/buPxSJ?p=preview">
   <demo-tab slot="demo-tab" heading="dom-element.html">
@@ -87,17 +74,15 @@ You can use Polymer's DOM templating to create a shadow DOM tree for your elemen
 Try it out in **Plunker**:
 * Try adding some other html elements inside the <template></template> block. For example, add `<h1>A heading!</h1>` or `<a href=”stuff.html”>A link!</a>`
 
-Shadow DOM is encapsulated inside the element.
+Shadow DOMはカスタム要素の内部にカプセル化されています。
 
 <p><a href="/{{{polymer_version_dir}}}/docs/devguide/dom-template" class="blue-button">Learn more: DOM templating</a></p>
 
-### Compose with shadow DOM
+### Shadow DOMを使って要素を作成
 
-Shadow DOM lets you control _composition_. The element's children can be _distributed_
-so they render as if they were inserted into the shadow DOM tree.
+Shadow DOMを使うことでカスタム要素を柔軟に構築できます。カスタム要素の子は割り当てられるので、Shadow DOMツリーに挿入されたかのようにレンダリングされます。
 
-This example creates a simple tag that decorates an image by wrapping it
-with a styled `<div>` tag.
+このサンプルでは、ロゴイメージをCSSでスタイリングされた`<div>`タグで囲うことで、シンプルなカスタムタグを作成しています。
 
 <demo-tabs selected="0" name="qt-3-compose" src="http://plnkr.co/edit/KvBnmE?p=preview">
   <demo-tab slot="demo-tab" heading="picture-frame.html">
@@ -114,21 +99,17 @@ Try it out in **Plunker**:
 * Try adding a `<div>` to `index.html`; is it affected by the styles in `<picture-frame>`'s shadow DOM?
 * Try adding other HTML elements to the DOM template to see how they are positioned relative to the distributed child nodes.
 
-**Note:** The CSS styles defined inside the `<dom-module>` are _scoped_ to the element's shadow DOM.
-So the `div` rule here only affects `<div>` tags inside `<picture-frame>`.
+**ヒント**: `<dom-module>`の内部で定義されたCSSのスタイル情報は、カスタム要素のShadow DOM内にスコープされます。そのため、上記サンプルにおいて`<picture-frame>`内部の`div`に対して適用したスタイルルールは、内部の`<div>`タグに対してのみ適用されます。
 {: .alert .alert-info }
 
 <p><a href="/2.0/docs/devguide/shadow-dom#shadow-dom-and-composition" class="blue-button">
 Learn more: Composition & distribution</a></p>
 
-### Use data binding
+### データバインディングを利用
 
-Of course, it's not enough to have static shadow DOM. You usually want to have your element update
-its shadow DOM dynamically.
+もちろん予め静的にマークアップしたShadow DOMだけは十分でないと考えるでしょう。多くの場面において、Shadow DOMを動的にアップデートしたいと考えるはずです。そのような場合には、データバインディングというシステムを使いします。
 
-Data binding is a great way to quickly propagate changes in your element and reduce boilerplate code.
-You can bind properties in your component using the "double-mustache" syntax (`{%raw%}{{}}{%endraw%}`).
-The `{%raw%}{{}}{%endraw%}` is replaced by the value of the property referenced between the brackets.
+データバインディングを使えば、簡潔なコードでカスタム要素内部で発生した変化をShadow DOMへ反映させることができます。`{%raw%}{{}}{%endraw%}`という記号を使い、コンポーネント内のプロパティとバインドします。例えば`{%raw%}{{}}{%endraw%}`は、カスタム要素内のプロパティ`foo`の値によって置き換えられます。
 
 <demo-tabs selected="0" name="qt-4-data-binding" src="http://plnkr.co/edit/8mZK8S?p=preview">
   <demo-tab slot="demo-tab" heading="name-tag.html">
@@ -150,14 +131,15 @@ Try it out in **Plunker**:
 <p><a href="/2.0/docs/devguide/data-binding" class="blue-button">
 Learn more: data binding</a></p>
 
-### Declare a property
+### プロパティの宣言
 
-Properties are an important part of an element's public API. Polymer
-_declared properties_ support a number of common patterns for properties—setting default
-values, configuring properties from markup, observing property changes, and more.
+プロパティは、カスタム要素が外部へ公開するAPIの重要な一部です。Polymerは、*宣言的なプロパティ*をサポートしており、以下のような一般的な機能を提供します。：
 
-The following example declares the `owner` property from the last example.
-It also shows configuring the owner property from markup in `index.html`.
+- プロパティにデフォルト値を設定
+- マークアップからプロパティを設定
+- プロパティの変更を監視して事前に指定した処理(observer)を実行
+
+下記サンプルでは、一つ前に紹介したサンプルに`owner`プロパティの宣言を加えています。`index.html`内のマークアップから`owner`プロパティを設定しているのが分かると思います。
 
 <demo-tabs selected="0" name="qt-5-declare-property" src="http://plnkr.co/edit/3Nz8GL?p=preview">
   <demo-tab slot="demo-tab" heading="configurable-name-tag.html">
@@ -174,16 +156,13 @@ Try it out in **Plunker**:
 * Try editing the initial value of `owner` in index.html. Observe how this sets the property directly from your HTML.
 
 <p><a href="/2.0/docs/devguide/properties" class="blue-button">
-Learn more: declared properties</a></p>
+Learn more: プロパティの宣言</a></p>
 
-### Bind to a property
+### プロパティへのデータバインディング
 
-In addition to text content, you can bind to an element's _properties_ (using
-`property-name="[[binding]]"`). Polymer properties
-can optionally support two-way binding, using curly braces (`property-name="{{binding}}"`).
+Shadow DOMのテキストコンテンツだけでなく、カスタム要素のプロパティに対してもバインドすることができます。(`property-name="[[binding]]"`という記法を使います。)Polymerの`properties`は、任意のオプションとして双方向バインディングもサポートしています。(`property-name="{{binding}}"`のように`{{}}`を使います。)
 
-This example uses two-way binding: binding the value of a custom input element (`iron-input`)
-to the element's `owner` property, so it's updated as the user types.
+このサンプルでは、双方向バインディング(two-way binding)を使用しています。カスタム`input`要素(`iron-input`)の`value`と`owner`プロパティがバインドされており、ユーザーがタイプするとカスタム要素のコンテンツもアップデートされます。
 
 <demo-tabs selected="0" name="qt-6-bind-property" src="http://plnkr.co/edit/03HGzn98uIN5I1WgkDwu?p=preview">
   <demo-tab slot="demo-tab" heading="editable-name-tag.html">
@@ -199,13 +178,12 @@ to the element's `owner` property, so it's updated as the user types.
 Try it out in **Plunker**:
 * Edit the placeholder text to see two-way data binding at work.
 
-**Note:** The `<iron-input>` element wraps a native `<input>` element and provides two-way
-data binding and input validation.
+**ヒント**: [`<iron-input>`](https://www.webcomponents.org/element/PolymerElements/iron-input)要素は、ネイティブの`<input>`要素のラッパーとして双方向のデータバインディングや入力値のバリデーション機能を提供します。
 {: .alert .alert-info }
 
-### Using `<dom-repeat>` for template repeating
+### `<dom-repeat>`使いテンプレートを連続して描画
 
-The template repeater (`dom-repeat`) is a specialized template that binds to an array. It creates one instance of the template's contents for each item in the array.
+テンプレートリピーター(`dom-repeat`)は、配列とのバインドに特化したテンプレートです。配列内の各アイテムにつき一つずつテンプレート内のコンテンツをインスタンス化します。
 
 <demo-tabs selected="0" name="qt-7-dom-repeat" src="http://plnkr.co/edit/FdgkAtcLFHX5TpTsYtZn?p=preview">
   <demo-tab slot="demo-tab" heading="employee-list.html">
@@ -227,8 +205,8 @@ Try it out in **Plunker**:
   ```
 
 <p><a href="/2.0/docs/devguide/templates" class="blue-button">
-Learn more: Template repeater</a></p>
+Learn more: テンプレートリピーター(dom-repeat)</a></p>
 
-## Next steps
+## 次のステップ
 
-Now that you understand these fundamental Polymer concepts, you can [build an app with App Toolbox](/2.0/start/toolbox/set-up) or see a [feature overview of the Polymer library](/2.0/docs/devguide/feature-overview).
+これでPolymerの基本的なコンセプトは理解できたはずです。あとは、[build an app with App Toolbox](/2.0/start/toolbox/set-up)というCLIツールを使って実際にアプリケーションを作成したり、[feature overview of the Polymer library](/2.0/docs/devguide/feature-overview)を参照してPolymerライブラリの機能の概要を理解していってください。

@@ -1,22 +1,16 @@
 ---
-title: Browser support overview
+title: 対応ブラウザについて
 ---
 
 <!-- toc -->
 
-Polymer 2.x works in the _latest two versions_ of all major browsers: Safari 9+, IE 11+, and the
-evergreen Chrome, Firefox, and Edge.
+Polymer 2.x は全ての主要ブラウザにおいて _最新と1つ前のバージョンで_ 動作します: Safari 9、IE 11以上、また最新のChrome、Firefox、Edgee.
 
-## Platform features
+##  対応状況
 
-The Polymer library is a lightweight sugaring layer on top of the [Web Components
-APIs](http://webcomponents.org/articles/why-web-components/). Some features used by Polymer are not
-(yet) supported natively in all browsers. For
-broad web components support, Polymer uses the [polyfills](https://github.com/webcomponents/webcomponentsjs) from
-[webcomponents.org](http://webcomponents.org). They're lightweight, work well, and provide the
-feature support Polymer requires.
+Polymerライブラリは、[WebコンポーネントAPI](http://webcomponents.org/articles/why-web-components/)における最上位の軽量レイヤーです。Polymerによって使用されるいくつかの機能は、（まだ）すべてのブラウザでネイティブにサポートされていません。幅広いWebコンポーネントのサポートのために、Polymerは [webcomponents.org](http://webcomponents.org) の [ポリフィル]((https://github.com/webcomponents/webcomponentsjs) を使用します。これは軽量で、うまく動作し、Polymerが必要とする機能をサポートします。
 
-With the polyfills, Polymer works in these browsers:
+このポリフィルによって、Polymerは次のブラウザで動作します。：
 
 <style>
 td:not(.feature-title),th {
@@ -45,7 +39,7 @@ td.polyfill {
   <td class="feature-title"><a href="http://www.html5rocks.com/en/tutorials/webcomponents/template/">Template</a></td>
   <td class="native">Native</td>
   <td class="native">Native</td>
-  <td class="partial">Partial</td>
+  <td class="partial">部分的</td>
   <td class="native">Native</td>
   <td class="native">Native</td>
   <td class="native">Native</td>
@@ -67,9 +61,9 @@ td.polyfill {
   <td class="polyfill">Polyfill</td>
   <td class="polyfill">Polyfill</td>
   <td class="native">Native</td>
-  <td class="partial">Partial</td>
+  <td class="partial">部分的</td>
   <td class="native">Native</td>
-  <td class="partial">Partial</td>
+  <td class="partial">部分的</td>
 </tr>
 <tr>
   <td class="feature-title"><a href="http://www.html5rocks.com/en/tutorials/webcomponents/shadowdom/">Shadow DOM</a></td>
@@ -77,34 +71,32 @@ td.polyfill {
   <td class="polyfill">Polyfill</td>
   <td class="polyfill">Polyfill</td>
   <td class="native">Native</td>
-  <td class="partial">Partial</td>
+  <td class="partial">部分的</td>
   <td class="native">Native</td>
-  <td class="partial">Partial</td>
+  <td class="partial">部分的</td>
 </tr>
 </table>
 
-Notes:
+注意:
 
--   Templates are supported in Edge, but not IE.
--   Safari supports custom elements starting in 10.3.
--   Safari supports shadow DOM starting in 10.2, but as of 10.3 there are still some known issues.
--   Older versions of the Android Browser may run into some issues - please file an
-    [issue](https://github.com/polymer/polymer/issues) if you run into a problem on this browser.
-    Chrome for Android is supported.
+-   Templates はEdgeではサポートされていますが、IEではされていません。
+-   SafariはCustom Elementsのサポートを10.3から開始しています。
+-   SafariはShadow DOMのサポートを10.2から開始していますが、10.3でもいくつか問題が残っています。
+-   古いバージョンのAndroidブラウザはいくつか動作に問題があるでしょう。問題を発見したら[イシュー](https://github.com/polymer/polymer/issues)として報告してください。
+    Chrome for Androidはサポートされています。
 
-See the documentation on [polyfills](polyfills) for more information.
+さらに詳しい情報は[Polyfills](polyfills)を参照してください。
 
 ## ES6
 
-Polymer 2.x uses EcmaScript 2015 (commonly known as ES6). The following browsers support all of the
-ES6 features required by Polymer.
+Polymer 2.x は EcmaScript 2015 (ES6)を使用します。次のブラウザは、Polymerに必要なすべてのES6の機能をサポートしています。
 
--   Chrome or Chromium version 49 or later.
--   Opera 36 or later.
--   Safari or Mobile Safari 10 or later.
--   Edge 15.15063 or later.
--   Firefox 51 or later.
+-   Chrome もしくは Chromium の49以上
+-   Opera 36以上
+-   Safari もしくは Mobile Safari 10以上
+-   Edge 15.15063以上
+-   Firefox 51以上
 
-For other browsers, you should compile your application to ES5.
+他のブラウザでは、ES5にコンパイルする必要があります。
 
-See the documentation on [compiling ES6 to ES5](es6) for more information.
+さらに詳しい情報は[ES6からES5へのコンパイル](es6)を参照してください。

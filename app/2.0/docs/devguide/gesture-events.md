@@ -1,25 +1,19 @@
 ---
-title: Gesture events
+title: ジェスチャーイベント
 ---
 
 <!-- toc -->
 
-Polymer provides optional support for custom "gesture" events for certain user
-interactions. the up, down, and track events fire consistently on both touch and mouse 
-environments, so we recommend using these events instead of their mouse- or		
-touch-specific event counterparts. This provides better interoperability with 
-both touch and mouse devices.	
+Polymerは、特別なユーザーインタラクションに向けて独自の「ジェスチャーイベント」をオプションでサポートしています。ジェスチャーイベントは、タッチ及びマウスの両環境で一貫したイベントを発生させるので、仕様の`mouse-`イベントや`touch-`イベントに代えて利用されることが推奨されます。これにより、タッチとマウスの両デバイス間で相互運用性が向上します。
 
 **In general, use the standard `click` event instead of `tap` in mobile browsers.** The `tap`
 event is included in the gesture event mixin for backwards compatibility, but it's no longer
 required in modern mobile browsers.
 {.alert .alert-info}
 
-## Using gesture events
+## ジェスチャーイベントの使用
 
-Gesture events are supported by default when using hybrid elements. For class-style elements based
-on `Polymer.Element`, you need to explicitly add gesture support by importing and using the
-`Polymer.GestureEventListeners` mixin.
+ハイブリッド要素を使用する場合は、デフォルトでジェスチャーイベントがサポートされています。`Polymer.Element`をベースにクラススタイルで作成した要素では、`Polymer.GestureEventListeners`ミックスインをインポートすることで、ジェスチャサポートを明示的に追加する必要があります。
 
 ```html
 <link rel="import" href="polymer/lib/mixins/gesture-event-listeners.html">
@@ -30,59 +24,58 @@ on `Polymer.Element`, you need to explicitly add gesture support by importing an
 </script>
 ```
 
-Gesture events require some extra setup, so you can't simply add a listener
-using the generic `addEventListener` method. To listen for a gesture event:
 
-*   Use an [annotated event listener](events#annotated-listeners) for one of the gesture events.
+ジェスチャーイベントにはいくつか追加の設定が必要なため、単純に一般的な`addEventListener`メソッドを用いてリスナーを追加することはできません。ジェスチャーイベントを監視(liseten)するには、：
+
+*   ジェスチャーイベントの一つに[アノテーション付イベントリスナー](events#annotated-listeners)を使用する。
        
     ```html
     <div id="dragme" on-track="handleTrack">Drag me!</div>
     ```
     
-    Polymer automatically does the extra bookkeeping for gesture events when you use annotated
-    event listeners.
+    アノテーション付イベントリスナーを使用した場合、Polymerは自動的にジェスチャーイベントを特別に記録するようになります。
     
-*   Use the `Polymer.Gestures.addListener`/`Polymer.Gestures.removeListener` methods.
+
+*   `Polymer.Gestures.addListener`/`Polymer.Gestures.removeListener`メソッドを使用する
     
     ```js
     Polymer.Gestures.addListener(this, 'track', e => this.trackHandler(e));
     ```
     
-    You can use the `Polymer.Gestures.addListener` function to add a listener to the host element.
+    この`Polymer.Gestures.addListener`メソッドを使用して、ホスト要素にリスナーを追加できます。
 
-### Gesture event types
+### ジェスチャーイベントのタイプ
 
-The following are the gesture event types supported, with a short description
-and list of detail properties available on `event.detail` for each type:
+サポートされるジェスチャーイベントのタイプは次のとおりです。各タイプについて簡単な説明と`event.detail`から取得できる詳細なプロパティを列挙して紹介します。：
 
-* **down**—finger/button went down
-  * `x`—clientX coordinate for event
-  * `y`—clientY coordinate for event
-  * `sourceEvent`—the original DOM event that caused the `down` action
-* **up**—finger/button went up
-  * `x`—clientX coordinate for event
-  * `y`—clientY coordinate for event
-  * `sourceEvent`—the original DOM event that caused the `up` action
-* **tap**—down & up occurred
-  * `x`—clientX coordinate for event
-  * `y`—clientY coordinate for event
-  * `sourceEvent`—the original DOM event that caused the `tap` action
-* **track**—moving while finger/button is down
-  * `state`—a string indicating the tracking state:
-      * `start`—fired when tracking is first detected (finger/button down and moved past a pre-set distance threshold)
-      * `track`—fired while tracking
-      * `end`—fired when tracking ends
-  * `x`—clientX coordinate for event
-  * `y`—clientY coordinate for event
-  * `dx`—change in pixels horizontally since the first track event
-  * `dy`—change in pixels vertically since the first track event
-  * `ddx`—change in pixels horizontally since last track event
-  * `ddy`—change in pixels vertically since last track event
-  * `hover()`—a function that may be called to determine the element currently being hovered
+* **down**：指/ボタンが下げられた
+  * `x`：イベントのclientX座標
+  * `y`：イベントのclientY座標
+  * `sourceEvent`：`down`アクションを最初に発生させたDOMイベント
+* **up**：指/ボタンが上げられた
+  * `x`：イベントのclientX座標
+  * `y`：イベントのclientY座標
+  * `sourceEvent`：`up`アクションを最初に発生させたDOMイベント
+* **tap**：ダウン＆アップが発生した
+  * `x`：イベントのclientX座標
+  * `y`：イベントのclientY座標
+  * `sourceEvent`：`tap`アクションを最初に発生させたDOMイベント
+* **track**：指/ボタンが下げながら動いた
+  * `state`：トラッキング状態を示す文字列：
+    * `start`：トラッキングが最初に検出された時に発生(指/ボタンが押され、事前に設定された距離の閾値を超えて移動した時）
+    * `track`：トラッキングの最中に発生
+    * `end`：トラッキングが終了した時に発生
+  * `x`：イベントのclientX座標
+  * `y`：イベントのclientY座標
+  * `dx`：トラックイベントの開始時から水平方向にピクセル単位で生じた変化
+  * `dy`：トラックイベントの開始時から垂直方向にピクセル単位で生じた変化
+  * `ddx`：トラックイベントの終了時からから水平方向にピクセル単位で生じた変化
+  * `ddy`：トラックイベントの終了時からから垂直方向にピクセル単位で生じた変化
+  * `hover()`：現在ホバーされている要素を判断するために呼び出される可能性のあるメソッド
 
-### Examples
+### 例
 
-Example declarative event listener { .caption }
+宣言的イベントリスナーの例 { .caption }
 
 ```html
 <link rel="import" href="polymer/polymer-element.html">
@@ -127,15 +120,11 @@ Example declarative event listener { .caption }
 </dom-module>
 ```
 
-Example imperative event listener { .caption }
+命令的なイベントリスナーの例 { .caption }
 
-This example uses `Polymer.Gestures.addListener` to add a listener to the host element, which can't be
-done with annotated event listeners. If the listener is attached to the host element or a shadow DOM
-child, you can usually add the event listener once and not worry about removing it.
+以下の例では、ホスト要素に対してリスナーを追加するのに`Polymer.Gestures.addListener`を使用しています。このようなケースでは、アノテーション付イベントリスナーで設定することができません。もし、リスナーがホスト要素またはシャドーDOMの子に対して設定されている場合には、通常、一度追加したイベントリスナーに関してその削除について心配する必要はありません。
 
-If you are adding an event listener to a dynamically-added child, you may need to remove the event
-listener with `Polymer.Gestures.addListener` when you remove the child, to allow the child element
-to be garbage collected.
+動的に追加された子にイベントリスナーを設定する場合には、子を削除する時点で、`Polymer.Gestures.addListener`によって設定されたイベントリスナーを削除する必要があるかもしれません。これは、子要素がガベージコレクトされるようにするためです。
 
 ```html
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
@@ -188,12 +177,7 @@ to be garbage collected.
 
 ```
 
-## Gestures and scroll direction
+## ジェスチャーとスクロールの方向
 
-Listening for certain gestures controls the scrolling direction for touch input.
-For example, nodes with a listener for the `track` event will prevent scrolling
-by default. Elements can override scroll direction with
-`this.setScrollDirection(direction, node)`, where `direction` is one of `'x'`,
-`'y'`, `'none'`, or `'all'`, and `node` defaults to `this`.
-
-
+特定のジェスチャーを監視(listen)した場合には、タッチ入力に関してスクロール方向が制御されます。例えば、`track`イベントのリスナーを持つノードは、デフォルトでスクロールが禁止されます。要素は、`this.setScrollDirection(direction, node)`でスクロール方向を上書きすることができます。
+引数`direction`には`x`、`y`、`none`、`all`のいずれかになり、引数`node`はデフォルトで`this`になります。

@@ -1,15 +1,12 @@
 ---
-title: Data binding
+title: データバインディング
 ---
 
 <!-- toc -->
 
-A _data binding_ connects data from a custom element
-(the _host element_) to a property or attribute of an element in its local DOM (the _child_
-or _target element_). The host element data can be a property or sub-property represented by a
-[data path](data-system#paths), or data generated based on one or more paths.
+_データバインディング_は、カスタム要素(_ホスト要素_)のデータとそのローカルDOM(子要素または_ターゲット要素_)のプロパティまたは属性にコネクトします。ホスト要素のデータは、[データパス](data-system#paths)で表された特定のプロパティやサブプロパティまたは、一つ以上のパスに基づき生成されたデータになるでしょう。
 
-You create data bindings by adding annotations to an element's local DOM template.
+要素のローカルDOMのテンプレートにアノテーションを追加することで、データバインディングを作成できます。
 
 ```
 <dom-module id="host-element">
@@ -19,99 +16,82 @@ You create data bindings by adding annotations to an element's local DOM templat
 </dom-module>
 ```
 
-Updating data bindings is a [property effect](data-system#property-effects).
+データバインディングのアップデートは、[プロパティエフェクト](data-system#property-effects)の一つです。
 
-## Anatomy of a data binding
+## データバインディングの分析
 
-A data binding appears in the local DOM template as an HTML attribute:
+データバインディングは、ローカルDOMのテンプレートにHTML属性として現れます。：
 
 <pre><code><var>property-name</var><b>=</b><var>annotation-or-compound-binding</var></code>
 <code><var>attribute-name</var><b>$=</b><var>annotation-or-compound-binding</var></code></pre>
 
-The left-hand side of the binding identifies the target property or attribute.
+バインディングの左側で、ターゲットのプロパティや属性を識別します。
 
--   To bind to a property, use the property name in attribute form (dash-case not
-    camelCase), as described in [Property  name to attribute name
-    mapping](#property-name-mapping):
+-   プロパティにバインドするには、[プロパティ名と属性名のマッピング](#property-name-mapping)で説明した通り、プロパティ名は属性のフォーマット(camelCaseでなくdash-case)で指定して下さい。
 
     ```html
     <my-element my-property="{{hostProperty}}">
     ```
 
-    This example binds to the target property, `myProperty` on `<my-element>`.
+    この例では、`<my-element>`上のプロパティ`myProperty`をターゲットにしてバインドします。
 
--   To bind to an attribute instead, use the attribute name followed by `$`:
+-   一方、属性にバインドするには、次のように`$`に続けて属性名を記述します。
 
     ```html
     <a href$="{{hostProperty}}">
     ```
 
-    This example binds to the anchor element's `href` **attribute**.
+    この例では、`a`要素の`href`**属性**にバインドしています。
 
-The right-hand side of the binding consists of either a _binding annotation_ or a _compound binding_:
+バインディングの右側は、 _バインディングアノテーション(binding annotation)_ または _複合バインディング(compound binding)_ のいずれかになります。：
 
 <dl>
-  <dt>Binding annotation</dt>
-  <dd>Text surrounded by double curly bracket (<code>{{ }}</code>) or double square bracket
-      (<code>[[ ]]</code>) delimiters. Identifies the host data being bound. </dd>
-  <dt>Compound binding</dt>
-  <dd>A string literal containing one or more binding annotations.</dd>
+  <dt>バインディングアノテーション</dt>
+  <dd>二つの中括弧(<code>{{ }}</code>)または、二つの角括弧(<code>[[ ]]</code>)で囲まれたテキスト。ホストのデータがバインドされていることを表します。</dd>
+  <dt>複合バインディング(compound binding)</dt>
+  <dd>一つ以上のバインディングアノテーションを含む文字列リテラル。</dd>
 </dl>
 
-Whether data flow goes down from host to target, up from target to host, or both ways is controlled
-by the type of binding annotation and the configuration of the target property.
+データフローが、ホストからターゲットに下に向けて流れるか、ターゲットからホストへ上に向けて流れるか、あるいはその両方になるかは、バインディングのアノテーションの種類やターゲットプロパティの設定によって制御されます。
 
--   Double-curly brackets (`{{ }}`) support both upward and downward data flow.
+-   二重中括弧(`{{ }}`)は、上向きと下向きのデータフロー両方をサポートします。
+-   二重角括弧(`[[ ]]`)は、下向きに一方向のデータフローだけをサポートします。
 
--   Double square brackets (`[[ ]]`) are _one-way_, and support only downward data
-    flow.
+データフローの詳細については、[データフローの制御方法](data-system#data-flow-control)を参照してください。
 
-For more on data flow, see [How data flow is controlled](data-system#data-flow-control).
+## ターゲットプロパティへバインド {#property-binding}
 
-## Bind to a target property {#property-binding}
-
-To bind to a target property, specify the attribute name that corresponds to the
-property, with an [annotation](#binding-annotation) or [compound binding](#compound-binding)
-as the attribute value:
+ターゲットプロパティにバインドするには、属性値に[アノテーション](#binding-annotations)または[複合バインディング](#compound-bindings)を使用して、プロパティに対応する属性名を指定します。：
 
 ```
 <target-element name="{{myName}}"></target-element>
 ```
 
-This example binds the target element's `name` property to the host element's
-`myName` property. Since this annotation uses the two-way or "automatic" delimiters (`{{ }}`),
-it creates a two-way binding if the `name` property is configured to support it.
+この例では、ターゲット要素の`name`プロパティをホスト要素の`myName`プロパティにバインドしています。アノテーションには双方向又は自動(automatic)デリミタ(`{{ }}`)が使用されているので、`name`プロパティでサポートするように設定していれば双方向バインディングが生成されます。
 
-To ensure a one-way binding, use double square brackets:
+一方向バインディングを指定するには、二重角括弧(`[[ ]]`)を使用します。：
 
 ```
 <target-element name="[[myName]]"></target-element>
 ```
 
-Property names are specified in attribute format, as described in [Property name to
-attribute name mapping](properties#property-name-mapping). To
-bind to camel-case properties of elements, use dash-case in the attribute name.
-For example:
+
+プロパティ名は、[プロパティ名と属性名のマッピング](properties#property-name-mapping)で説明しているように、属性のフォーマットで記述されます。要素の`camelCase`プロパティをバインドするには、属性名に`dash-case`を使用します。
+例えば：
 
 ```
 <!-- Bind <user-view>.firstName to this.managerName; -->
 <user-view first-name="{{managerName}}"></user-view>
 ```
 
-If the property being bound is an object or an array, both elements get a reference to the **same
-object**. This means that either element can change the object and a true one-way binding is
-impossible. For more information, see [Data flow for objects and
-arrays](data-system#data-flow-objects-arrays).
+バインドされているプロパティがオブジェクか配列の場合、どちらの要素も**同じオブジェクト**への参照を取得します。つまり、どちらの要素からもオブジェクトを変更できるので、真の一方向バインディングは実現できません。詳細は、[オブジェクト及び配列のデータフロー](data-system#data-flow-objects-arrays)を参照してください。
 
-**Some attributes and properties are special.** When binding to `style`, `href`, `class`, `for` or
-`data-*` attributes, it is recommend that you use [attribute binding](#attribute-binding)
-syntax. For more information, see [Binding to native element attributes](#native-binding).
+**属性やプロパティの中には特別なものがあります。**`style`、`href`、`class`、`for`、`data-*`へバインドする場合には、[属性のバインド](#attribute-binding)構文を使ってください。詳細は、[ネイティブ要素の属性へのバインド](#native-binding)を参照してください。 
 { .alert .alert-info }
 
-### Bind to text content
+### テキストコンテンツ(text contetent)にバインド
 
-To bind to a target element's `textContent`, you can simply include the
-annotation or compound binding inside the target element.
+ターゲット要素の`textContent`にバインドするには、ターゲット要素の中にアノテーションまたは複合バインディングを含めるだけです。
 
 ```
 <dom-module id="user-view">
@@ -137,42 +117,38 @@ annotation or compound binding inside the target element.
 <user-view name="Samuel"></user-view>
 ```
 
-Binding to text content is always one-way, host-to-target.
+テキストコンテンツへのバインディングは、常にホストからターゲットへ一方向になります。
 
-## Bind to a target attribute {#attribute-binding}
+## ターゲット属性にバインド {#attribute-binding}
 
-In the vast majority of cases, binding data to other elements should use [property
-bindings](#property-binding), where changes are propagated by setting the new value to the
-JavaScript property on the element.
+大半のケースでは、データを他の要素へバインドするには、[プロパティバインディング](#property-binding)を利用するすべきです。それによって、要素上のJavaScriptのプロパティに新しい値を設定すると、その変更が伝播されます。
 
-However, sometimes you need to set an attribute on an element, as opposed to a property.  For
-example, when attribute selectors are used for CSS or for interoperability with attribute-based APIs,
-such as the Accessible Rich Internet Applications (ARIA) standard for accessibility information.
+しかし、時には要素にプロパティではなく属性を設定する必要があるかもしれません。例えば、CSSで属性セレクタを利用していたり、ARIA(※)のような属性ベースのAPIと相互運用性を高めるために属性セレクタを使っている場合です。
+(※)ARIA(Accessible Rich Internet Applications)：ハンディキャップを持つ人に向けた情報のアクセシビリティ向上を目的とした標準規約
 
-To bind to an attribute, add a dollar sign (`$`) after the attribute name:
+属性にバインドするには、属性名の後にドル記号(`$`)を追加します。：
 
 ```
 <div style$="color: {{myColor}};">
 ```
 
-Where the attribute value is either a [binding annotation](#binding-annotation) or a [compound
-binding](#compound-binding).
+属性の値は、[バインディングアノテーション](#binding-annotationstem/data-binding.md#binding-annotations)または[複合バインディング](#compound-binding)のいずれかになります。
 
-Attribute binding results in a call to:
+属性バインディングにより、次の呼び出しが行われます。：
 
 
 ```js
 element.setAttribute(attr,value);
 ```
 
-As opposed to:
+以下とは対照的です。：
 
 
 ```js
 element.property = value;
 ```
 
-For example:
+例：
 
 
 ```html
@@ -188,47 +164,40 @@ For example:
 ```
 
 
-Attribute bindings are always one-way, host-to-target. Values are serialized according to the
-value's _current_ type, as described for
-[attribute serialization](properties.html#attribute-serialization).
+属性バインディングは、ホストからターゲットに向けて常に一方向なります。値は、[属性のシリアル化](properties.html#attribute-serialization)で説明したように、 _現在の_ 型に応じてシリアライズされます。
 
-Again, as values must be serialized to strings when binding to attributes, it is always more
-performant to use property binding for pure data propagation.
+繰り返しになりますが、属性にバインドする際は、値は文字列にシリアライズする必要があるので、単純なデータの伝播には、常にプロパティバインディングを使用する方が優れたパフォーマンスを発揮します。
 
-### Native properties that don't support property binding {#native-binding}
 
-There are a handful of common native element properties that Polymer can't data-bind to directly,
-because the binding causes issues on one or more browsers.
+### プロパティバインディングをサポートしていないネイティブのプロパティ {#native-binding}
 
-You need to use attribute bindings to affect the following properties:
+Polymerが直接データをバインドできない一般的なネイティブ要素のプロパティがわずかながら存在します。原因は、いくつかのブラウザ上でバインディングが引き起こす問題にあります。
 
-| Attribute | Property | Notes |
+以下のプロパティにバインディングの効果を与えるには属性バインディングを使用する必要があります。：
+
+| 属性 | プロパティ | 説明 |
 |----|----|----|
-| `class` | `classList`, `className` | Maps to two properties with different formats. |
-| `style` | `style` | By specification, `style` is considered a read-only reference to a `CSSStyleDeclaration` object. |
+| `class` | `classList`, `className` | フォーマットの異なる二つのプロパティをマップされます。 |
+| `style` | `style` | 仕様では、`style`は`CSSStyleDeclaration`オブジェクトに対する読み取り専用の参照とみなされます。 |
 | `href` | `href` | |
 | `for` | `htmlFor` | |
-| `data-*` |  `dataset` | Custom data attributes (attribute names starting with `data-`) are stored on the `dataset` property. |
-| `value` | `value` | Only for `<input type="number">`. |
+| `data-*` |  `dataset` | カスタムデータ属性(属性名が`data-`で始まる)は`dataset`プロパティに格納されています。|
+| `value` | `value` | `<input type="number">`だけに使えます。 |
 
-**Note:** data binding to the `value` property doesn't work on IE for ***numeric input types***. For
-this specific case, you can use one-way attribute binding to set the `value` of a numeric input. Or
-use another element such as `iron-input` or `paper-input` that handles two-way binding correctly.
+**注意**：`value`プロパティへのデータバインディングは、**入力タイプが数値の場合**IEではうまく機能しません。このようなケースでは、一方向の属性バインディングを使用することで、`value`に数値入力を設定できます。あるいは、双方向バインディングを正しく扱う`iron-input`や`paper-input`のような別の要素を使用して下さい。
 {.alert .alert-info }
 
-This list includes the properties currently known to cause issues with property bindings. Other
-properties may also be affected.
+上記リストには現在、プロパティのバインディングで問題を引き起こすことが知られているプロパティが含まれます。他のプロパティも影響を受ける可能性があります。
 
-There are various reasons that properties can't be bound:
+プロパティをバインドできない理由は様々です：
 
-*   Cross-browser isssues with the ability to place binding braces `{{...}}` in some of these
-    attribute values.
+*   属性値に括弧`{{...}}`を配置する機能には全てのブラウザ上で問題がある。
 
-*   Attributes that map to differently-named JavaScript properties (such as `class`).
+*   (`class`のように)別の名前のJavaScriptプロパティにマップされる属性がある。
 
-*   Properties with unique structures (such as `style`).
+*   (`style`のように)固有の構造を持つプロパティが存在する。
 
-Attribute binding to dynamic values (use `$=`):
+動的な値への属性バインディング(`$=`を使用)：
 
 
 ```html
@@ -252,44 +221,40 @@ Attribute binding to dynamic values (use `$=`):
 
 ```
 
-## Binding annotations {#binding-annotation}
+## アノテーションのバインド {#binding-annotation}
 
-Polymer provides two kinds of data binding delimiters:
+Polymerは、二種類のデータバインディングデリミタを用意しています。：
 
 <dl>
-  <dt>One-way delimiters: <code>[[<var>binding</var>]]</code></dt>
-  <dd>One-way bindings allow only <strong>downward</strong> data flow.</dd>
-  <dt>Two-way or "automatic" delimiters: <code>{{<var>binding</var>}}</code></dt>
-  <dd>Automatic bindings allow <strong>upward and downward</strong> data flow.</dd>
+  <dt>一方向デリミタ： <code>[[<var>binding</var>]]</code></dt>
+  <dd>一方向バインディングは、<strong>下向き</strong>のデータフローのみ許可します。</dd>
+  <dt>双方向または自動(automatic)デリミタ: <code>{{<var>binding</var>}}</code></dt>
+  <dd>双方向(オートマティック)バインディングは、<strong>上向きと下向き</strong>のデータフローを許可します。</dd>
 </dl>
 
-See [Data flow](data-system#data-flow) for information on two-way binding and upward data flow.
+双方向バインディングと上向きデータフローについては、[データフロー](data-system#data-flow)を参照してください。
 
-The text inside the delimiters can be one of the following:
+デリミタ内のテキストは、次のいずれかになります。：
 
-*   A property or subproperty path (`users`, `address.street`).
-*   A computed binding (`_computeName(firstName, lastName, locale)`).
-*   Any of the above, preceded by the negation operator (`!`).
+*   プロパティまたはサブプロパティのパス(例：`users`、`address.street`)。
+*   算出バインディング(例：`_computeName(_computeName(firstName, lastName, locale)`)。
+*   上記のいずれかに、否定演算子(`!`)を前置したもの。
 
-The paths in a data binding annotation are relative to the current [data binding
-scope](data-system#data-binding-scope).
+データバインディングアノテーションのパスは、現在の[データバインディングのスコープ](data-system#data-binding-scop)に関連しています。
 
-### Bind to a host property {#host-property}
+### ホストプロパティにバインド {#host-property}
 
-The simplest form of binding annotation uses a host property:
+バインディングアノテーションの最もシンプルな形式は、ホストプロパティを使用する場合です。：
 
 ```
 <simple-view name="{{myName}}"></simple-view>
 ```
 
-If the property being bound is an object or an array, both elements get a reference to the **same
-object**. This means that either element can change the object and a true one-way binding is
-impossible. For more information, see [Data flow for objects and
-arrays](data-system#data-flow-objects-arrays).
+バインドされるプロパティがオブジェクトか配列の場合、どちらの要素も**同じオブジェクト**への参照を取得します。つまり、どちらの要素からもオブジェクトを変更できるので、真の一方向バインディングは実現できません。詳細については、[オブジェクトおよび配列のデータフロー](data-system#data-flow-objects-arrays)を参照してください。
 
-### Bind to a host sub-property {#path-binding}
+### ホストのサブプロパティにバインド {#path-binding}
 
-Binding annotations can also include paths to sub-properties, as shown below:
+以下に示すように、バインディングアノテーションには、サブプロパティのパスも含めることができます。：
 
 ```
 <dom-module id="main-view">
@@ -314,11 +279,9 @@ Binding annotations can also include paths to sub-properties, as shown below:
 </dom-module>
 ```
 
-Subproperty changes are not automatically [observable](data-system#observable-changes).
+サブプロパティの変更は自動的に[監視可能](data-system#observable-changes)ではありません。
 
-If the host element updates the subproperty it needs to use the `set` method, as described in
-[Set a property or subproperty by path](model-data#set-path). Or the `notifyPath` method, as
-described in [Notify Polymer of a subproperty change](model-data#notify-path).
+ホスト要素がサブプロパティを更新する場合は、[パスでプロパティまたはサブプロパティを設定](model-data#set-path)で説明した通り、`set`メソッドを使用するか、[Polymerへの通知](model-data#notify-path)で説明した`notifyPath`メソッドを使用する必要があります。
 
 
 ```
@@ -326,18 +289,13 @@ described in [Notify Polymer of a subproperty change](model-data#notify-path).
 this.set('name.last', 'Maturin');
 ```
 
-If the binding is two-way and the target element updates the bound property, the change propagates
-upward automatically.
+バインディングが双方向で、ターゲット要素がバインドされたプロパティを更新する場合には、その変更は上に向けて自動的に伝播します。
 
-If the subproperty being bound is an object or an array, both elements get a reference to the **same
-object**. This means that either element can change the object and a true one-way binding is
-impossible. For more information, see [Data flow for objects and
-arrays](data-system#data-flow-objects-arrays).
+バインドされているサブプロパティがオブジェクトか配列の場合、どちらの要素も**同じオブジェクト**への参照を取得します。つまり、どちらの要素もオブジェクトを変更できるので、真の一方向バインディングは実現できません。詳細については、[オブジェクトおよび配列のデータフロー](data-system#data-flow-objects-array)を参照してください。
 
-### Logical not operator {#expressions-in-binding-annotations}
+### 論理否定演算子(!) {#expressions-in-binding-annotations}
 
-Binding annotations support a single logical not operator (`!`), as the first character inside
-the binding delimiters:
+バインディングアノテーションは、バインディングデリミタの中の最初の文字として、単一の論理否定演算子(`!`)をサポートします。：
 
 ```
 <template>
@@ -345,50 +303,39 @@ the binding delimiters:
 </template>
 ```
 
-In this example, `showLogin` is `false` if `isLoggedIn` has a truthy value.
+この例では、`isLoggedIn`が真の値を持つなら`showLogin`は`false`になります。
 
-Only a single logical not operator is supported. You can't cast a value to boolean using `!!`. For
-more complicated transformations, use a [computed binding](#annotated-computed).
+論理否定演算子は一つだけサポートされています。(`!!`)を使って値の型変換をするようなことはできません。より複雑な変換が必要な場合には、[算出バインディング](#annotated-computed)を使用します。
 
-**Negated bindings are one-way**:
-A binding with a logical not operator is **always one-way, host-to-target**.
+**論理否定バインディングは一方向です。**：
+論理否定演算子を使ったバインディングは、**常にホストからターゲットに一方向**になります。
 {.alert .alert-info}
 
-### Computed bindings {#annotated-computed}
+### 算出バインディング(Computed bindings) {#annotated-computed}
 
-A *computed binding* is similar to a [computed property](observers#computed-properties). It's
-declared inside a binding annotation.
+*算出バインディング*は[算出プロパティ](observers#computed-properties)と似ています。バインディングアノテーション内で宣言されます。
 
 ```
 <div>[[_formatName(first, last, title)]]</div>
 ```
 
-The computed binding declaration includes a computing function name, followed by a list of
-_dependencies_, in parenthesis.
+算出バインディングの宣言は、算出関数の名前に続けて括弧で囲った_依存部_のリストを記述します。
 
-An element can have multiple computed bindings in its template that refer to the same computing
-function.
+要素は、自身のテンプレート内で、同じ算出関数を参照する複数の算出バインディングを持つことができます。
 
-In addition to the dependency types supported by computed properties and complex observers, the
-dependencies for a computed binding can include string or number literals.
+算出プロパティと*複雑なオブザーバー*でサポートされている*依存部*のタイプに加えて、算出バインディングの依存部には、文字列または数値リテラルを含めることができます。
 
-A computed binding is useful if you don't need to expose a computed property as part of the
-element's API, or use it elsewhere in the element. Computed bindings are also useful for filtering
-or transforming values for display.
+算出バインディングが役に立つのは、算出プロパティを要素のAPIの一部として公開する必要がない場合や、要素内の他の場所で使用する場合です。算出バインディングは、値を表示する際に、フィルタリングしたり変換したりするのにも役立ちます。
 
-Computed bindings differ from computed properties in the following ways:
+算出バインディングは、以下の点で算出プロパティと異なります：
 
-*   A computed binding's dependencies are interpreted relative to the current *binding scope*. For
-    example, inside a [template repeater](templates.html#dom-repeat), a dependent property could
-    refer to the current `item`.
+*   算出バインディングの依存部は、現在のバインディングスコープに関連づけて解釈されます。例えば、[テンプレートリピーター](templates.html#dom-repeat)の内部では、依存関係にあるプロパティは現在の`item`を参照します。
 
-*   A computed binding's argument list can include literal arguments.
+*   算出バインディングの引数リストには、[リテラルな引数](#literal-arguments-to-computed-bindings)を含めることができます。
 
-*   A computed binding can have an *empty* argument list, in which case the computing function is
-    only called once.
+*   算出バインディングは*空の*引数リストを持つことができます。この場合、算出関数の呼び出しは一度限りです。
 
-Example: { .caption }
-
+例：{ .caption }
 ```
 <dom-module id="x-custom">
 
@@ -417,48 +364,38 @@ Example: { .caption }
 </dom-module>
 ```
 
-In this case, the span's `textContent` property is bound to the return value
-of `_formatName`, which is recalculated whenever `first` or `last` changes.
+この場合、`span`の`textContent`プロパティは、`_formatName`の返り値にバインドされ、`first`や`last`が変更されるたびに再計算されます。
 
-**Computed bindings are one-way.** A computed binding is always one-way, host-to-target.
+**算出バインディングは一方向**：算出バインディングは、ホストからターゲットに常に一方向です。
 {.alert .alert-info}
 
-#### Dependencies of computed bindings {#computed-binding-dependencies}
+#### 算出バインディングの依存部 {#computed-binding-dependencies}
 
-A computed binding's dependencies can include any of the dependency types supported by
-[complex observers](observers#complex-observers):
+算出バインディングの依存部には、[複雑なオブザーバー](observers#complex-observers)によってサポートされている依存部のタイプであればどれでも含めることができます。
 
-*   Simple properties on the current scope.
+*   現在のスコープ上の単純なプロパティ
+*   サブプロパティへのパス
+*   ワイルドカードを含むパス
+*   配列のsplicesへのパス
 
-*   Paths to subproperties.
+上記に加えて、算出バインディングにはリテラルな引数を含めることができます。
 
-*   Paths with wildcards.
+依存関係にあるプロパティがどのタイプでも、算出関数に渡される引数はオブザーバーに渡されるものと同じです。
 
-*   Paths to array splices.
+オブザーバーや算出プロパティを利用する場合と同様に、**依存関係にある全てのプロパティが定義される(`!=undefined`)まで算出関数が呼び出されることはありません**。
 
-In addition, a computed binding can include literal arguments.
+ワイルドカードを含むパスを使った算出バインディングの例は、[配列アイテムにバインド](#array-bindin)を参照してください。
 
-For each type of dependent property, the argument passed to the computing function is the same as
-that passed to an observer.
+#### 算出バインディングへのリテラルな引数 {#literals}
 
-As with observers and computed properties, the computing function **is not called until all
-dependent properties are defined (`!=undefined`)**.
+算出バインディングに渡すことができる引数は、文字列または数値リテラルです。
 
-For an example computed binding using a path with a wildcard, see [Binding to array
-items](#array-binding).
+文字列は、シングルクォテーション(')又はダブルクォテーション(")で囲われるでしょう。属性やプロパティのバインディングでは、属性値にダブルクォテーションを使っている場合、文字列リテラルにはシングルクォテーションを使用して下さい。これらは逆であっても構いません。
 
-#### Literal arguments to computed bindings {#literals}
-
-Arguments to computed bindings may be string or number literals.
-
-Strings may be  either single- or double-quoted. In an attribute or property binding, if you use
-double quotes for the attribute value, use single quotes for string literals, or the reverse.
-
-**Commas in literal strings:** Any comma occurring in a string literal **must** be escaped using a
-backslash (`\`).
+**文字列リテラルでカンマを使用**：文字列リテラルの中でカンマを使用する場合には、バックスラッシュ(`\`)を使ってエスケープ**しなければいけません**。
 {.alert .alert-info }
 
-Example:
+例：
 
 ```html
 <dom-module id="x-custom">
@@ -468,7 +405,7 @@ Example:
 </dom-module>
 ```
 
-Finally, if a computed binding has no dependent properties, it is only evaluated once:
+なお、算出バインディングに依存関係のあるプロパティがない場合、評価は一度だけ行われます。：
 
 ```
 <dom-module id="x-custom">
@@ -492,10 +429,9 @@ Finally, if a computed binding has no dependent properties, it is only evaluated
 </dom-module>
 ```
 
-## Compound bindings {#compound-bindings}
+## 複合バインディング(Compound bindings) {#compound-bindings}
 
-You can combine string literals and bindings in a single property binding or
-text content binding. For example:
+文字列リテラルに単一プロパティのバインディングやテキストコンテンツのバインディングを混ぜて使用することもできます。例えば：
 
 ```
 <img src$="https://www.example.com/profiles/[[userId]].jpg">
@@ -503,19 +439,15 @@ text content binding. For example:
 <span>Name: [[lastname]], [[firstname]]</span>
 ```
 
-Compound bindings are re-evaluated whenever the value of any of the individual
-bindings changes. Undefined values are interpolated as empty strings.
+複合バインディングは、個々のバインディングのいずれかの値が変更されるたびに再評価されます。`undefined`の値は、空の文字列によって補完されます。
 
-**Compound bindings are one-way**: You can use either one-way (`[[ ]]`) or automatic (`{{ }}`)
-binding annotations in a compound binding, but the bindings are **always
-one-way, host-to-target.**
+**複合バインディングは一方向**：複合バインディングでは、一方向(`[[ ]]`)または自動(`{{ }}`)バインディングアノテーションを使用することができますが、その向きは**ホストからターゲットに常に一方向**になります。
 {.alert .alert-info}
 
 
-## Binding to arrays and array items {#array-binding}
+## 配列と配列アイテムへのバインディング {#array-binding}
 
-To keep annotation parsing simple, **Polymer doesn't provide a way to bind directly to an array
-item**.
+アノテーションの解析(parsing)をシンプルに保つために、**Polymerは配列のアイテムに直接バインドする方法を用意していません**。
 
 ```
 <!-- Don't do this! This format doesn't work -->
@@ -524,30 +456,27 @@ item**.
  <span>{{array.0}}</span>
 ```
 
-There are several ways to interact with arrays in a data binding:
+データバインディングにおいて、配列のアイテムとやりとりする方法はいくつか存在します。：
 
-*   The `dom-repeat` helper element lets you create a instance of a template for each item in an
-    array. Inside a `dom-repeat` instance, you can bind to the properties of the array item.
+*   ヘルパー要素`dom-repeat`を使用すると、配列内の各アイテムに対して、テンプレートのインスタンスを作成することができます。`dom-repeat`のインスタンス内部では、配列アイテムのプロパティへバインドできます。
 
-*   The `array-selector` helper element lets you data bind to a selection from an array, where the
-    selection is either a single item or a subset of the original array.
+*   ヘルパー要素`array-selector`を使用すると、配列中から選択されたアイテムとデータをバインドできます。そこで選択されるアイテムは、単一のアイテムか、元の配列のサブセットのいずれかになります。
 
-*   You can bind an individual array item using a computed binding.
+*   算出バインディングを使って、配列の個々のアイテムをバインドすることができます。
 
-Related topics:
+関連トピック：
 
-*   [Template repeater](templates#dom-repeat)
-*   [Array selector](templates#array-selector)
-*   [Bind to an array item](#bind-array-item)
+*   [テンプレートリピータ](templates#dom-repeat)
+*   [配列セレクタ](templates#array-selector)
+*   [配列アイテムにバインド](#bind-array-item)
 
-### Bind to an array item {#bind-array-item}
 
-You can use a computed binding to bind to a specific array item, or to a
-subproperty of an array item, like `array[index].name`.
+### 配列アイテムにバインド {#bind-array-item}
 
-The following example shows how to access a property from an array item using a computed binding.
-The computing function needs to be called if the subproperty value changes,
-_or_ if the array itself is mutated, so the binding uses a wildcard path, `myArray.*`.
+算出バインディングを使用して、特定の配列アイテムやその配列アイテムのサブプロパティにバインドすることができます(例：`array[index].name`)。
+
+次の例は、算出バインディングを使用して、配列アイテムからプロパティにアクセスする方法を示しています。
+バインディングにワイルドカードパス(`myArray.*`)を使用しているので、サブプロパティの値が変更された場合や、配列そのものが変更された場合には算出関数を呼び出す必要があります。
 
 ```
 <dom-module id="x-custom">
@@ -595,30 +524,22 @@ _or_ if the array itself is mutated, so the binding uses a wildcard path, `myArr
 </dom-module>
 ```
 
-## Two-way bindings
+## 双方向バインディング
 
-Two-way bindings can propagate data changes both downward (from host to target) and upward (from
-target to host). For changes to propagate upward, you must use automatic data binding
-delimiters (`{{ }}`) and the target property must be set to `notify: true`. For more information,
-see [Data flow](data-system#data-flow).
+双方向バインディングは、下向き(ホストからターゲットへ)と上向き(ターゲットからホストへ)の両方にデータの変更を伝播できます。変更を上に向けて伝播させるには、自動データバインディングデリミタ(`{{ }}`)を使用し、またターゲットプロパティを`notify: true`に設定する必要があります。詳細については、[データフロー](data-system#data-flow)を参照してください。
 
-When you bind an array or object property, both elements have access to the shared array or object,
-and both can make changes to it. Use automatic binding delimiters to ensure that property effects
-propagate upward. For more information, see [Data flow for objects and
-arrays](#data-flow-objects-arrays).
+配列やオブジェクトのプロパティにバインドする場合、どちらの要素も共有された配列やオブジェクトにアクセスして変更を加えることができます。そのような場合は、*プロパティエフェクト*が上向きに伝播するように、自動バインディングデリミタを使用して下さい。詳細については、[オブジェクトおよび配列のデータフロー]((#data-flow-objects-arrays)を参照してください。
 
-### Two-way binding to a non-Polymer element {#two-way-native}
+### Polymer要素でない要素への双方向データバインディング {#two-way-native}
 
-As described in [Change notification events](#change-events), Polymer uses an event naming
-convention to achieve two-way binding.
+[変更通知イベント](#change-events)で説明したように、Polymerは双方向データバインディングを実現するために、イベントの命名規則を利用しています。
 
-To two-way bind to native elements or non-Polymer elements that _don't_ follow this event naming
-convention, you can specify a custom change event name in the annotation using the following syntax:
+Polymer要素でない要素や、このイベント命名規則に従わないネイティブ要素へ双方向のデータバインドを行うには、次の構文を使いアノテーション内に独自の変更イベント名を指定することができます。：
 
 <code><var>target-prop</var>="{{<var>hostProp</var>::<var>target-change-event</var>}}"</code>
 
 
-Example: { .caption }
+例：{ .caption }
 
 ```
 <!-- Listens for `input` event and sets hostValue to <input>.value -->
@@ -631,9 +552,7 @@ Example: { .caption }
 <video url="..." current-time="{{hostTime::timeupdate}}">
 ```
 
-When binding to standard notifying properties on Polymer elements,
-specifying the event name is unnecessary, as the default convention will be
-to listen for `property-changed` events.  The following constructions are equivalent:
+Polymer要素上で標準の通知プロパティにバインドする場合、イベント名の指定は必須ではありません。デフォルトの命名規則のように、`property-changed`イベントを監視するようになっています。以下の構文は同じことです。：
 
 ```
 <!-- Listens for `value-changed` event -->
@@ -644,18 +563,16 @@ to listen for `property-changed` events.  The following constructions are equiva
 ```
 
 
-## Moved sections
+## 移動したセクション
 
-The following sections have moved to [Data system concepts](data-system):
+次のセクションは、[データシステムのコンセプト](data-system)に移行しました。
 
 <a id="#change-notification-protocol"></a>
 
--   Change notification protocol. See [Change notification events](#change-events).
+-   変更通知のプロトコル：[変更通知イベント](#change-events)を参照してください。
 
 <a id="#property-notification"></a>
 
--   Property change notification and two-way binding. See [How data flow is
-    controlled](data-system#data-flow-control).
+-   プロパティの変更通知と双方向バインディング：[データフローの制御方法](data-system#data-flow-controld)を参照してください。
 
--   Binding to structured data. See [Observable changes](data-system#observable-changes) and
-    [Data paths](data-system#paths).
+-   構造化されたデータへのバインディング：[監視可能な変更](data-system#paths)を参照してください。
